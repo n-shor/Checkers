@@ -97,8 +97,8 @@ public class Board {
      * @return true if there is at least one valid move available, false otherwise.
      */
     private boolean canMove(int x, int y) {
-        // TODO: add infinite distance checks for kings
         Piece piece = state[x][y];
+
         if (piece == null) {
             return false;
         }
@@ -109,18 +109,39 @@ public class Board {
             for (int dy : possibleMoves) {
                 int newX = x + dx;
                 int newY = y + dy;
+
                 // Check simple move
-                if (isValidMove(x, y, newX, newY)) {
+                if (isValidMove(x, y, newX, newY))
+                {
                     return true;
                 }
+
                 // Check capture
                 newX = x + 2 * dx;
                 newY = y + 2 * dy;
-                if (isValidMove(x, y, newX, newY)) {
+
+                if (isValidMove(x, y, newX, newY))
+                {
                     return true;
+                }
+
+                // Check more moves if the piece is a king
+                if (piece.isKing())
+                {
+                    for (int i = 2; i < BOARD_SIZE; i++)
+                    {
+                        newX = x + 2 * dx;
+                        newY = y + 2 * dy;
+
+                        if (isValidMove(x, y, newX, newY))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
         }
+
         return false;
     }
 
@@ -128,25 +149,34 @@ public class Board {
      * Determines the winner of the game based on the remaining pieces and possible moves.
      * @return 'BLACK' if black wins, 'WHITE' if white wins, 'DRAW' if the game is a draw, 'NONE' if the game is not over.
      */
-    public String getWinner() {
+    public String getWinner()
+    {
         boolean whiteHasPieces = false;
         boolean blackHasPieces = false;
         boolean whiteHasMoves = false;
         boolean blackHasMoves = false;
 
         // Scan the board to check for pieces and possible moves
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++)
+        {
+            for (int j = 0; j < BOARD_SIZE; j++)
+            {
                 Piece piece = state[i][j];
-                if (piece != null) {
-                    if (piece.isBlack()) {
+                if (piece != null)
+                {
+                    if (piece.isBlack())
+                    {
                         blackHasPieces = true;
-                        if (!blackHasMoves) { // Only check for moves if not already found
+                        if (!blackHasMoves)
+                        { // Only check for moves if not already found
                             blackHasMoves = canMove(i, j);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         whiteHasPieces = true;
-                        if (!whiteHasMoves) { // Only check for moves if not already found
+                        if (!whiteHasMoves)
+                        { // Only check for moves if not already found
                             whiteHasMoves = canMove(i, j);
                         }
                     }
@@ -155,10 +185,12 @@ public class Board {
         }
 
         // Determine winner based on pieces and moves left
-        if (!whiteHasPieces || (!whiteHasMoves && turn == WHITE)) {
+        if (!whiteHasPieces || (!whiteHasMoves && turn == WHITE))
+        {
             return "BLACK"; // Black wins if white has no pieces or moves
         }
-        if (!blackHasPieces || (!blackHasMoves && turn == BLACK)) {
+        if (!blackHasPieces || (!blackHasMoves && turn == BLACK))
+        {
             return "WHITE"; // White wins if black has no pieces or moves
         }
         return "NONE"; // No winner yet
@@ -169,12 +201,15 @@ public class Board {
      * Checks if the game is over due to a win or a draw.
      * @return 'BLACK' if black wins, 'WHITE' if white wins, 'DRAW' if the game is a draw, 'NONE' if the game is not over.
      */
-    public String checkGameStatus() {
+    public String checkGameStatus()
+    {
         String winner = getWinner();
-        if (!winner.equals("NONE")) {
+        if (!winner.equals("NONE"))
+        {
             return winner;
         }
-        if (movesSinceCaptureOrKing >= 80) { // 40 moves by each player without capture or kinging
+        if (movesSinceCaptureOrKing >= 80)
+        { // 40 moves by each player without capture or kinging
             return "DRAW";
         }
         return "NONE";
@@ -195,17 +230,21 @@ public class Board {
      * @param yDst Destination y-coordinate
      * @return true if the move is valid, false otherwise
      */
-    public boolean isValidMove(int xSrc, int ySrc, int xDst, int yDst) {
-        if (xDst < 0 || xDst >= BOARD_SIZE || yDst < 0 || yDst >= BOARD_SIZE) {
+    public boolean isValidMove(int xSrc, int ySrc, int xDst, int yDst)
+    {
+        if (xDst < 0 || xDst >= BOARD_SIZE || yDst < 0 || yDst >= BOARD_SIZE)
+        {
             return false;
         }
 
         Piece piece = state[xSrc][ySrc];
-        if (piece == null || piece.isBlack() != turn) {
+        if (piece == null || piece.isBlack() != turn)
+        {
             return false;
         }
 
-        if ((xDst + yDst) % 2 == 0 || state[xDst][yDst] != null) {
+        if ((xDst + yDst) % 2 == 0 || state[xDst][yDst] != null)
+        {
             return false;
         }
 
@@ -242,8 +281,9 @@ public class Board {
      * Performs the capture of an opponent's piece located between the source and destination squares.
      * The captured piece is removed from the board.
      */
-    private void performCapture(int xSrc, int ySrc, int xDst, int yDst) {
-        // TODO: fix logic issues - handle king moves - moved to separate function
+    private void performCapture(int xSrc, int ySrc, int xDst, int yDst)
+    {
+        // TODO: fix logic issues - handle king moves - BUT DO IT IN A SEPARATE FUNCTION
         int capturedX = (xSrc + xDst) / 2;
         int capturedY = (ySrc + yDst) / 2;
         state[capturedX][capturedY] = null;
@@ -254,12 +294,18 @@ public class Board {
      * Checks if the path between the source and destination is clear, which is necessary for king moves.
      * This method verifies that all intermediate squares between the starting and ending position are empty.
      */
-    private boolean isPathClear(int xSrc, int ySrc, int xDst, int yDst) {
+    private boolean isPathClear(int xSrc, int ySrc, int xDst, int yDst)
+    {
         int stepX = Integer.signum(xDst - xSrc);
         int stepY = Integer.signum(yDst - ySrc);
         int curX = xSrc + stepX, curY = ySrc + stepY;
-        while (curX != xDst && curY != yDst) {
-            if (state[curX][curY] != null) return false;
+        while (curX != xDst && curY != yDst)
+        {
+            if (state[curX][curY] != null)
+            {
+                return false;
+            }
+
             curX += stepX;
             curY += stepY;
         }
@@ -267,9 +313,10 @@ public class Board {
     }
 
     /**
-     * Checks if there is an opponent's piece between the source and destination.
+     * Checks if there is an opponent's piece between the source and destination - only for non-king pieces.
      */
-    private boolean hasOpponentPieceInBetween(int xSrc, int ySrc, int xDst, int yDst) {
+    private boolean hasOpponentPieceInBetween(int xSrc, int ySrc, int xDst, int yDst)
+    {
         // TODO: fix logic issues - mainly handle king moves normally
         int midX = (xSrc + xDst) / 2;
         int midY = (ySrc + yDst) / 2;
@@ -278,21 +325,38 @@ public class Board {
     }
 
     /**
-     * Checks if there is a mandatory capture from the given position.
+     * Checks if the path between the source and destination has a maximum of one ENEMY , which is necessary for king moves or captures.
+     * This method verifies that all intermediate squares between the starting and ending position are empty.
      */
-    private boolean pieceHasMandatoryCapture(int x, int y) {
+    private boolean
+
+    /**
+     * Checks if there is a mandatory capture from the given position - only for non-king pieces.
+     */
+    private boolean pieceHasMandatoryCapture(int x, int y)
+    {
         int[][] directionVectors = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-        for (int[] dir : directionVectors) {
+        for (int[] dir : directionVectors)
+        {
             int jumpX = x + 2 * dir[0];
             int jumpY = y + 2 * dir[1];
             if (jumpX >= 0 && jumpX < BOARD_SIZE && jumpY >= 0 && jumpY < BOARD_SIZE &&
                     state[x + dir[0]][y + dir[1]] != null &&
                     state[x + dir[0]][y + dir[1]].isBlack() != turn &&
-                    state[jumpX][jumpY] == null) {
+                    state[jumpX][jumpY] == null)
+            {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if there is a mandatory capture from the given position - only for kings.
+     */
+    private boolean kingHasMandatoryCapture(int x, int y)
+    {
+
     }
 
     /**
@@ -306,7 +370,7 @@ public class Board {
             {
                 if (state[i][j] != null && state[i][j].isBlack() == turn)
                 {
-                    if (pieceHasMandatoryCapture(i, j))
+                    if (state[i][j].isKing() && kingHasMandatoryCapture(i, j) || !state[i][j].isKing() && pieceHasMandatoryCapture())
                     {
                         return true;
                     }
