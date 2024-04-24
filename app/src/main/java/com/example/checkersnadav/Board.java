@@ -42,6 +42,7 @@ public class Board {
 
     }
 
+
     /**
      * Attempts to move a piece from the source to the destination coordinates.
      * It checks if the move is valid, performs the move, captures if applicable,
@@ -66,12 +67,27 @@ public class Board {
 
         movesSinceCaptureOrKing++;
 
-        // TODO: fix this wrong logic
         // Handle captures
-        if (Math.abs(xDst - xSrc) == 2) {
-            performCapture(xSrc, ySrc, xDst, yDst);
-            // Determine if further captures are possible for multi-jump
-            if (pieceHasMandatoryCapture(xDst, yDst)) {
+        // Piece capture
+        if (!piece.isKing() && Math.abs(xDst - xSrc) == 2)
+        {
+            performPieceCapture(xSrc, ySrc, xDst, yDst);
+            // Determine if further captures are possible for multi-jump, using the current location of the piece, which is the move's destination
+            if (pieceHasMandatoryCapture(xDst, yDst))
+            {
+                turn = !turn; // Reverse the incoming turn switch
+            }
+        }
+        // King capture
+        // making sure the path is not clear - meaning there is something to capture
+        // (we already know the move is valid so we don't have to worry about isPathClear() not being specific enough)
+        // also, it doesn't matter that the piece has moved already because we only check the squares that are in between the source and the destination squares
+        else if (!isPathClear(xSrc, ySrc, xDst, yDst))
+        {
+            performKingCapture(xSrc, ySrc, xDst, yDst);
+            // Determine if further captures are possible for multi-jump, using the current location of the king, which is the move's destination
+            if (kingHasMandatoryCapture(xDst, yDst))
+            {
                 turn = !turn; // Reverse the incoming turn switch
             }
         }
@@ -89,6 +105,7 @@ public class Board {
 
         return true;
     }
+
 
     /**
      * Checks if the specified piece at the given location can make any legal move.
@@ -144,6 +161,7 @@ public class Board {
 
         return false;
     }
+
 
     /**
      * Determines the winner of the game based on the remaining pieces and possible moves.
@@ -215,9 +233,18 @@ public class Board {
         return "NONE";
     }
 
-    public Piece[][] getState() {
+
+    public Piece[][] getState()
+    {
         return state;
     }
+
+
+    public int getMovesSinceCaptureOrKing()
+    {
+        return movesSinceCaptureOrKing;
+    }
+
 
     /**
      * Checks if the specified move is valid according to the rules of checkers.
@@ -255,10 +282,6 @@ public class Board {
         // King logic
         if (piece.isKing())
         {
-            // TODO: make this account for all king moves (currently it only accounts for non capture king moves)
-            //  (make a function that specifically checks if king captures are valid?)
-            //  (specifically make a function for actually making a capture as a king as well)
-            //  (and then fix normal capturing cuz that stuff isn't functioning as well)
             // Make sure the king is moving in a diagonal
             if (Math.abs(xDst - xSrc) != Math.abs(yDst - ySrc))
             {
@@ -268,15 +291,14 @@ public class Board {
             // Check if it's a normal king move
             if (isPathClear(xSrc, ySrc, xDst, yDst))
             {
-
+                // The player must capture if possible
+                return !playerHasMandatoryCapture();
             }
-            // Check if it's a capture or an invalid move
-            else if (hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst))
+            else
             {
-
+                // Check if it's a capture or an invalid move
+                return hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst);
             }
-
-            return false;
         }
         // Non-king logic
         else
@@ -307,18 +329,58 @@ public class Board {
         return false;
     }
 
+
     /**
      * Performs the capture of an opponent's piece located between the source and destination squares.
      * The captured piece is removed from the board.
      */
-    private void performCapture(int xSrc, int ySrc, int xDst, int yDst)
+    private void performPieceCapture(int xSrc, int ySrc, int xDst, int yDst)
     {
-        // TODO: fix logic issues - handle king moves - BUT DO IT IN A SEPARATE FUNCTION
         int capturedX = (xSrc + xDst) / 2;
         int capturedY = (ySrc + yDst) / 2;
         state[capturedX][capturedY] = null;
+
         movesSinceCaptureOrKing = 0;
     }
+
+
+    /**
+     * Performs a capture by a king, removing the first encountered opponent's piece from the board.
+     * This function assumes that the path to the destination is already verified to be clear.
+     *
+     * @param xSrc Source x-coordinate
+     * @param ySrc Source y-coordinate
+     * @param xDst Destination x-coordinate
+     * @param yDst Destination y-coordinate
+     */
+    private void performKingCapture(int xSrc, int ySrc, int xDst, int yDst)
+    {
+        int stepX = Integer.signum(xDst - xSrc);
+        int stepY = Integer.signum(yDst - ySrc);
+        int curX = xSrc + stepX;
+        int curY = ySrc + stepY;
+        boolean capturePerformed = false;
+
+        // Move along the diagonal until the destination or an opponent's piece is found
+        while (curX != xDst && curY != yDst && !capturePerformed)
+        {
+            if (state[curY][curX] != null && state[curY][curX].isBlack() != state[ySrc][xSrc].isBlack())
+            {
+                // Remove the first encountered opponent piece
+                state[curY][curX] = null;
+                capturePerformed = true;
+                // continue to update coordinates but stop checking for captures
+                curX += stepX;
+                curY += stepY;
+                continue;
+            }
+            curX += stepX;
+            curY += stepY;
+        }
+
+        movesSinceCaptureOrKing = 0;
+    }
+
 
     /**
      * Checks if the path between the source and destination is clear, which is necessary for king moves.
@@ -342,17 +404,46 @@ public class Board {
         return true;
     }
 
+
     /**
-     * Checks if there is an opponent's piece between the source and destination.
+     * Checks if there is exactly one of the opponent's pieces between the source and destination and nothing else.
+     * Assumes the move is along a diagonal.
+     *
+     * @param xSrc Source x-coordinate
+     * @param ySrc Source y-coordinate
+     * @param xDst Destination x-coordinate
+     * @param yDst Destination y-coordinate
+     * @return true if exactly one opponent's piece is between the source and destination and nothing else, false otherwise.
      */
     private boolean hasOpponentPieceInBetween(int xSrc, int ySrc, int xDst, int yDst)
     {
-        // TODO: fix logic issues - mainly handle king moves normally
-        int midX = (xSrc + xDst) / 2;
-        int midY = (ySrc + yDst) / 2;
-        Piece midPiece = state[midX][midY];
-        return midPiece != null && midPiece.isBlack() != turn;
+        int stepX = Integer.signum(xDst - xSrc);
+        int stepY = Integer.signum(yDst - ySrc);
+        int opponentCount = 0;
+
+        int curX = xSrc + stepX;
+        int curY = ySrc + stepY;
+
+        while (curX != xDst && curY != yDst) {
+            if (state[curY][curX] != null) {
+                if (state[curY][curX].isBlack() != state[ySrc][xSrc].isBlack() && opponentCount == 0) {
+                    // First opponent piece encountered
+                    opponentCount++;
+                }
+                else
+                {
+                    // More than one piece or encountering a second piece
+                    return false;
+                }
+            }
+            curX += stepX;
+            curY += stepY;
+        }
+
+        // Return true only if an opponent piece was found (because we can get through the for loop without finding anything)
+        return opponentCount == 1;
     }
+
 
     /**
      * Checks if there is a mandatory capture from the given position - only for non-king pieces.
@@ -375,13 +466,51 @@ public class Board {
         return false;
     }
 
+
     /**
-     * Checks if there is a mandatory capture from the given position - only for kings.
+     * Checks if there is a mandatory capture available from the given position for a king.
+     * Kings can capture in any diagonal direction over multiple squares.
+     *
+     * @param x The x-coordinate of the king on the board.
+     * @param y The y-coordinate of the king on the board.
+     * @return true if a capture is mandatory, false otherwise.
      */
     private boolean kingHasMandatoryCapture(int x, int y)
     {
+        // Directions vectors for diagonal movement
+        int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
+        for (int[] dir : directions)
+        {
+            int curX = x + dir[0];
+            int curY = y + dir[1];
+            boolean foundOpponent = false;
+
+            while (curX >= 0 && curX < BOARD_SIZE && curY >= 0 && curY < BOARD_SIZE)
+            {
+                if (state[curY][curX] != null)
+                {
+                    if (state[curY][curX].isBlack() != state[y][x].isBlack())
+                    {
+                        foundOpponent = true; // Found an opponent's piece
+                    }
+                    else
+                    {
+                        break; // Blocked by a same-color piece
+                    }
+                }
+                else if (foundOpponent)
+                {
+                    // Empty space after an opponent's piece - valid capture
+                    return true;
+                }
+                curX += dir[0];
+                curY += dir[1];
+            }
+        }
+        return false;
     }
+
 
     /**
      * Checks if there is a mandatory capture for any piece of the current player in the given position.
