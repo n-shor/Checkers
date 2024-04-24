@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "613699731912",
+    "firebase_url": "https://checkersnadav-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "checkersnadav",
+    "storage_bucket": "checkersnadav.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613699731912:android:d54fbc7bbd15cdb67f40fd",
+        "android_client_info": {
+          "package_name": "com.example.checkersnadav"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALFXZ8by__khXMvI5cglE1QdGmfBtelcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
