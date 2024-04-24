@@ -130,8 +130,8 @@ public class Board {
                 {
                     for (int i = 2; i < BOARD_SIZE; i++)
                     {
-                        newX = x + 2 * dx;
-                        newY = y + 2 * dy;
+                        newX = x + i * dx;
+                        newY = y + i * dy;
 
                         if (isValidMove(x, y, newX, newY))
                         {
@@ -232,48 +232,78 @@ public class Board {
      */
     public boolean isValidMove(int xSrc, int ySrc, int xDst, int yDst)
     {
+        // Make sure the move is in the bounds of the board
         if (xDst < 0 || xDst >= BOARD_SIZE || yDst < 0 || yDst >= BOARD_SIZE)
         {
             return false;
         }
 
-        Piece piece = state[xSrc][ySrc];
-        if (piece == null || piece.isBlack() != turn)
-        {
-            return false;
-        }
-
+        // Make sure the destination of the move is a black square, and that it does not contain another piece
         if ((xDst + yDst) % 2 == 0 || state[xDst][yDst] != null)
         {
             return false;
         }
 
+        Piece piece = state[xSrc][ySrc];
+
+        // Make sure the square that we are attempting to move a piece from contains a piece of the correct color
+        if (piece == null || piece.isBlack() != turn)
+        {
+            return false;
+        }
+
+        // King logic
         if (piece.isKing())
         {
             // TODO: make this account for all king moves (currently it only accounts for non capture king moves)
             //  (make a function that specifically checks if king captures are valid?)
             //  (specifically make a function for actually making a capture as a king as well)
-            //  (and then fix normal capturing cuz that shit isn't functioning as well)
-            return Math.abs(xDst - xSrc) == Math.abs(yDst - ySrc) && isPathClear(xSrc, ySrc, xDst, yDst);
+            //  (and then fix normal capturing cuz that stuff isn't functioning as well)
+            // Make sure the king is moving in a diagonal
+            if (Math.abs(xDst - xSrc) != Math.abs(yDst - ySrc))
+            {
+                return false;
+            }
+
+            // Check if it's a normal king move
+            if (isPathClear(xSrc, ySrc, xDst, yDst))
+            {
+
+            }
+            // Check if it's a capture or an invalid move
+            else if (hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst))
+            {
+
+            }
+
+            return false;
         }
+        // Non-king logic
         else
         {
             int dx = Math.abs(xDst - xSrc);
             int dy = Math.abs(yDst - ySrc);
+
+            // Normal move
             if (dx == 1 && dy == 1)
             {
+                // The player must capture if possible
                 if (playerHasMandatoryCapture())
                 {
                     return false;
                 }
 
+                // Make sure the piece is going in the right direction
                 return (piece.isBlack() && xDst - xSrc == -1) || (!piece.isBlack() && xDst - xSrc == 1);
             }
+            // Capture
             else if (dx == 2 && dy == 2)
             {
+                // Make sure the capture is possible
                 return hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst);
             }
         }
+
         return false;
     }
 
@@ -313,7 +343,7 @@ public class Board {
     }
 
     /**
-     * Checks if there is an opponent's piece between the source and destination - only for non-king pieces.
+     * Checks if there is an opponent's piece between the source and destination.
      */
     private boolean hasOpponentPieceInBetween(int xSrc, int ySrc, int xDst, int yDst)
     {
@@ -323,12 +353,6 @@ public class Board {
         Piece midPiece = state[midX][midY];
         return midPiece != null && midPiece.isBlack() != turn;
     }
-
-    /**
-     * Checks if the path between the source and destination has a maximum of one ENEMY , which is necessary for king moves or captures.
-     * This method verifies that all intermediate squares between the starting and ending position are empty.
-     */
-    private boolean
 
     /**
      * Checks if there is a mandatory capture from the given position - only for non-king pieces.
