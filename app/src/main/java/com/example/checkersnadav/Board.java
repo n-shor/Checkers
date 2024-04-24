@@ -27,8 +27,10 @@ public class Board {
                 if ((i + j) % 2 != 0) {
                     if (i <= 2) {
                         state[i][j] = new Piece(WHITE);
+                        state[i][j].setKing(true);
                     } else if (i >= 5) {
                         state[i][j] = new Piece(BLACK);
+                        state[i][j].setKing(true);
                     } else {
                         state[i][j] = null;
                     }
@@ -72,11 +74,14 @@ public class Board {
         if (!piece.isKing() && Math.abs(xDst - xSrc) == 2)
         {
             performPieceCapture(xSrc, ySrc, xDst, yDst);
+
             // Determine if further captures are possible for multi-jump, using the current location of the piece, which is the move's destination
             if (pieceHasMandatoryCapture(xDst, yDst))
             {
                 turn = !turn; // Reverse the incoming turn switch
             }
+
+            movesSinceCaptureOrKing = 0; // Reset on capture
         }
         // King capture
         // making sure the path is not clear - meaning there is something to capture
@@ -85,11 +90,14 @@ public class Board {
         else if (!isPathClear(xSrc, ySrc, xDst, yDst))
         {
             performKingCapture(xSrc, ySrc, xDst, yDst);
+
             // Determine if further captures are possible for multi-jump, using the current location of the king, which is the move's destination
             if (kingHasMandatoryCapture(xDst, yDst))
             {
                 turn = !turn; // Reverse the incoming turn switch
             }
+
+            movesSinceCaptureOrKing = 0; // Reset on capture
         }
 
         // King promotion
@@ -424,15 +432,18 @@ public class Board {
         int curX = xSrc + stepX;
         int curY = ySrc + stepY;
 
-        while (curX != xDst && curY != yDst) {
-            if (state[curY][curX] != null) {
-                if (state[curY][curX].isBlack() != state[ySrc][xSrc].isBlack() && opponentCount == 0) {
+        while (curX != xDst && curY != yDst)
+        {
+            if (state[curX][curY] != null)
+            {
+                if (state[curX][curY].isBlack() != turn && opponentCount == 0)
+                {
                     // First opponent piece encountered
                     opponentCount++;
                 }
                 else
                 {
-                    // More than one piece or encountering a second piece
+                    // More than one piece or encountering a non-opponent piece
                     return false;
                 }
             }
@@ -490,7 +501,7 @@ public class Board {
             {
                 if (state[curY][curX] != null)
                 {
-                    if (state[curY][curX].isBlack() != state[y][x].isBlack())
+                    if (state[curY][curX].isBlack() != turn)
                     {
                         foundOpponent = true; // Found an opponent's piece
                     }
@@ -523,7 +534,7 @@ public class Board {
             {
                 if (state[i][j] != null && state[i][j].isBlack() == turn)
                 {
-                    if (state[i][j].isKing() && kingHasMandatoryCapture(i, j) || !state[i][j].isKing() && pieceHasMandatoryCapture())
+                    if (state[i][j].isKing() && kingHasMandatoryCapture(i, j) || !state[i][j].isKing() && pieceHasMandatoryCapture(i, j))
                     {
                         return true;
                     }
