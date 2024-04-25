@@ -4,5 +4,7 @@
         <item name="boxStrokeColor">@color/gray</item>
         <item name="cursorColor">@color/gray</item>
         <item name="hintTextColor">@color/gray</item>
+        <item name="android:textColorHint">@color/gray</item>
     </style>
+
 </resources>

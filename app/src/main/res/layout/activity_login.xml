@@ -43,8 +43,7 @@
             android:inputType="text"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238"
-            app:boxStrokeColor="#2A2A2A"
+            android:textColorHint="@color/gray"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -70,8 +69,7 @@
             android:inputType="textPassword"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238"
-            app:boxStrokeColor="#2A2A2A"
+            android:textColorHint="@color/gray"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -161,8 +159,7 @@
             android:inputType="text"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238"
-            app:boxStrokeColor="#2A2A2A"
+            android:textColorHint="@color/gray"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
