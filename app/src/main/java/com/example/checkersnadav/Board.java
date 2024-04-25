@@ -12,6 +12,8 @@ public class Board {
     private final Piece[][] state;
     private boolean turn;
     private int movesSinceCaptureOrKing = 0;
+    private int lastMoveX = BOARD_SIZE - 1; // Making sure these are on a black square initially so the logic won't think that white needs to do a capture chain
+    private int lastMoveY = BOARD_SIZE - 2;
 
 
     /**
@@ -22,16 +24,22 @@ public class Board {
         turn = WHITE; // White starts in checkers
 
         // Initialize the board with alternating empty and filled squares
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if ((i + j) % 2 != 0) {
-                    if (i <= 2) {
+        for (int i = 0; i < BOARD_SIZE; i++)
+        {
+            for (int j = 0; j < BOARD_SIZE; j++)
+            {
+                if ((i + j) % 2 != 0)
+                {
+                    if (i <= 2)
+                    {
                         state[i][j] = new Piece(WHITE);
-                        state[i][j].setKing(true);
-                    } else if (i >= 5) {
+                    }
+                    else if (i >= 5)
+                    {
                         state[i][j] = new Piece(BLACK);
-                        state[i][j].setKing(true);
-                    } else {
+                    }
+                    else
+                    {
                         state[i][j] = null;
                     }
                 }
@@ -110,6 +118,10 @@ public class Board {
         }
 
         turn = !turn; // Turn switch
+
+        // Updating the last move
+        lastMoveX = xDst;
+        lastMoveY = yDst;
 
         return true;
     }
@@ -287,6 +299,12 @@ public class Board {
             return false;
         }
 
+        // If the first half of the condition is true, it means we are in a situation of a chain capture and that only this piece can move
+        if (state[lastMoveX][lastMoveY].isBlack() == turn && (lastMoveX != xSrc || lastMoveY != ySrc))
+        {
+            return false;
+        }
+
         // King logic
         if (piece.isKing())
         {
@@ -372,10 +390,10 @@ public class Board {
         // Move along the diagonal until the destination or an opponent's piece is found
         while (curX != xDst && curY != yDst && !capturePerformed)
         {
-            if (state[curY][curX] != null && state[curY][curX].isBlack() != state[ySrc][xSrc].isBlack())
+            if (state[curX][curY] != null && state[curX][curY].isBlack() != turn)
             {
                 // Remove the first encountered opponent piece
-                state[curY][curX] = null;
+                state[curX][curY] = null;
                 capturePerformed = true;
                 // continue to update coordinates but stop checking for captures
                 curX += stepX;

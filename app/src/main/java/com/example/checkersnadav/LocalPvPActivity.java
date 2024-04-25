@@ -58,7 +58,7 @@ public class LocalPvPActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(LocalPvPActivity.this, "Invalid Move, (" + startX + ", " + startY + "), (" + flippedRow + ", " + flippedCol + ")", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LocalPvPActivity.this, "Invalid Move, " + (game.isGameActive() ? "(" + startX + ", " + startY + "), (" + flippedRow + ", " + flippedCol + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
                         }
 
                         startX = -1;
