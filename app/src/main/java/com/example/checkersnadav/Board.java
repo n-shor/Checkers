@@ -495,13 +495,19 @@ public class Board {
         {
             int curX = x + dir[0];
             int curY = y + dir[1];
+
             boolean foundOpponent = false;
 
             while (curX >= 0 && curX < BOARD_SIZE && curY >= 0 && curY < BOARD_SIZE)
             {
-                if (state[curY][curX] != null)
+                if (state[curX][curY] != null)
                 {
-                    if (state[curY][curX].isBlack() != turn)
+                    if (foundOpponent)
+                    {
+                        break; // Found two pieces in a row - the capture would be illegal
+                    }
+
+                    if (state[curX][curY].isBlack() != turn)
                     {
                         foundOpponent = true; // Found an opponent's piece
                     }
