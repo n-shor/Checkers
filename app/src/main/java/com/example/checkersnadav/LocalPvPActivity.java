@@ -1,5 +1,6 @@
 package com.example.checkersnadav;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +13,7 @@ public class LocalPvPActivity extends AppCompatActivity {
     private GridView gridView;
     private CheckersAdapter adapter;
 
+    @SuppressLint("ClickableViewAccessibility") // Added this just to avoid the warning for now
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

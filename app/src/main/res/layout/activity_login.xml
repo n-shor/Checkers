@@ -24,6 +24,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etUsernameLayout"
+        style="@style/CustomTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -42,11 +43,14 @@
             android:inputType="text"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238" />
+            android:textColorHint="#263238"
+            app:boxStrokeColor="#2A2A2A"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etPasswordLayout"
+        style="@style/CustomTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -66,7 +70,9 @@
             android:inputType="textPassword"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238" />
+            android:textColorHint="#263238"
+            app:boxStrokeColor="#2A2A2A"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -136,6 +142,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etEmailLayout"
+        style="@style/CustomTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -154,7 +161,9 @@
             android:inputType="text"
             android:minHeight="48dp"
             android:textColor="@color/black"
-            android:textColorHint="#263238" />
+            android:textColorHint="#263238"
+            app:boxStrokeColor="#2A2A2A"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
 
