@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,20 +20,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLocalPvP"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
         android:text="Local PvP"
         android:onClick="goToLocalPvP"
         android:textColor="#FFFFFF"
-        android:background="@drawable/menu_background"
+        android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonOnlinePvP"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
@@ -47,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonStats"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
@@ -60,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLogout"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
