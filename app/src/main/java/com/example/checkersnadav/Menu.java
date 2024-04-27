@@ -28,7 +28,7 @@ public class Menu extends AppCompatActivity {
     }
 
     public void goToOnlinePvP(View view) {
-        Intent intent = new Intent(this, OnlinePvPActivity.class);
+        Intent intent = new Intent(this, CreateAndJoinRoom.class);
         intent.putExtra("userEmail", userEmail); // Pass the user's email
         startActivity(intent);
         finish();

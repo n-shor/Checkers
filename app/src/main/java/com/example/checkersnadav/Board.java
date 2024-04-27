@@ -299,7 +299,7 @@ public class Board {
             return false;
         }
 
-        // If the first half of the condition is true, it means we are in a situation of a chain capture and that only this piece can move
+        // If the first half of the condition is true, it means we are in a situation of a chain capture and that only that piece can move
         if (state[lastMoveX][lastMoveY].isBlack() == turn && (lastMoveX != xSrc || lastMoveY != ySrc))
         {
             return false;
