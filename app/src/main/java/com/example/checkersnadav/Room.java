@@ -1,14 +1,47 @@
 package com.example.checkersnadav;
 
-import androidx.appcompat.app.AppCompatActivity;
+public class Room {
+    private String roomId;
+    private String player1;
+    private String player2;
+    private boolean isGameOngoing;
 
-import android.os.Bundle;
+    public Room() {
+        // Default constructor for Firebase
+    }
 
-public class Room extends AppCompatActivity {
+    public Room(String roomId, String player1) {
+        this.roomId = roomId;
+        this.player1 = player1;
+        this.isGameOngoing = false;
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_room);
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public String getPlayer1() {
+        return player1;
+    }
+
+    public String getPlayer2() {
+        return player2;
+    }
+
+    public void setPlayer2(String player2) {
+        this.player2 = player2;
+    }
+
+    public boolean isGameOngoing() {
+        return isGameOngoing;
+    }
+
+    public void setGameOngoing(boolean gameOngoing) {
+        isGameOngoing = gameOngoing;
+    }
+
+    public boolean canJoin() {
+        return player2 == null && !isGameOngoing;
     }
 }
+
