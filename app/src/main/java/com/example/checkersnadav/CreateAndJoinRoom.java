@@ -1,7 +1,6 @@
 package com.example.checkersnadav;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -21,16 +20,17 @@ import java.util.List;
 /**
  * Activity to create and join rooms for the game.
  * Users can create a new room or join an existing room through the UI provided by this activity.
- * This activity also allows users to refresh the list of available rooms.
  */
-public class CreateAndJoinRoom extends AppCompatActivity {
+public class CreateAndJoinRoom extends AppCompatActivity
+{
 
     private ListView roomListView;
-    private Button createRoomButton, joinRoomButton, refreshRoomsButton;
+    private Button createRoomButton, joinRoomButton;
     private EditText roomNameEditText;
     private RoomAdapter roomAdapter;
     private List<Room> roomList = new ArrayList<>();
     private String currentUserEmail;
+
 
     /**
      * Called when the activity is starting. This is where most initialization should go: calling setContentView(int)
@@ -42,27 +42,29 @@ public class CreateAndJoinRoom extends AppCompatActivity {
      *                           Note: Otherwise it is null.
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_and_join_room);
 
         roomListView = findViewById(R.id.roomListView);
         createRoomButton = findViewById(R.id.createRoomButton);
         joinRoomButton = findViewById(R.id.joinRoomButton);
-        refreshRoomsButton = findViewById(R.id.refreshRoomsButton);
         roomNameEditText = findViewById(R.id.roomNameEditText);
 
-        Intent intent = getIntent();
-        currentUserEmail = intent.getStringExtra("userEmail");
+        // Retrieve the current user's email from the intent
+        currentUserEmail = getIntent().getStringExtra("userEmail");
 
+        // Setup the room list view adapter
         roomAdapter = new RoomAdapter(this, roomList);
         roomListView.setAdapter(roomAdapter);
+        roomListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE); // Enable single choice mode
 
+        // Attach event listeners to buttons
         createRoomButton.setOnClickListener(v -> createRoom());
         joinRoomButton.setOnClickListener(v -> joinRoom(roomListView.getCheckedItemPosition()));
-        refreshRoomsButton.setOnClickListener(v -> updateRoomList());
 
-        // Show the rooms in their initial state when entering the room
+        // Initial room list update
         updateRoomList();
     }
 
@@ -70,9 +72,11 @@ public class CreateAndJoinRoom extends AppCompatActivity {
      * Creates a new game room and adds it to the Firebase database.
      * The new room is associated with the current user as the first player.
      */
-    private void createRoom() {
+    private void createRoom()
+    {
         String roomName = roomNameEditText.getText().toString().trim();
-        if (roomName.isEmpty()) {
+        if (roomName.isEmpty())
+        {
             Toast.makeText(this, "Please enter a room name", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -81,34 +85,26 @@ public class CreateAndJoinRoom extends AppCompatActivity {
         String roomId = roomsRef.push().getKey();
         Room newRoom = new Room(roomId, currentUserEmail, roomName);
         roomsRef.child(roomId).setValue(newRoom)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(CreateAndJoinRoom.this, "Room created successfully!", Toast.LENGTH_SHORT).show();
-                    updateRoomList();  // Refresh the room list to include the new room
-                })
+                .addOnSuccessListener(aVoid -> Toast.makeText(CreateAndJoinRoom.this, "Room created successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(CreateAndJoinRoom.this, "Failed to create room", Toast.LENGTH_SHORT).show());
 
+        // Redirect to the room activity as the room creator
         Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
         intent.putExtra("player1Email", currentUserEmail);
         intent.putExtra("roomId", roomId);
         startActivity(intent);
     }
 
-
     /**
      * Updates the list of rooms displayed to the user by querying the Firebase database.
-     * This method listens for changes in the database and updates the UI accordingly.
      */
-    private void updateRoomList()
-    {
+    private void updateRoomList() {
         DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
-        roomsRef.addValueEventListener(new ValueEventListener()
-        {
+        roomsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 roomList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Room room = snapshot.getValue(Room.class);
                     roomList.add(room);
                 }
@@ -116,8 +112,7 @@ public class CreateAndJoinRoom extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+            public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(CreateAndJoinRoom.this, "Failed to load rooms.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -125,28 +120,21 @@ public class CreateAndJoinRoom extends AppCompatActivity {
 
     /**
      * Handles the action of a user attempting to join a selected room from the list.
-     * It checks if the room is available to join and provides feedback accordingly.
-     *
      * @param position The index of the selected room in the ListView.
      */
-    private void joinRoom(int position)
-    {
-        if (position == ListView.INVALID_POSITION)
-        {
+    private void joinRoom(int position) {
+        if (position == ListView.INVALID_POSITION) {
             Toast.makeText(this, "Please select a room first", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Room room = roomList.get(position);
-        if (room.canJoin())
-        {
-            Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);  // Add current user as player2 or handle accordingly
+        if (room.canJoin()) {
+            Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
             intent.putExtra("player2Email", currentUserEmail);
             intent.putExtra("roomId", room.getRoomId());
             startActivity(intent);
-        }
-        else
-        {
+        } else {
             Toast.makeText(this, "Room is full or the game is already ongoing", Toast.LENGTH_SHORT).show();
         }
     }
