@@ -3,25 +3,25 @@ package com.example.checkersnadav;
 public class Room {
     private String roomId;
     private String roomOwnerEmail;
-    private String player2Name;
+    private String player2Email;
     private boolean isGameOngoing;
     private String roomName;
 
-    public Room()
-    {
-        // Default constructor for Firebase
+    // Default constructor for Firebase
+    public Room() {
     }
 
-    public Room(String roomId, String roomOwnerEmail, String roomName)
-    {
+    // Constructor for initially creating a room
+    public Room(String roomId, String roomOwnerEmail, String roomName) {
         this.roomId = roomId;
         this.roomOwnerEmail = roomOwnerEmail;
         this.roomName = roomName;
-        this.isGameOngoing = false;
+        this.isGameOngoing = false; // Game is not ongoing when room is first created
+        this.player2Email = null; // Initially, there is no second player
     }
 
-    public String getRoomId()
-    {
+    // Getters and setters
+    public String getRoomId() {
         return roomId;
     }
 
@@ -29,12 +29,12 @@ public class Room {
         return roomOwnerEmail;
     }
 
-    public String getPlayer2() {
-        return player2Name;
+    public String getPlayer2Email() {
+        return player2Email;
     }
 
-    public void setPlayer2(String player2) {
-        this.player2Name = player2;
+    public void setPlayer2Email(String player2Email) {
+        this.player2Email = player2Email;
     }
 
     public boolean isGameOngoing() {
@@ -45,13 +45,12 @@ public class Room {
         isGameOngoing = gameOngoing;
     }
 
+    // Returns true if the room is joinable
     public boolean canJoin() {
-        return player2Name == null && !isGameOngoing;
+        return player2Email == null && !isGameOngoing;
     }
 
-    public String getRoomName()
-    {
+    public String getRoomName() {
         return roomName;
     }
 }
-

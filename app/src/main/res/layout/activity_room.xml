@@ -6,15 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".RoomActivity">
 
+    <TextView
+        android:id="@+id/txtRoomOwner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Room Owner: [Owner Name]"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"/>
+
+    <TextView
+        android:id="@+id/txtOtherPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintTop_toBottomOf="@id/txtRoomOwner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
     <Button
         android:id="@+id/btnStartGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Game"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtOtherPlayer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnCloseRoom"

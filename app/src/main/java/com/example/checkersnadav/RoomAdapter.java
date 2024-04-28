@@ -9,29 +9,38 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import java.util.List;
 
-public class RoomAdapter extends ArrayAdapter<Room> {
+public class RoomAdapter extends ArrayAdapter<Room>
+{
 
     public RoomAdapter(Context context, List<Room> rooms) {
         super(context, 0, rooms);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
         Room room = getItem(position);
 
-        if (convertView == null) {
+        if (convertView == null)
+        {
             convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
         }
 
         TextView tvRoom = (TextView) convertView.findViewById(android.R.id.text1);
 
-        if (room != null) {
+        if (room != null)
+        {
             tvRoom.setText("Room: " + room.getRoomId());
-            if (room.isGameOngoing()) {
+            if (room.isGameOngoing())
+            {
                 tvRoom.setTextColor(Color.RED); // Ongoing game
-            } else if (room.getPlayer2() != null) {
+            }
+            else if (room.getPlayer2Email() != null)
+            {
                 tvRoom.setTextColor(Color.GRAY); // Full room
-            } else {
+            }
+            else
+            {
                 tvRoom.setTextColor(Color.BLACK); // Available room
             }
         }
