@@ -20,14 +20,14 @@ public class Menu extends AppCompatActivity {
 
     }
 
-    public void goToCreateOrJoinRoom(View view) {
+    public void goToLocalPvP(View view) {
         Intent intent = new Intent(this, LocalPvPActivity.class);
         intent.putExtra("userEmail", userEmail); // Pass the user's email
         startActivity(intent);
         finish();
     }
 
-    public void goToOnlinePvP(View view) {
+    public void goToCreateOrJoinRoom(View view) {
         Intent intent = new Intent(this, CreateAndJoinRoom.class);
         intent.putExtra("userEmail", userEmail); // Pass the user's email
         startActivity(intent);

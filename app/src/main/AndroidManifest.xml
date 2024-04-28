@@ -22,6 +22,9 @@
             android:name=".CreateAndJoinRoom"
             android:exported="false" />
         <activity
+            android:name=".RoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".StatsActivity"
             android:exported="false" />
         <activity

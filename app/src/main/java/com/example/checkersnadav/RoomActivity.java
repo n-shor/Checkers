@@ -10,7 +10,8 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class RoomActivity extends AppCompatActivity {
+public class RoomActivity extends AppCompatActivity
+{
 
     private Button btnStartGame;
     private Button btnCloseRoom;
@@ -20,7 +21,8 @@ public class RoomActivity extends AppCompatActivity {
     private String roomId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
 
@@ -33,8 +35,8 @@ public class RoomActivity extends AppCompatActivity {
         roomOwnerEmail = getIntent().getStringExtra("player1Email");
         roomId = getIntent().getStringExtra("roomId");
 
-        // Check if the current user is the room owner
-        if (!player2Email.equals(roomOwnerEmail))
+        // Check if the current user is the room owner, if the second player's email is null it means that this is the room owner
+        if (player2Email == null)
         {
             // Hide the start and close buttons if not the owner
             btnStartGame.setVisibility(View.GONE);
