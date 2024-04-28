@@ -4,9 +4,16 @@ class Piece {
     private final boolean color;
     private boolean isKing;
 
-    public Piece(boolean color) {
+    public Piece(boolean color)
+    {
         this.color = color;
         this.isKing = false;
+    }
+
+    public Piece(boolean color, boolean isKing)
+    {
+        this.color = color;
+        this.isKing = isKing;
     }
 
     public boolean isBlack() {
