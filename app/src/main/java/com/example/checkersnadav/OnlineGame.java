@@ -14,9 +14,10 @@ import com.google.firebase.database.ValueEventListener;
  * This class handles synchronization of the game state with a Firebase backend,
  * ensuring that all moves made by players are updated in real-time across different sessions.
  */
-public class OnlineGame extends Game {
+public class OnlineGame extends Game
+{
     private DatabaseReference gameRef;
-    private String playerColor; // "WHITE" or "BLACK"
+    private final String playerColor; // "WHITE" or "BLACK"
 
     /**
      * Constructor for OnlineGame. Initializes the game board and sets up Firebase
@@ -25,7 +26,8 @@ public class OnlineGame extends Game {
      * @param gameId The unique identifier for the game session on Firebase.
      * @param playerColor The color assigned to the player ("WHITE" or "BLACK").
      */
-    public OnlineGame(String gameId, String playerColor) {
+    public OnlineGame(String gameId, String playerColor)
+    {
         super(); // Initializes the board and sets the game to active
         this.playerColor = playerColor;
         setupFirebase(gameId);
@@ -37,22 +39,27 @@ public class OnlineGame extends Game {
      *
      * @param gameId The unique identifier for the game session on Firebase.
      */
-    private void setupFirebase(String gameId) {
+    private void setupFirebase(String gameId)
+    {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         gameRef = database.getReference("games").child(gameId);
 
         // Listen for changes in the database, which indicate the other player's move
-        gameRef.addValueEventListener(new ValueEventListener() {
+        gameRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 String boardState = dataSnapshot.getValue(String.class);
-                if (boardState != null) {
+                if (boardState != null)
+                {
                     updateLocalBoard(boardState);
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Log.e("OnlineGame", "Failed to read game data: " + databaseError.toException());
             }
         });
@@ -69,14 +76,17 @@ public class OnlineGame extends Game {
      * @return true if the move was successful, false otherwise.
      */
     @Override
-    public boolean makeMove(int xSrc, int ySrc, int xDst, int yDst) {
-        if (!isValidPlayerMove(xSrc, ySrc)) {
+    public boolean makeMove(int xSrc, int ySrc, int xDst, int yDst)
+    {
+        if (!isValidPlayerMove(xSrc, ySrc))
+        {
             Toast.makeText(null, "Invalid move or not your turn", Toast.LENGTH_SHORT).show();
             return false; // Player tried to move out of turn or with the wrong color
         }
 
         boolean success = super.makeMove(xSrc, ySrc, xDst, yDst);
-        if (success) {
+        if (success)
+        {
             updateGameStateInFirebase();
         }
         return success;
@@ -89,9 +99,11 @@ public class OnlineGame extends Game {
      * @param ySrc Source y-coordinate.
      * @return true if the player is moving their own piece, false otherwise.
      */
-    private boolean isValidPlayerMove(int xSrc, int ySrc) {
+    private boolean isValidPlayerMove(int xSrc, int ySrc)
+    {
         Piece piece = board.getState()[ySrc][xSrc];
-        if (piece == null) {
+        if (piece == null)
+        {
             return false;
         }
         return (piece.isBlack() && playerColor.equals("BLACK")) || (!piece.isBlack() && playerColor.equals("WHITE"));
@@ -100,7 +112,8 @@ public class OnlineGame extends Game {
     /**
      * Updates the Firebase database with the current state of the game board.
      */
-    private void updateGameStateInFirebase() {
+    private void updateGameStateInFirebase()
+    {
         gameRef.setValue(serializeBoardState());
     }
 
@@ -109,7 +122,8 @@ public class OnlineGame extends Game {
      *
      * @param boardState The serialized string representation of the game board.
      */
-    private void updateLocalBoard(String boardState) {
+    private void updateLocalBoard(String boardState)
+    {
         deserializeBoardState(boardState);
     }
 
@@ -118,17 +132,26 @@ public class OnlineGame extends Game {
      *
      * @return A string representation of the game board.
      */
-    private String serializeBoardState() {
+    private String serializeBoardState()
+    {
         StringBuilder sb = new StringBuilder();
-        for (int y = 0; y < Board.BOARD_SIZE; y++) {
-            for (int x = 0; x < Board.BOARD_SIZE; x++) {
+        for (int y = 0; y < Board.BOARD_SIZE; y++)
+        {
+            for (int x = 0; x < Board.BOARD_SIZE; x++)
+            {
                 Piece piece = board.getState()[y][x];
-                if (piece == null) {
+                if (piece == null)
+                {
                     sb.append('_');
-                } else {
-                    if (piece.isBlack()) {
+                }
+                else
+                {
+                    if (piece.isBlack())
+                    {
                         sb.append(piece.isKing() ? 'K' : 'P');
-                    } else {
+                    }
+                    else
+                    {
                         sb.append(piece.isKing() ? 'k' : 'p');
                     }
                 }
@@ -142,12 +165,16 @@ public class OnlineGame extends Game {
      *
      * @param boardState The serialized string representation of the game board.
      */
-    private void deserializeBoardState(String boardState) {
+    private void deserializeBoardState(String boardState)
+    {
         int index = 0;
-        for (int y = 0; y < Board.BOARD_SIZE; y++) {
-            for (int x = 0; x < Board.BOARD_SIZE; x++) {
+        for (int y = 0; y < Board.BOARD_SIZE; y++)
+        {
+            for (int x = 0; x < Board.BOARD_SIZE; x++)
+            {
                 char ch = boardState.charAt(index++);
-                switch (ch) {
+                switch (ch)
+                {
                     case '_':
                         board.getState()[y][x] = null;
                         break;
