@@ -38,7 +38,7 @@
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
         android:text="Online PvP"
-        android:onClick="goToOnlinePvP"
+        android:onClick="goToCreateOrJoinRoom"
         android:textColor="#FFFFFF"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/buttonLocalPvP"

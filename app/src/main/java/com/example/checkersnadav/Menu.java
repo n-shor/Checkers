@@ -20,7 +20,7 @@ public class Menu extends AppCompatActivity {
 
     }
 
-    public void goToLocalPvP(View view) {
+    public void goToCreateOrJoinRoom(View view) {
         Intent intent = new Intent(this, LocalPvPActivity.class);
         intent.putExtra("userEmail", userEmail); // Pass the user's email
         startActivity(intent);

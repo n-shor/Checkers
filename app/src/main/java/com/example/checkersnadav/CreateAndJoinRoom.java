@@ -2,6 +2,7 @@ package com.example.checkersnadav;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
@@ -27,6 +28,7 @@ public class CreateAndJoinRoom extends AppCompatActivity {
     private Button joinRoomButton;
     private RoomAdapter roomAdapter;
     private List<Room> roomList = new ArrayList<>();
+    private String currentUserEmail;
 
     /**
      * Initializes the activity, setting up the layout and the adapters for displaying rooms.
@@ -44,6 +46,9 @@ public class CreateAndJoinRoom extends AppCompatActivity {
         createRoomButton = findViewById(R.id.createRoomButton);
         joinRoomButton = findViewById(R.id.joinRoomButton);
 
+        Intent intent = getIntent();
+        currentUserEmail = intent.getStringExtra("user_email");
+
         roomAdapter = new RoomAdapter(this, roomList);
         roomListView.setAdapter(roomAdapter);
 
@@ -59,7 +64,6 @@ public class CreateAndJoinRoom extends AppCompatActivity {
     private void createRoom() {
         DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
         String roomId = roomsRef.push().getKey();
-        String currentUserEmail = getCurrentUserEmail();
 
         Room newRoom = new Room(roomId, currentUserEmail);
         roomsRef.child(roomId).setValue(newRoom)
@@ -71,25 +75,20 @@ public class CreateAndJoinRoom extends AppCompatActivity {
     }
 
     /**
-     * Fetches the current user's email.
-     * This method is a placeholder and should be implemented to return the actual user's email.
-     * @return The current user's email address.
-     */
-    private String getCurrentUserEmail() {
-        return "example@example.com"; // Placeholder
-    }
-
-    /**
      * Updates the list of rooms displayed to the user.
      * This method listens for changes in the Firebase database and updates the UI accordingly.
      */
-    private void updateRoomList() {
+    private void updateRoomList()
+    {
         DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
-        roomsRef.addValueEventListener(new ValueEventListener() {
+        roomsRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 roomList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
                     Room room = snapshot.getValue(Room.class);
                     roomList.add(room);
                 }
@@ -97,7 +96,8 @@ public class CreateAndJoinRoom extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Toast.makeText(CreateAndJoinRoom.this, "Failed to load rooms.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -108,17 +108,22 @@ public class CreateAndJoinRoom extends AppCompatActivity {
      * Validates the room's availability and informs the user if joining is not possible.
      * @param position The index of the selected room in the list.
      */
-    private void joinRoom(int position) {
-        if (position == ListView.INVALID_POSITION) {
+    private void joinRoom(int position)
+    {
+        if (position == ListView.INVALID_POSITION)
+        {
             Toast.makeText(this, "Please select a room first", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Room room = roomList.get(position);
-        if (room.canJoin()) {
+        if (room.canJoin())
+        {
             // Join the room
             // Add current user as player2 or handle accordingly
-        } else {
+        }
+        else
+        {
             Toast.makeText(this, "Room is full or the game is already ongoing", Toast.LENGTH_SHORT).show();
         }
     }
