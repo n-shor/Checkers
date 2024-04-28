@@ -36,7 +36,7 @@ public class RoomActivity extends AppCompatActivity
         roomId = getIntent().getStringExtra("roomId");
 
         // Check if the current user is the room owner, if the second player's email is null it means that this is the room owner
-        if (player2Email == null)
+        if (player2Email != null)
         {
             // Hide the start and close buttons if not the owner
             btnStartGame.setVisibility(View.GONE);

@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                                         textViewError.setVisibility(View.GONE);
                                         Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(LoginActivity.this, Menu.class);
+                                        intent.putExtra("userEmail", email);
                                         startActivity(intent);
                                         finish();
                                     } else {

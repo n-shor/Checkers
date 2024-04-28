@@ -53,7 +53,7 @@ public class CreateAndJoinRoom extends AppCompatActivity {
         roomNameEditText = findViewById(R.id.roomNameEditText);
 
         Intent intent = getIntent();
-        currentUserEmail = intent.getStringExtra("user_email");
+        currentUserEmail = intent.getStringExtra("userEmail");
 
         roomAdapter = new RoomAdapter(this, roomList);
         roomListView.setAdapter(roomAdapter);
