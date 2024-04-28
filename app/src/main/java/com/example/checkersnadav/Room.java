@@ -2,19 +2,21 @@ package com.example.checkersnadav;
 
 public class Room {
     private String roomId;
-    private String player1Name;
+    private String roomOwnerEmail;
     private String player2Name;
     private boolean isGameOngoing;
+    private String roomName;
 
     public Room()
     {
         // Default constructor for Firebase
     }
 
-    public Room(String roomId, String player1)
+    public Room(String roomId, String roomOwnerEmail, String roomName)
     {
         this.roomId = roomId;
-        this.player1Name = player1;
+        this.roomOwnerEmail = roomOwnerEmail;
+        this.roomName = roomName;
         this.isGameOngoing = false;
     }
 
@@ -23,8 +25,8 @@ public class Room {
         return roomId;
     }
 
-    public String getPlayer1() {
-        return player1Name;
+    public String getRoomOwnerEmail() {
+        return roomOwnerEmail;
     }
 
     public String getPlayer2() {
@@ -45,6 +47,11 @@ public class Room {
 
     public boolean canJoin() {
         return player2Name == null && !isGameOngoing;
+    }
+
+    public String getRoomName()
+    {
+        return roomName;
     }
 }
 

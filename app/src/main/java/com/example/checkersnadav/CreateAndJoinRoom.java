@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ public class CreateAndJoinRoom extends AppCompatActivity {
 
     private ListView roomListView;
     private Button createRoomButton, joinRoomButton, refreshRoomsButton;
+    private EditText roomNameEditText;
     private RoomAdapter roomAdapter;
     private List<Room> roomList = new ArrayList<>();
     private String currentUserEmail;
@@ -48,21 +50,19 @@ public class CreateAndJoinRoom extends AppCompatActivity {
         createRoomButton = findViewById(R.id.createRoomButton);
         joinRoomButton = findViewById(R.id.joinRoomButton);
         refreshRoomsButton = findViewById(R.id.refreshRoomsButton);
+        roomNameEditText = findViewById(R.id.roomNameEditText);
 
-        // Retrieve the current user's email passed from the previous activity.
         Intent intent = getIntent();
         currentUserEmail = intent.getStringExtra("user_email");
 
-        // Setup the adapter to display the rooms in the ListView.
         roomAdapter = new RoomAdapter(this, roomList);
         roomListView.setAdapter(roomAdapter);
 
-        // Set listeners for the buttons.
         createRoomButton.setOnClickListener(v -> createRoom());
         joinRoomButton.setOnClickListener(v -> joinRoom(roomListView.getCheckedItemPosition()));
         refreshRoomsButton.setOnClickListener(v -> updateRoomList());
 
-        // Initially populate the list of rooms.
+        // Show the rooms in their initial state when entering the room
         updateRoomList();
     }
 
@@ -71,18 +71,23 @@ public class CreateAndJoinRoom extends AppCompatActivity {
      * The new room is associated with the current user as the first player.
      */
     private void createRoom() {
-        DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
-        String roomId = roomsRef.push().getKey();  // Generate a unique ID for the room
+        String roomName = roomNameEditText.getText().toString().trim();
+        if (roomName.isEmpty()) {
+            Toast.makeText(this, "Please enter a room name", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        Room newRoom = new Room(roomId, currentUserEmail);  // Create a new Room object
-        roomsRef.child(roomId).setValue(newRoom)  // Push the new Room object to Firebase
+        DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
+        String roomId = roomsRef.push().getKey();
+        Room newRoom = new Room(roomId, currentUserEmail, roomName);
+        roomsRef.child(roomId).setValue(newRoom)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(CreateAndJoinRoom.this, "Room created successfully!", Toast.LENGTH_SHORT).show();
                     updateRoomList();  // Refresh the room list to include the new room
                 })
                 .addOnFailureListener(e -> Toast.makeText(CreateAndJoinRoom.this, "Failed to create room", Toast.LENGTH_SHORT).show());
 
-        Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);  // Add current user as player2 or handle accordingly
+        Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
         intent.putExtra("player1Email", currentUserEmail);
         intent.putExtra("roomId", roomId);
         startActivity(intent);

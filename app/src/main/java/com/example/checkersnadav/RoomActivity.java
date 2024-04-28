@@ -58,6 +58,7 @@ public class RoomActivity extends AppCompatActivity {
     private void startGame()
     {
         // Code to start the game
+        // Don't forget to set the room's gameOngoing member to true
     }
 
     private void closeRoom()
