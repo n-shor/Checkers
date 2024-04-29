@@ -17,7 +17,7 @@ import android.widget.ImageView;
  */
 public class CheckersAdapter extends BaseAdapter {
     private final Context context; // Context in which the adapter is running
-    private final Piece[][] boardState; // Current state of the board
+    private Piece[][] boardState; // Current state of the board
 
     /**
      * Constructs a new CheckersAdapter.
@@ -108,6 +108,12 @@ public class CheckersAdapter extends BaseAdapter {
         }
 
         return imageView;
+    }
+
+    // Required for online play - the board representation needs to be updated according to the move the other player made on their device
+    public void updateGameState(Piece[][] newBoardState) {
+        this.boardState = newBoardState; // Update the internal representation
+        notifyDataSetChanged(); // Notify the adapter to refresh the UI
     }
 
 }

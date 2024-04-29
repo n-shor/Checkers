@@ -1,16 +1,12 @@
 package com.example.checkersnadav;
 
 public class Game {
-    protected Player white;
-    protected Player black;
     protected Board board;
-    private boolean gameActive;
-    Player currentPlayer;
+    protected boolean gameActive;
 
     public Game() {
         board = new Board();
         gameActive = true;
-        currentPlayer = white; // White starts in checkers
     }
 
     public Board getBoard() {
@@ -33,7 +29,6 @@ public class Game {
         }
         if (board.move(xSrc, ySrc, xDst, yDst))
         {
-            switchTurns();
             if (board.checkGameStatus() != "NONE")
             {
                 gameActive = false;
@@ -44,12 +39,7 @@ public class Game {
         return false;
     }
 
-    /**
-     * Switches the current player after a move is made.
-     */
-    private void switchTurns() {
-        currentPlayer = (currentPlayer == white) ? black : white;
-    }
+
 
     /**
      * Determines if the game is still active.

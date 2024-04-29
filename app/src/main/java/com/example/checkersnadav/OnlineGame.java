@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 /**
  * Extends the Game class to add online multiplayer capabilities using Firebase.
@@ -16,6 +17,8 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class OnlineGame extends Game
 {
+    private Player white;
+    private Player black;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
 
@@ -25,12 +28,26 @@ public class OnlineGame extends Game
      *
      * @param gameId The unique identifier for the game session on Firebase.
      * @param playerColor The color assigned to the player ("WHITE" or "BLACK").
+     * @param white The player that is using the white pieces.
+     * @param black The player that is using the black pieces.
      */
-    public OnlineGame(String gameId, String playerColor)
+    public OnlineGame(String gameId, String playerColor, Player white, Player black)
     {
         super(); // Initializes the board and sets the game to active
+        this.white = white;
+        this.black = black;
         this.playerColor = playerColor;
         setupFirebase(gameId);
+    }
+
+    public String serialize() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public static OnlineGame deserialize(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, OnlineGame.class);
     }
 
     /**
@@ -63,6 +80,11 @@ public class OnlineGame extends Game
                 Log.e("OnlineGame", "Failed to read game data: " + databaseError.toException());
             }
         });
+
+        // Initialize the board
+        gameRef.child("whiteEmail").setValue(white.getEmail());
+        gameRef.child("blackEmail").setValue(black.getEmail());
+        updateGameStateInFirebase();
     }
 
     /**
@@ -114,7 +136,8 @@ public class OnlineGame extends Game
      */
     private void updateGameStateInFirebase()
     {
-        gameRef.setValue(serializeBoardState());
+        gameRef.child("boardState").setValue(serializeBoardState());
+        gameRef.child("currentTurn").setValue(board.getTurn() ? "black" : "white");
     }
 
     /**
@@ -196,4 +219,6 @@ public class OnlineGame extends Game
             }
         }
     }
+
+
 }

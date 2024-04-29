@@ -266,6 +266,12 @@ public class Board {
     }
 
 
+    public boolean getTurn()
+    {
+        return turn;
+    }
+
+
     /**
      * Checks if the specified move is valid according to the rules of checkers.
      * This includes bounds checking, ensuring the move is to a legal board square,

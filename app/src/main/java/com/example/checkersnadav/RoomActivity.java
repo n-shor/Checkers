@@ -2,6 +2,7 @@ package com.example.checkersnadav;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ public class RoomActivity extends AppCompatActivity {
     private String roomId;
     private TextView txtRoomOwner, txtOtherPlayer;
     private DatabaseReference roomRef;
+    private String playerColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +50,14 @@ public class RoomActivity extends AppCompatActivity {
         if (player2Email == null)
         {
             // Assume this device belongs to the room owner
+            playerColor = "WHITE"; // Room owner plays white
             fetchPlayerDetails(roomOwnerEmail, txtRoomOwner, "Room Owner: ");
         }
         else
         {
             // Assume this device belongs to the second player
             // Update Firebase with the second player's email
+            playerColor = "BLACK"; // Second player plays black
             roomRef.child("player2Email").setValue(player2Email);
             fetchPlayerDetails(player2Email, txtOtherPlayer, "Other Player: ");
         }
@@ -72,11 +76,14 @@ public class RoomActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Toast.makeText(RoomActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
-                    finish();  // Exit activity if room is closed
+                    finish(); // Exit activity if room is closed
                 } else {
                     Room room = dataSnapshot.getValue(Room.class);
                     if (room != null) {
                         updateUI(room);
+                    }
+                    if (room.isGameOngoing()) {
+                        startOnlinePvPActivity(); // Move both players to game activity
                     }
                 }
             }
@@ -151,7 +158,7 @@ public class RoomActivity extends AppCompatActivity {
 
     private void startGame() {
         roomRef.child("gameOngoing").setValue(true);
-        // rest of start game logic (make the firebase checking move both players into the next activity and start the game)
+        // After this, both players will get thrown into the game
     }
 
     private void setupDisconnectHandling() {
@@ -185,5 +192,14 @@ public class RoomActivity extends AppCompatActivity {
             }
         });
         finish(); // Return to previous activity
+    }
+
+    private void startOnlinePvPActivity() {
+        Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
+        intent.putExtra("gameId", roomId);
+        intent.putExtra("playerColor", playerColor);
+        intent.putExtra("player1Email", roomOwnerEmail);
+        intent.putExtra("player2Email", player2Email);
+        startActivity(intent);
     }
 }

@@ -23,7 +23,6 @@ import java.util.List;
  */
 public class CreateAndJoinRoom extends AppCompatActivity
 {
-
     private ListView roomListView;
     private Button createRoomButton, joinRoomButton;
     private EditText roomNameEditText;
