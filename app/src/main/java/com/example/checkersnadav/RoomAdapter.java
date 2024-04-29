@@ -30,7 +30,7 @@ public class RoomAdapter extends ArrayAdapter<Room>
 
         if (room != null)
         {
-            tvRoom.setText("Room: " + room.getRoomId());
+            tvRoom.setText("Room Name: " + room.getRoomName() + ", Room ID: " + room.getRoomId());
             if (room.isGameOngoing())
             {
                 tvRoom.setTextColor(Color.RED); // Ongoing game

@@ -2,7 +2,6 @@ package com.example.checkersnadav;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,15 +19,14 @@ public class RoomActivity extends AppCompatActivity {
     private Button btnStartGame;
     private Button btnCloseRoom;
     private Button btnLeaveRoom;
-    private String player2Email;
     private String roomOwnerEmail;
+    private String player2Email;
     private String roomId;
     private TextView txtRoomOwner, txtOtherPlayer;
     private DatabaseReference roomRef;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
 
@@ -39,45 +37,46 @@ public class RoomActivity extends AppCompatActivity {
         btnCloseRoom = findViewById(R.id.btnCloseRoom);
         btnLeaveRoom = findViewById(R.id.btnLeaveRoom);
 
+        roomId = getIntent().getStringExtra("roomId");
         roomOwnerEmail = getIntent().getStringExtra("player1Email");
         player2Email = getIntent().getStringExtra("player2Email");
-        roomId = getIntent().getStringExtra("roomId");
 
         roomRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomId);
+
         setupRoomListener();
 
-        if (player2Email != null)
+        if (player2Email == null)
         {
+            // Assume this device belongs to the room owner
+            fetchPlayerDetails(roomOwnerEmail, txtRoomOwner, "Room Owner: ");
+        }
+        else
+        {
+            // Assume this device belongs to the second player
+            // Update Firebase with the second player's email
+            roomRef.child("player2Email").setValue(player2Email);
             fetchPlayerDetails(player2Email, txtOtherPlayer, "Other Player: ");
         }
 
-        fetchPlayerDetails(roomOwnerEmail, txtRoomOwner, "Room Owner: ");
+        setButtonVisibility(player2Email == null);
 
-        // Determine button visibility based on player role
-        setButtonVisibility(!roomOwnerEmail.equals(player2Email));
-
-        // Set onClickListeners
         btnStartGame.setOnClickListener(v -> startGame());
         btnCloseRoom.setOnClickListener(v -> closeRoom());
         btnLeaveRoom.setOnClickListener(v -> leaveRoom());
     }
 
-    private void setupRoomListener()
-    {
-        roomRef.addValueEventListener(new ValueEventListener()
-        {
+
+    private void setupRoomListener() {
+        roomRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    // If the room is deleted, exit activity
                     Toast.makeText(RoomActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
-                    finish();
+                    finish();  // Exit activity if room is closed
                 } else {
                     Room room = dataSnapshot.getValue(Room.class);
-                    if (room != null && room.getPlayer2Email() == null)
-                    {
-                        txtOtherPlayer.setText("Other Player: Waiting...");
+                    if (room != null) {
+                        updateUI(room);
                     }
                 }
             }
@@ -89,6 +88,32 @@ public class RoomActivity extends AppCompatActivity {
         });
     }
 
+    private void updateUI(Room room) {
+        // Update room owner name if available, otherwise indicate waiting for room owner
+        if (room.getRoomOwnerEmail() != null && !room.getRoomOwnerEmail().isEmpty()) {
+            // Fetch and display the room owner's username based on their email
+            fetchPlayerDetails(room.getRoomOwnerEmail(), txtRoomOwner, "Room Owner: ");
+        } else {
+            txtRoomOwner.setText("Room Owner: Waiting...");
+        }
+
+        // Update second player's name if available, otherwise indicate that the player slot is open
+        if (room.getPlayer2Email() != null && !room.getPlayer2Email().isEmpty()) {
+            // Fetch and display the second player's username based on their email
+            fetchPlayerDetails(room.getPlayer2Email(), txtOtherPlayer, "Other Player: ");
+            roomRef.child("isJoinable").setValue(false); // Set the room to unjoinable if second player is present
+            setButtonVisibility(false); // Hide start game button for the second player
+        } else {
+            txtOtherPlayer.setText("Other Player: Waiting for player...");
+            roomRef.child("isJoinable").setValue(true); // Set the room to joinable if no second player
+            setButtonVisibility(true); // Show start game button if it's just the room owner
+        }
+
+        // Update button visibility based on whether the room owner is the user of this device
+        setButtonVisibility(roomOwnerEmail != null && roomOwnerEmail.equals(player2Email));
+    }
+
+
     private void fetchPlayerDetails(String email, TextView textView, String prefix) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         usersRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -97,7 +122,7 @@ public class RoomActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Player player = snapshot.getValue(Player.class);
-                        if (player != null) {
+                        if (player != null && player.getUsername() != null) {
                             textView.setText(prefix + player.getUsername());
                         }
                     }
@@ -113,8 +138,8 @@ public class RoomActivity extends AppCompatActivity {
         });
     }
 
-    private void setButtonVisibility(boolean isNotOwner) {
-        if (isNotOwner) {
+    private void setButtonVisibility(boolean isOwner) {
+        if (!isOwner) {
             btnStartGame.setVisibility(View.GONE);
             btnCloseRoom.setVisibility(View.GONE);
             btnLeaveRoom.setVisibility(View.VISIBLE);
@@ -126,7 +151,6 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void startGame() {
-        // Code to start the game
         roomRef.child("gameOngoing").setValue(true);
     }
 
@@ -136,9 +160,9 @@ public class RoomActivity extends AppCompatActivity {
 
     private void leaveRoom() {
         if (!roomOwnerEmail.equals(player2Email)) { // if it's not the owner
-            roomRef.child("player2Email").setValue(null);
+            roomRef.child("player2Email").setValue(null);  // Second player leaves
         } else {
-            closeRoom(); // If owner leaves, close the room
+            closeRoom();  // Room owner leaves, close the room
         }
     }
 }
