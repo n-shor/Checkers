@@ -17,8 +17,8 @@ import com.google.gson.Gson;
  */
 public class OnlineGame extends Game
 {
-    private Player white;
-    private Player black;
+    private String whiteEmail;
+    private String blackEmail;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
 
@@ -28,14 +28,14 @@ public class OnlineGame extends Game
      *
      * @param gameId The unique identifier for the game session on Firebase.
      * @param playerColor The color assigned to the player ("WHITE" or "BLACK").
-     * @param white The player that is using the white pieces.
-     * @param black The player that is using the black pieces.
+     * @param whiteEmail The email of the player that is using the white pieces.
+     * @param blackEmail The email of the player that is using the black pieces.
      */
-    public OnlineGame(String gameId, String playerColor, Player white, Player black)
+    public OnlineGame(String gameId, String playerColor, String whiteEmail, String blackEmail)
     {
         super(); // Initializes the board and sets the game to active
-        this.white = white;
-        this.black = black;
+        this.whiteEmail = whiteEmail;
+        this.blackEmail = blackEmail;
         this.playerColor = playerColor;
         setupFirebase(gameId);
     }
@@ -82,8 +82,8 @@ public class OnlineGame extends Game
         });
 
         // Initialize the board
-        gameRef.child("whiteEmail").setValue(white.getEmail());
-        gameRef.child("blackEmail").setValue(black.getEmail());
+        gameRef.child("whiteEmail").setValue(whiteEmail);
+        gameRef.child("blackEmail").setValue(blackEmail);
         updateGameStateInFirebase();
     }
 

@@ -47,14 +47,11 @@ public class RoomActivity extends AppCompatActivity {
 
         setupRoomListener();
 
-        if (player2Email == null)
-        {
+        if (player2Email == null) {
             // Assume this device belongs to the room owner
             playerColor = "WHITE"; // Room owner plays white
             fetchPlayerDetails(roomOwnerEmail, txtRoomOwner, "Room Owner: ");
-        }
-        else
-        {
+        } else {
             // Assume this device belongs to the second player
             // Update Firebase with the second player's email
             playerColor = "BLACK"; // Second player plays black
@@ -142,14 +139,11 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void setButtonVisibility(boolean isOwner) {
-        if (!isOwner)
-        {
+        if (!isOwner) {
             btnStartGame.setVisibility(View.GONE);
             btnCloseRoom.setVisibility(View.GONE);
             btnLeaveRoom.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+        } else {
             btnStartGame.setVisibility(View.VISIBLE);
             btnCloseRoom.setVisibility(View.VISIBLE);
             btnLeaveRoom.setVisibility(View.GONE);
@@ -157,8 +151,29 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void startGame() {
-        roomRef.child("gameOngoing").setValue(true);
-        // After this, both players will get thrown into the game
+        roomRef.child("isJoinable").get().addOnSuccessListener(snapshot -> {
+            // Check if the room is not joinable
+            if (!Boolean.TRUE.equals(snapshot.getValue(Boolean.class))) {
+                // Set "gameOngoing" to true
+                roomRef.child("gameOngoing").setValue(true)
+                        .addOnSuccessListener(aVoid -> {
+                            // Game has started successfully
+                            Toast.makeText(getApplicationContext(), "Game started, players are in.", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            // Handle failure
+                            Toast.makeText(getApplicationContext(), "Failed to start the game: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+            }
+            else
+            {
+                // Inform the room leader that the room is not full
+                Toast.makeText(getApplicationContext(), "Please wait for the second player to enter the room before starting the game!", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(e -> {
+            // Handle failure in getting the value
+            Toast.makeText(getApplicationContext(), "Failed to check if room is joinable: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setupDisconnectHandling() {
@@ -195,11 +210,28 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void startOnlinePvPActivity() {
-        Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
-        intent.putExtra("gameId", roomId);
-        intent.putExtra("playerColor", playerColor);
-        intent.putExtra("player1Email", roomOwnerEmail);
-        intent.putExtra("player2Email", player2Email);
-        startActivity(intent);
+        roomRef.child("roomOwnerEmail").get().addOnSuccessListener(ownerSnapshot -> {
+            String roomOwnerEmail = ownerSnapshot.getValue(String.class);
+
+            roomRef.child("player2Email").get().addOnSuccessListener(player2Snapshot -> {
+                String player2Email = player2Snapshot.getValue(String.class);
+
+                Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
+                intent.putExtra("gameId", roomId);
+                intent.putExtra("playerColor", playerColor);
+                intent.putExtra("player1Email", roomOwnerEmail);
+                intent.putExtra("player2Email", player2Email);
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Why is this necessary?
+
+                startActivity(intent);
+
+            }).addOnFailureListener(e -> {
+                Toast.makeText(RoomActivity.this, "Failed to retrieve player 2's email: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            });
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(RoomActivity.this, "Failed to retrieve room owner's email: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        });
     }
 }
