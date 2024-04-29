@@ -102,15 +102,11 @@ public class RoomActivity extends AppCompatActivity {
             // Fetch and display the second player's username based on their email
             fetchPlayerDetails(room.getPlayer2Email(), txtOtherPlayer, "Other Player: ");
             roomRef.child("isJoinable").setValue(false); // Set the room to unjoinable if second player is present
-            setButtonVisibility(false); // Hide start game button for the second player
         } else {
             txtOtherPlayer.setText("Other Player: Waiting for player...");
             roomRef.child("isJoinable").setValue(true); // Set the room to joinable if no second player
-            setButtonVisibility(true); // Show start game button if it's just the room owner
         }
 
-        // Update button visibility based on whether the room owner is the user of this device
-        setButtonVisibility(roomOwnerEmail != null && roomOwnerEmail.equals(player2Email));
     }
 
 
@@ -139,11 +135,14 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void setButtonVisibility(boolean isOwner) {
-        if (!isOwner) {
+        if (!isOwner)
+        {
             btnStartGame.setVisibility(View.GONE);
             btnCloseRoom.setVisibility(View.GONE);
             btnLeaveRoom.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else
+        {
             btnStartGame.setVisibility(View.VISIBLE);
             btnCloseRoom.setVisibility(View.VISIBLE);
             btnLeaveRoom.setVisibility(View.GONE);
@@ -152,17 +151,39 @@ public class RoomActivity extends AppCompatActivity {
 
     private void startGame() {
         roomRef.child("gameOngoing").setValue(true);
+        // rest of start game logic (make the firebase checking move both players into the next activity and start the game)
     }
 
-    private void closeRoom() {
-        roomRef.removeValue();
+    private void setupDisconnectHandling() {
+        if (player2Email != null) {
+            // Set the player2Email to null on disconnect only if the current user is the second player
+            DatabaseReference player2Ref = roomRef.child("player2Email");
+            player2Ref.onDisconnect().setValue(null);
+        }
     }
 
     private void leaveRoom() {
-        if (!roomOwnerEmail.equals(player2Email)) { // if it's not the owner
-            roomRef.child("player2Email").setValue(null);  // Second player leaves
-        } else {
-            closeRoom();  // Room owner leaves, close the room
-        }
+        // The current user is not the room owner, so simply clear their field in the database
+        roomRef.child("player2Email").setValue(null).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(RoomActivity.this, "You have successfully left the room.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(RoomActivity.this, "Failed to leave the room.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        finish(); // Return to previous activity
+    }
+
+
+    private void closeRoom() {
+        // Remove the room from Firebase, which triggers the onDataChange in the room listener to finish the activity
+        roomRef.removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(RoomActivity.this, "Room closed successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(RoomActivity.this, "Failed to close room", Toast.LENGTH_SHORT).show();
+            }
+        });
+        finish(); // Return to previous activity
     }
 }
