@@ -36,12 +36,7 @@ public class OnlineGame extends Game
         this.whiteEmail = whiteEmail;
         this.blackEmail = blackEmail;
         this.playerColor = playerColor;
-
-        // Making sure that Firebase will only get set up once
-        if (Objects.equals(playerColor, "WHITE"))
-        {
-            setupFirebase(gameId);
-        }
+        setupFirebase(gameId);
     }
 
     /**
@@ -56,16 +51,17 @@ public class OnlineGame extends Game
         gameRef = database.getReference("games").child(gameId);
 
         // Listen for changes in the database, which indicate the other player's move
-        gameRef.child("boardState").addValueEventListener(new ValueEventListener()
+        gameRef.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                String boardState = dataSnapshot.getValue(String.class);
-                if (boardState != null)
-                {
-                    updateLocalBoard(boardState);
-                }
+                String boardState = dataSnapshot.child("boardState").getValue(String.class);
+                String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
+                board.setTurn(!Objects.equals(currentTurn, "white")); // White is false
+
+                updateLocalBoard(boardState);
+                
             }
 
             @Override
@@ -75,10 +71,13 @@ public class OnlineGame extends Game
             }
         });
 
-        // Initialize the board
-        gameRef.child("whiteEmail").setValue(whiteEmail);
-        gameRef.child("blackEmail").setValue(blackEmail);
-        updateGameStateInFirebase();
+        // Making sure that Firebase will only get initialized once
+        if (Objects.equals(playerColor, "WHITE")) {
+            // Initialize the board
+            gameRef.child("whiteEmail").setValue(whiteEmail);
+            gameRef.child("blackEmail").setValue(blackEmail);
+            updateGameStateInFirebase();
+        }
     }
 
     /**

@@ -32,28 +32,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
         String player2Email = getIntent().getStringExtra("player2Email");
         String gameId = getIntent().getStringExtra("gameId");
 
-
-        if (playerColor.equals("WHITE"))
-        {
-            // This device belongs to the room owner (white player)
-            initializeGameInFirebase(player1Email, player2Email, gameId);
-        }
-        else
-        {
-            // This device belongs to the other player (black player)
-
-            // Wait half a second to make sure the game gets created in the database (unnecessary)
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            // Firebase reference to the games node
-            DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("games").child(gameId);
-
-            waitForGameToBeInitialized(gameRef);
-        }
+        initializeGame(player1Email, player2Email, gameId);
 
         gridView = findViewById(R.id.grid_view);
         adapter = new CheckersAdapter(this, game.getBoard().getState());
@@ -63,82 +42,13 @@ public class OnlinePvPActivity extends AppCompatActivity {
     }
 
 
-    // Everything here is nested together to make sure the the logical order of operations matches order of operations in practice
-    private void initializeGameInFirebase(String player1Email, String player2Email, String gameId)
+    private void initializeGame(String player1Email, String player2Email, String gameId)
     {
         // Initialize game object
         game = new OnlineGame(gameId, "WHITE", player1Email, player2Email); // The initializer is always WHITE
     }
 
 
-    private void waitForGameToBeInitialized(DatabaseReference gameRef) {
-        // Latch to wait for the game to be initialized
-        CountDownLatch latch = new CountDownLatch(1);
-
-        gameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Create a new OnlineGame object
-                    String blackEmail = dataSnapshot.child("blackEmail").getValue(String.class);
-                    String whiteEmail = dataSnapshot.child("whiteEmail").getValue(String.class);
-                    String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
-                    String boardState = dataSnapshot.child("boardState").getValue(String.class);
-
-                    game = new OnlineGame(gameRef.getKey(), currentTurn, whiteEmail, blackEmail);
-                    game.deserializeBoardState(boardState);
-
-                    // Update the adapter and UI
-                    adapter.updateGameState(game.getBoard().getState());
-                    gridView.setAdapter(adapter);
-                    setupGameStateListener(gameRef);
-
-                    // Release the latch
-                    latch.countDown();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(OnlinePvPActivity.this, "Failed to find game: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-
-                // Release the latch on error as well
-                latch.countDown();
-            }
-        });
-
-        try {
-            // Wait until the latch is released by onDataChange or onCancelled
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private void setupGameStateListener(DatabaseReference gameRef) {
-        gameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Fetch specific values and update the game's members
-                    String boardState = dataSnapshot.child("boardState").getValue(String.class);
-                    String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
-
-                    game.deserializeBoardState(boardState);
-                    game.getBoard().setTurn(!Objects.equals(currentTurn, "white")); // White is false
-
-                    // Update the adapter and UI
-                    adapter.updateGameState(game.getBoard().getState());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(OnlinePvPActivity.this, "Error updating game: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
     private void setupTouchListeners() {
         gridView.setOnTouchListener(new View.OnTouchListener()
