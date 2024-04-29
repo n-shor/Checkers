@@ -9,7 +9,7 @@ public class Board {
     public static final boolean WHITE = false;
     public static final boolean BLACK = !WHITE;
     public static final int BOARD_SIZE = 8;
-    private final Piece[][] state;
+    private Piece[][] state;
     private boolean turn;
     private int movesSinceCaptureOrKing = 0;
     private int lastMoveX = BOARD_SIZE - 1; // Making sure these are on a black square initially so the logic won't think that white needs to do a capture chain
@@ -576,4 +576,8 @@ public class Board {
     }
 
 
+    // Required for online play - lets the turn be switched on the other player's device if needed.
+    public void setTurn(boolean turn) {
+        this.turn = turn;
+    }
 }

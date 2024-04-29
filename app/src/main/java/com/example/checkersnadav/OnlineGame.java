@@ -1,14 +1,13 @@
 package com.example.checkersnadav;
 
 import android.util.Log;
-import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
+
+import java.util.Objects;
 
 /**
  * Extends the Game class to add online multiplayer capabilities using Firebase.
@@ -37,17 +36,12 @@ public class OnlineGame extends Game
         this.whiteEmail = whiteEmail;
         this.blackEmail = blackEmail;
         this.playerColor = playerColor;
-        setupFirebase(gameId);
-    }
 
-    public String serialize() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
-    }
-
-    public static OnlineGame deserialize(String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, OnlineGame.class);
+        // Making sure that Firebase will only get set up once
+        if (Objects.equals(playerColor, "WHITE"))
+        {
+            setupFirebase(gameId);
+        }
     }
 
     /**
@@ -62,7 +56,7 @@ public class OnlineGame extends Game
         gameRef = database.getReference("games").child(gameId);
 
         // Listen for changes in the database, which indicate the other player's move
-        gameRef.addValueEventListener(new ValueEventListener()
+        gameRef.child("boardState").addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -102,8 +96,7 @@ public class OnlineGame extends Game
     {
         if (!isValidPlayerMove(xSrc, ySrc))
         {
-            Toast.makeText(null, "Invalid move or not your turn", Toast.LENGTH_SHORT).show();
-            return false; // Player tried to move out of turn or with the wrong color
+            return false;
         }
 
         boolean success = super.makeMove(xSrc, ySrc, xDst, yDst);
@@ -123,7 +116,7 @@ public class OnlineGame extends Game
      */
     private boolean isValidPlayerMove(int xSrc, int ySrc)
     {
-        Piece piece = board.getState()[ySrc][xSrc];
+        Piece piece = board.getState()[xSrc][ySrc];
         if (piece == null)
         {
             return false;
@@ -188,7 +181,7 @@ public class OnlineGame extends Game
      *
      * @param boardState The serialized string representation of the game board.
      */
-    private void deserializeBoardState(String boardState)
+    public void deserializeBoardState(String boardState)
     {
         int index = 0;
         for (int y = 0; y < Board.BOARD_SIZE; y++)
