@@ -61,7 +61,7 @@ public class OnlineGame extends Game
                 board.setTurn(!Objects.equals(currentTurn, "white")); // White is false
 
                 updateLocalBoard(boardState);
-                
+
             }
 
             @Override
@@ -154,7 +154,7 @@ public class OnlineGame extends Game
         {
             for (int x = 0; x < Board.BOARD_SIZE; x++)
             {
-                Piece piece = board.getState()[y][x];
+                Piece piece = board.getState()[x][y];
                 if (piece == null)
                 {
                     sb.append('_');
@@ -191,19 +191,19 @@ public class OnlineGame extends Game
                 switch (ch)
                 {
                     case '_':
-                        board.getState()[y][x] = null;
+                        board.getState()[x][y] = null;
                         break;
                     case 'p':
-                        board.getState()[y][x] = new Piece(false); // White piece
+                        board.getState()[x][y] = new Piece(false); // White piece
                         break;
                     case 'k':
-                        board.getState()[y][x] = new Piece(false, true); // White king
+                        board.getState()[x][y] = new Piece(false, true); // White king
                         break;
                     case 'P':
-                        board.getState()[y][x] = new Piece(true); // Black piece
+                        board.getState()[x][y] = new Piece(true); // Black piece
                         break;
                     case 'K':
-                        board.getState()[y][x] = new Piece(true, true); // Black king
+                        board.getState()[x][y] = new Piece(true, true); // Black king
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected character in board state: " + ch);

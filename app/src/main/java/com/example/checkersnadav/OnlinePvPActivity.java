@@ -32,7 +32,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
         String player2Email = getIntent().getStringExtra("player2Email");
         String gameId = getIntent().getStringExtra("gameId");
 
-        initializeGame(player1Email, player2Email, gameId);
+        initializeGame(player1Email, player2Email, gameId, playerColor);
 
         gridView = findViewById(R.id.grid_view);
         adapter = new CheckersAdapter(this, game.getBoard().getState());
@@ -42,10 +42,10 @@ public class OnlinePvPActivity extends AppCompatActivity {
     }
 
 
-    private void initializeGame(String player1Email, String player2Email, String gameId)
+    private void initializeGame(String player1Email, String player2Email, String gameId, String playerColor)
     {
         // Initialize game object
-        game = new OnlineGame(gameId, "WHITE", player1Email, player2Email); // The initializer is always WHITE
+        game = new OnlineGame(gameId, playerColor, player1Email, player2Email); // The initializer is always WHITE
     }
 
 
