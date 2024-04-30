@@ -229,7 +229,7 @@ public class Board {
         }
         if (!blackHasPieces || (!blackHasMoves && turn == BLACK))
         {
-            return "WHITE"; // White wins if black has no pieces or moves
+            return Game.WHITE_STRING; // White wins if black has no pieces or moves
         }
         return "NONE"; // No winner yet
     }

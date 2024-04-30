@@ -1,8 +1,11 @@
 package com.example.checkersnadav;
 
+
 public class Game {
     protected Board board;
     protected boolean gameActive;
+    public static final String WHITE_STRING = "WHITE";
+
 
     public Game() {
         board = new Board();

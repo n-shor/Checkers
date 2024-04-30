@@ -20,6 +20,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
     private OnlineGame game;
     private GridView gridView;
     private CheckersAdapter adapter;
+    String playerColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
         setContentView(R.layout.activity_online_pv_pactivity);
 
         // Retrieving data from intent
-        String playerColor = getIntent().getStringExtra("playerColor");
+        playerColor = getIntent().getStringExtra("playerColor");
         String player1Email = getIntent().getStringExtra("player1Email");
         String player2Email = getIntent().getStringExtra("player2Email");
         String gameId = getIntent().getStringExtra("gameId");
@@ -36,7 +37,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
         game = new OnlineGame(gameId, playerColor, player1Email, player2Email);
 
         gridView = findViewById(R.id.grid_view);
-        adapter = new CheckersAdapter(this, game.getBoard().getState());
+        adapter = new CheckersAdapter(this, game.getBoard().getState(), !playerColor.equals(Game.WHITE_STRING));
         gridView.setAdapter(adapter);
 
         game.setAdapter(adapter);
@@ -64,24 +65,27 @@ public class OnlinePvPActivity extends AppCompatActivity {
                 int row = position / Board.BOARD_SIZE;
                 int col = position % Board.BOARD_SIZE;
 
-                // Adjust for any GUI board flipping like in the local PvP
-                int logicalRow = Board.BOARD_SIZE - 1 - row;
-                int logicalCol = Board.BOARD_SIZE - 1 - col;
+                // Adjust for any GUI board flipping like in the local PvP, but only for the white player
+                if (playerColor.equals(Game.WHITE_STRING))
+                {
+                    row = Board.BOARD_SIZE - 1 - row;
+                    col = Board.BOARD_SIZE - 1 - col;
+                }
 
                 switch (action)
                 {
                     case MotionEvent.ACTION_DOWN:
-                        startX = logicalRow;
-                        startY = logicalCol;
+                        startX = row;
+                        startY = col;
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (game.makeMove(startX, startY, logicalRow, logicalCol))
+                        if (game.makeMove(startX, startY, row, col))
                         {
                             adapter.notifyDataSetChanged();
                         }
                         else
                         {
-                            Toast.makeText(OnlinePvPActivity.this, "Invalid Move, " + (game.isGameActive() ? "(" + startX + ", " + startY + "), (" + logicalRow + ", " + logicalCol + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OnlinePvPActivity.this, "Invalid Move, " + (game.isGameActive() ? "(" + startX + ", " + startY + "), (" + row + ", " + col + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
                         }
                         startX = -1;
                         startY = -1;

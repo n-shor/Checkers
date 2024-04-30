@@ -13,7 +13,6 @@ public class LocalPvPActivity extends AppCompatActivity {
     private GridView gridView;
     private CheckersAdapter adapter;
 
-    @SuppressLint("ClickableViewAccessibility") // Added this just to avoid the warning for now
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +20,7 @@ public class LocalPvPActivity extends AppCompatActivity {
 
         game = new Game();
         gridView = findViewById(R.id.grid_view);
-        adapter = new CheckersAdapter(this, game.getBoard().getState());
+        adapter = new CheckersAdapter(this, game.getBoard().getState(), Board.WHITE); // We display the board from white's perspective in local PvP
         gridView.setAdapter(adapter);
 
         gridView.setOnTouchListener(new View.OnTouchListener()

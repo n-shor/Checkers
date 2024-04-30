@@ -59,10 +59,17 @@ public class OnlineGame extends Game
             {
                 String boardState = dataSnapshot.child("boardState").getValue(String.class);
                 String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
-                board.setTurn(!Objects.equals(currentTurn, "white")); // White is false
-                board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
-                board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
-                board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
+                board.setTurn(!Objects.equals(currentTurn, Game.WHITE_STRING)); // White is false
+
+                // Making sure the integers are initialized in Firebase before reading them
+                if (dataSnapshot.child("lastMoveX").getValue() != null
+                        && dataSnapshot.child("lastMoveY").getValue() != null
+                        && dataSnapshot.child("movesSinceCaptureOrKing").getValue() != null)
+                {
+                    board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
+                    board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
+                    board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
+                }
 
                 // Making sure the board is already initialized in Firebase, if not we'll just update it next time
                 if (boardState != null)
@@ -80,7 +87,7 @@ public class OnlineGame extends Game
         });
 
         // Making sure that Firebase will only get initialized once
-        if (Objects.equals(playerColor, "WHITE"))
+        if (Objects.equals(playerColor, Game.WHITE_STRING))
         {
             // Initialize the board
             gameRef.child("whiteEmail").setValue(whiteEmail);
@@ -129,7 +136,7 @@ public class OnlineGame extends Game
         {
             return false;
         }
-        return (piece.isBlack() && playerColor.equals("BLACK")) || (!piece.isBlack() && playerColor.equals("WHITE"));
+        return (piece.isBlack() && !playerColor.equals(Game.WHITE_STRING)) || (!piece.isBlack() && playerColor.equals(Game.WHITE_STRING));
     }
 
     /**
@@ -138,7 +145,7 @@ public class OnlineGame extends Game
     private void updateGameStateInFirebase()
     {
         gameRef.child("boardState").setValue(serializeBoardState());
-        gameRef.child("currentTurn").setValue(board.getTurn() ? "black" : "white");
+        gameRef.child("currentTurn").setValue(board.getTurn() ? "BLACK" : Game.WHITE_STRING);
         gameRef.child("lastMoveX").setValue(board.getLastMoveX());
         gameRef.child("lastMoveY").setValue(board.getLastMoveY());
         gameRef.child("movesSinceCaptureOrKing").setValue(board.getMovesSinceCaptureOrKing());

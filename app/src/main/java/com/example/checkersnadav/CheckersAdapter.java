@@ -18,15 +18,17 @@ import android.widget.ImageView;
 public class CheckersAdapter extends BaseAdapter {
     private final Context context; // Context in which the adapter is running
     private Piece[][] boardState; // Current state of the board
+    boolean color; // Required for online play, so we know how to display the board
 
     /**
      * Constructs a new CheckersAdapter.
      * @param context The current context.
      * @param boardState The 2D array representing the state of the checkers board.
      */
-    public CheckersAdapter(Context context, Piece[][] boardState) {
+    public CheckersAdapter(Context context, Piece[][] boardState, boolean color) {
         this.context = context;
         this.boardState = boardState;
+        this.color = color;
     }
 
     /**
@@ -83,12 +85,15 @@ public class CheckersAdapter extends BaseAdapter {
         int col = position % Board.BOARD_SIZE;
 
         // Flip the rows and cols for piece setup so white pieces start at the bottom
-        int flippedRow = Board.BOARD_SIZE - 1 - row;
-        int flippedCol = Board.BOARD_SIZE - 1 - col;
+        if (!color)
+        {
+            row = Board.BOARD_SIZE - 1 - row;
+            col = Board.BOARD_SIZE - 1 - col;
+        }
 
-        Piece piece = boardState[flippedRow][flippedCol];
+        Piece piece = boardState[row][col];
 
-        if ((flippedRow + flippedCol) % 2 == 0)
+        if ((row + col) % 2 == 0)
         {
             imageView.setBackgroundColor(Color.WHITE); // Light squares
         }
