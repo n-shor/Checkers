@@ -20,6 +20,7 @@ public class OnlineGame extends Game
     private String blackEmail;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
+    private CheckersAdapter adapter;
 
     /**
      * Constructor for OnlineGame. Initializes the game board and sets up Firebase
@@ -62,6 +63,7 @@ public class OnlineGame extends Game
 
                 updateLocalBoard(boardState);
 
+                adapter.updateGameState(board.getState());
             }
 
             @Override
@@ -72,11 +74,25 @@ public class OnlineGame extends Game
         });
 
         // Making sure that Firebase will only get initialized once
-        if (Objects.equals(playerColor, "WHITE")) {
+        if (Objects.equals(playerColor, "WHITE"))
+        {
             // Initialize the board
             gameRef.child("whiteEmail").setValue(whiteEmail);
             gameRef.child("blackEmail").setValue(blackEmail);
             updateGameStateInFirebase();
+        }
+        else
+        {
+            // Sleep for half a second to make sure the game is set up before trying to access firebase
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch (java.lang.InterruptedException e)
+            {
+                // Log the exception so we can see what happened
+                Log.d("InterruptedException", e.getMessage());
+            }
         }
     }
 
@@ -213,4 +229,7 @@ public class OnlineGame extends Game
     }
 
 
+    public void setAdapter(CheckersAdapter adapter) {
+        this.adapter = adapter;
+    }
 }
