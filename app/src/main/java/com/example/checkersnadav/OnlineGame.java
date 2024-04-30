@@ -61,9 +61,12 @@ public class OnlineGame extends Game
                 String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
                 board.setTurn(!Objects.equals(currentTurn, "white")); // White is false
 
-                updateLocalBoard(boardState);
-
-                adapter.updateGameState(board.getState());
+                // Making sure the board is already initialized in Firebase, if not we'll just update it next time
+                if (boardState != null)
+                {
+                    updateLocalBoard(boardState);
+                    adapter.updateGameState(board.getState());
+                }
             }
 
             @Override
@@ -80,19 +83,6 @@ public class OnlineGame extends Game
             gameRef.child("whiteEmail").setValue(whiteEmail);
             gameRef.child("blackEmail").setValue(blackEmail);
             updateGameStateInFirebase();
-        }
-        else
-        {
-            // Sleep for half a second to make sure the game is set up before trying to access firebase
-            try
-            {
-                Thread.sleep(500);
-            }
-            catch (java.lang.InterruptedException e)
-            {
-                // Log the exception so we can see what happened
-                Log.d("InterruptedException", e.getMessage());
-            }
         }
     }
 
