@@ -260,18 +260,6 @@ public class Board {
     }
 
 
-    public int getMovesSinceCaptureOrKing()
-    {
-        return movesSinceCaptureOrKing;
-    }
-
-
-    public boolean getTurn()
-    {
-        return turn;
-    }
-
-
     /**
      * Checks if the specified move is valid according to the rules of checkers.
      * This includes bounds checking, ensuring the move is to a legal board square,
@@ -579,5 +567,35 @@ public class Board {
     // Required for online play - lets the turn be switched on the other player's device if needed.
     public void setTurn(boolean turn) {
         this.turn = turn;
+    }
+
+    // All of these are also required in online play in order to sync up the boards.
+    public boolean getTurn()
+    {
+        return turn;
+    }
+    public int getLastMoveX() {
+        return lastMoveX;
+    }
+
+    public void setLastMoveX(int lastMoveX) {
+        this.lastMoveX = lastMoveX;
+    }
+
+    public int getLastMoveY() {
+        return lastMoveY;
+    }
+
+    public void setLastMoveY(int lastMoveY) {
+        this.lastMoveY = lastMoveY;
+    }
+
+    public int getMovesSinceCaptureOrKing()
+    {
+        return movesSinceCaptureOrKing;
+    }
+
+    public void setMovesSinceCaptureOrKing(int movesSinceCaptureOrKing) {
+        this.movesSinceCaptureOrKing = movesSinceCaptureOrKing;
     }
 }

@@ -60,11 +60,14 @@ public class OnlineGame extends Game
                 String boardState = dataSnapshot.child("boardState").getValue(String.class);
                 String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
                 board.setTurn(!Objects.equals(currentTurn, "white")); // White is false
+                board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
+                board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
+                board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
 
                 // Making sure the board is already initialized in Firebase, if not we'll just update it next time
                 if (boardState != null)
                 {
-                    updateLocalBoard(boardState);
+                    updateLocalBoardState(boardState);
                     adapter.updateGameState(board.getState());
                 }
             }
@@ -136,6 +139,9 @@ public class OnlineGame extends Game
     {
         gameRef.child("boardState").setValue(serializeBoardState());
         gameRef.child("currentTurn").setValue(board.getTurn() ? "black" : "white");
+        gameRef.child("lastMoveX").setValue(board.getLastMoveX());
+        gameRef.child("lastMoveY").setValue(board.getLastMoveY());
+        gameRef.child("movesSinceCaptureOrKing").setValue(board.getMovesSinceCaptureOrKing());
     }
 
     /**
@@ -143,7 +149,7 @@ public class OnlineGame extends Game
      *
      * @param boardState The serialized string representation of the game board.
      */
-    private void updateLocalBoard(String boardState)
+    private void updateLocalBoardState(String boardState)
     {
         deserializeBoardState(boardState);
     }
