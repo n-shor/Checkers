@@ -46,6 +46,7 @@ public class Player {
         this.username = username;
         this.email = email;
         this.hashedPassword = hashedPassword;
+        this.stats = new Statistics();
     }
 
 
