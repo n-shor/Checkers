@@ -1,5 +1,10 @@
 package com.example.checkersnadav;
 
+import static com.example.checkersnadav.Statistics.Outcomes.DRAW;
+import static com.example.checkersnadav.Statistics.Outcomes.LOSS;
+import static com.example.checkersnadav.Statistics.Outcomes.WIN;
+
+
 import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,6 +25,7 @@ public class OnlineGame extends Game
     private String blackEmail;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
+    private int playerMoves;
     private CheckersAdapter adapter;
 
     /**
@@ -31,12 +37,13 @@ public class OnlineGame extends Game
      * @param whiteEmail The email of the player that is using the white pieces.
      * @param blackEmail The email of the player that is using the black pieces.
      */
-    public OnlineGame(String gameId, String playerColor, String whiteEmail, String blackEmail)
+    public OnlineGame(String gameId, String playerColor, String whiteEmail, String blackEmail) throws Exception
     {
         super(); // Initializes the board and sets the game to active
         this.whiteEmail = whiteEmail;
         this.blackEmail = blackEmail;
         this.playerColor = playerColor;
+        playerMoves = 0;
         setupFirebase(gameId);
     }
 
@@ -55,8 +62,7 @@ public class OnlineGame extends Game
         gameRef.addValueEventListener(new ValueEventListener()
         {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 String boardState = dataSnapshot.child("boardState").getValue(String.class);
                 String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
                 board.setTurn(!Objects.equals(currentTurn, Game.WHITE_STRING)); // White is false
@@ -76,6 +82,19 @@ public class OnlineGame extends Game
                 {
                     updateLocalBoardState(boardState);
                     adapter.updateGameState(board.getState());
+                }
+
+                // Finish game if necessary
+                if (!isActive)
+                {
+                    try
+                    {
+                        finishGame();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
 
@@ -117,6 +136,7 @@ public class OnlineGame extends Game
         boolean success = super.makeMove(xSrc, ySrc, xDst, yDst);
         if (success)
         {
+            playerMoves++;
             updateGameStateInFirebase();
         }
         return success;
@@ -145,7 +165,7 @@ public class OnlineGame extends Game
     private void updateGameStateInFirebase()
     {
         gameRef.child("boardState").setValue(serializeBoardState());
-        gameRef.child("currentTurn").setValue(board.getTurn() ? "BLACK" : Game.WHITE_STRING);
+        gameRef.child("currentTurn").setValue(board.getTurn() ? Game.BLACK_STRING : Game.WHITE_STRING);
         gameRef.child("lastMoveX").setValue(board.getLastMoveX());
         gameRef.child("lastMoveY").setValue(board.getLastMoveY());
         gameRef.child("movesSinceCaptureOrKing").setValue(board.getMovesSinceCaptureOrKing());
@@ -235,4 +255,52 @@ public class OnlineGame extends Game
     public void setAdapter(CheckersAdapter adapter) {
         this.adapter = adapter;
     }
+
+    public void finishGame() throws Exception {
+        String playerEmail = playerColor.equals(Game.WHITE_STRING) ? whiteEmail : blackEmail;
+
+        // Firebase reference to the statistics node of this player
+        DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference("users");
+
+        statsRef.orderByChild("email").equalTo(playerEmail).limitToFirst(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Extract player's statistics
+                    Statistics stats = dataSnapshot.child(playerEmail).child("stats").getValue(Statistics.class);
+
+                    Statistics.Outcomes outcome;
+
+                    if (Objects.equals(board.checkGameStatus(), playerColor))
+                    {
+                        outcome = WIN;
+                    }
+                    else if (Objects.equals(board.checkGameStatus(), Game.DRAW_STRING))
+                    {
+                        outcome = DRAW;
+                    }
+                    else
+                    {
+                        outcome = LOSS;
+                    }
+
+                    // Update the statistics
+                    stats.updateStatistics(outcome, playerMoves);
+
+                    // Push the updated statistics back to Firebase
+                    statsRef.child(playerEmail).child("stats").setValue(stats);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("Failed to fetch player's statistics: " + databaseError.getMessage());
+            }
+        });
+
+        // Detach listeners if necessary
+
+        throw new Exception("Game is done!");
+    }
+
 }

@@ -54,7 +54,7 @@ public class RoomActivity extends AppCompatActivity {
         } else {
             // Assume this device belongs to the second player
             // Update Firebase with the second player's email
-            playerColor = "BLACK"; // Second player plays black, name technically doesn't matter because we only check if it's different than WHITE
+            playerColor = Game.BLACK_STRING; // Second player plays black, name technically doesn't matter because we only check if it's different than WHITE
             roomRef.child("player2Email").setValue(player2Email);
             fetchPlayerDetails(player2Email, txtOtherPlayer, "Other Player: ");
         }

@@ -2,7 +2,7 @@ package com.example.checkersnadav;
 
 public class Statistics
 {
-    enum Outcomes { WIN, LOSS, DRAW }
+    enum Outcomes { WIN, LOSS, DRAW, NONE }
     private int wins;
     private int losses;
     private int draws;
@@ -18,8 +18,8 @@ public class Statistics
         topMoves = 0;
     }
 
-
-    public void updateStatistics(Outcomes outcome, int moves)
+    // Updates the statistics according to the arguments. Returns true if there was a new topMoves record, otherwise returns false.
+    public boolean updateStatistics(Outcomes outcome, int moves)
     {
         int totalGames = wins + losses + draws;
         averageMovesPerGame = (averageMovesPerGame * (totalGames) + moves) / (totalGames + 1);
@@ -50,7 +50,13 @@ public class Statistics
             }
         }
 
-        topMoves = Math.max(topMoves, moves);
+        if (moves > topMoves)
+        {
+            topMoves = moves;
+            return true;
+        }
+
+        return false;
     }
 
 

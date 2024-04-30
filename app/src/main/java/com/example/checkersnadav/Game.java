@@ -1,15 +1,20 @@
 package com.example.checkersnadav;
 
 
+import java.util.Objects;
+
 public class Game {
     protected Board board;
-    protected boolean gameActive;
+    protected boolean isActive;
     public static final String WHITE_STRING = "WHITE";
+    public static final String BLACK_STRING = "BLACK";
+    public static final String DRAW_STRING = "DRAW";
+    public static final String NONE_STRING = "NONE";
 
 
     public Game() {
         board = new Board();
-        gameActive = true;
+        isActive = true;
     }
 
     public Board getBoard() {
@@ -26,15 +31,15 @@ public class Game {
      */
     public boolean makeMove(int xSrc, int ySrc, int xDst, int yDst)
     {
-        if (!gameActive)
+        if (!isActive)
         {
             return false;
         }
         if (board.move(xSrc, ySrc, xDst, yDst))
         {
-            if (board.checkGameStatus() != "NONE")
+            if (!Objects.equals(board.checkGameStatus(), Game.NONE_STRING))
             {
-                gameActive = false;
+                isActive = false;
             }
             return true;
         }
@@ -48,8 +53,8 @@ public class Game {
      * Determines if the game is still active.
      * @return true if the game is active, false if it has ended.
      */
-    public boolean isGameActive() {
-        return gameActive;
+    public boolean isActive() {
+        return isActive;
     }
 
 }

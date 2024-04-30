@@ -13,6 +13,7 @@ public class LocalPvPActivity extends AppCompatActivity {
     private GridView gridView;
     private CheckersAdapter adapter;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +60,16 @@ public class LocalPvPActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(LocalPvPActivity.this, "Invalid Move, " + (game.isGameActive() ? "(" + startX + ", " + startY + "), (" + flippedRow + ", " + flippedCol + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LocalPvPActivity.this, "Invalid Move, " + (game.isActive() ? "(" + startX + ", " + startY + "), (" + flippedRow + ", " + flippedCol + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
                         }
 
                         startX = -1;
                         startY = -1;
+
+                        if (!game.isActive())
+                        {
+                            // win/lose/draw screen
+                        }
 
                         break;
                 }

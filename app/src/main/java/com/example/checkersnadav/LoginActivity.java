@@ -71,7 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, hashedPassword)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
                         mDatabase.child("users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override

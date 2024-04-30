@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,6 +15,15 @@
         android:theme="@style/Theme.CheckersNadav"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".DrawScreen"
+            android:exported="false" />
+        <activity
+            android:name=".LoseScreen"
+            android:exported="false" />
+        <activity
+            android:name=".WinScreen"
+            android:exported="false" />
         <activity
             android:name=".Room"
             android:exported="false" />

@@ -225,13 +225,13 @@ public class Board {
         // Determine winner based on pieces and moves left
         if (!whiteHasPieces || (!whiteHasMoves && turn == WHITE))
         {
-            return "BLACK"; // Black wins if white has no pieces or moves
+            return Game.BLACK_STRING; // Black wins if white has no pieces or moves
         }
         if (!blackHasPieces || (!blackHasMoves && turn == BLACK))
         {
             return Game.WHITE_STRING; // White wins if black has no pieces or moves
         }
-        return "NONE"; // No winner yet
+        return Game.NONE_STRING; // No winner yet
     }
 
 
@@ -242,15 +242,15 @@ public class Board {
     public String checkGameStatus()
     {
         String winner = getWinner();
-        if (!winner.equals("NONE"))
+        if (!winner.equals(Game.NONE_STRING) && !winner.equals(Game.DRAW_STRING))
         {
             return winner;
         }
         if (movesSinceCaptureOrKing >= 80)
         { // 40 moves by each player without capture or kinging
-            return "DRAW";
+            return Game.DRAW_STRING;
         }
-        return "NONE";
+        return Game.NONE_STRING;
     }
 
 
