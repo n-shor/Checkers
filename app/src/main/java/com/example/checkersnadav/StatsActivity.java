@@ -23,35 +23,33 @@ public class StatsActivity extends AppCompatActivity {
 
         // Get user's email from intent
         Intent intent = getIntent();
-        String userEmail = intent.getStringExtra("USER_EMAIL");
+        String userEmail = intent.getStringExtra("userEmail");
 
         // Fetch user's statistics from Firebase
         fetchUserStats(userEmail);
 
         // Set up back button to return to MenuActivity
         Button backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // or explicitly create an intent for MenuActivity if needed
-            }
+        backButton.setOnClickListener(v -> {
+            Intent intent1 = new Intent(StatsActivity.this, Menu.class);
+            startActivity(intent1);
+            finish();
         });
     }
 
     private void fetchUserStats(String email) {
-        // Reference to Firebase database
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users").child(email).child("statistics");
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        databaseRef.addValueEventListener(new ValueEventListener() {
+        databaseRef.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Statistics stats = dataSnapshot.getValue(Statistics.class);
+                    Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
 
                     // Display the statistics
                     String userStats = String.format(
-                            "Statistics for %s:\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nTop Moves: %d",
-                            email, stats.getWins(), stats.getLosses(), stats.getDraws(),
+                            "Statistics for %s:\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nMost Moves in One Game: %d",
+                            dataSnapshot.child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );
 

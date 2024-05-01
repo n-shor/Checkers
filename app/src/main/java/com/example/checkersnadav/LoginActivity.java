@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
 
-                        mDatabase.child("users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                        mDatabase.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()){
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                         });
                     }
                     else {
-                        textViewError.setText("Authentication failed. Incorrect username or password.");
+                        textViewError.setText("Login failed: " + Objects.requireNonNull(task.getException()));
                         textViewError.setVisibility(View.VISIBLE);
                     }
                 });

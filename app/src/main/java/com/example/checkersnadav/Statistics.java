@@ -18,6 +18,14 @@ public class Statistics
         topMoves = 0;
     }
 
+    public Statistics(int wins, int losses, int draws, int averageMovesPerGame, int topMoves) {
+        this.wins = wins;
+        this.losses = losses;
+        this.draws = draws;
+        this.averageMovesPerGame = averageMovesPerGame;
+        this.topMoves = topMoves;
+    }
+
     // Updates the statistics according to the arguments. Returns true if there was a new topMoves record, otherwise returns false.
     public boolean updateStatistics(Outcomes outcome, int moves)
     {
@@ -78,5 +86,25 @@ public class Statistics
 
     public int getTopMoves() {
         return topMoves;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
+    public void setDraws(int draws) {
+        this.draws = draws;
+    }
+
+    public void setAverageMovesPerGame(int averageMovesPerGame) {
+        this.averageMovesPerGame = averageMovesPerGame;
+    }
+
+    public void setTopMoves(int topMoves) {
+        this.topMoves = topMoves;
     }
 }
