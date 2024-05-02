@@ -23,10 +23,10 @@ public class StatsActivity extends AppCompatActivity {
 
         // Get user's email from intent
         Intent intent = getIntent();
-        String userEmail = intent.getStringExtra("userEmail");
+        String userId = intent.getStringExtra("userId");
 
         // Fetch user's statistics from Firebase
-        fetchUserStats(userEmail);
+        fetchUserStats(userId);
 
         // Set up back button to return to MenuActivity
         Button backButton = findViewById(R.id.backButton);
@@ -37,19 +37,19 @@ public class StatsActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchUserStats(String email) {
+    private void fetchUserStats(String userId) {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        databaseRef.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
+        databaseRef.child("users").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Statistics stats = dataSnapshot.getChildren().iterator().next().child("stats").getValue(Statistics.class);
+                    Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
 
                     // Display the statistics
                     String userStats = String.format(
                             "Statistics for %s:\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nMost Moves in One Game: %d",
-                            dataSnapshot.getChildren().iterator().next().child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
+                            dataSnapshot.child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );
 

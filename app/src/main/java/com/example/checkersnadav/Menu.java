@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class Menu extends AppCompatActivity {
 
-    private String userEmail;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,27 +16,26 @@ public class Menu extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         // Retrieving the user's email from the intent
-        userEmail = getIntent().getStringExtra("userEmail");
+        userId = getIntent().getStringExtra("userId");
 
     }
 
     public void goToLocalPvP(View view) {
         Intent intent = new Intent(this, LocalPvPActivity.class);
-        intent.putExtra("userEmail", userEmail); // Pass the user's email
         startActivity(intent);
         finish();
     }
 
     public void goToCreateOrJoinRoom(View view) {
         Intent intent = new Intent(this, CreateAndJoinRoom.class);
-        intent.putExtra("userEmail", userEmail); // Pass the user's email
+        intent.putExtra("userId", userId); // Pass the user's ID
         startActivity(intent);
         finish();
     }
 
     public void goToStats(View view) {
         Intent intent = new Intent(this, StatsActivity.class);
-        intent.putExtra("userEmail", userEmail); // Pass the user's email
+        intent.putExtra("userId", userId); // Pass the user's ID
         startActivity(intent);
         finish();
     }

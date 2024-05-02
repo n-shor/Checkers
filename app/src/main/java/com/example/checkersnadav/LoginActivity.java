@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                                         textViewError.setVisibility(View.GONE);
                                         Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(LoginActivity.this, Menu.class);
-                                        intent.putExtra("userEmail", email);
+                                        intent.putExtra("userId", snapshot.getChildren().iterator().next().getKey());
                                         startActivity(intent);
                                         finish();
                                     } else {
@@ -124,15 +124,36 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         textViewError.setVisibility(View.GONE);
-                        Toast.makeText(LoginActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
 
                         // Save user (including username) to database
                         saveUserToDatabase(username, email, hashedPassword);
 
-                        Intent intent = new Intent(LoginActivity.this, Menu.class);
-                        intent.putExtra("userEmail", email); // Pass the user's email
-                        startActivity(intent);
-                        finish();
+                        // Retrieving user ID and forwarding it to the next activity
+                        mDatabase.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()){
+                                    Player player = snapshot.getChildren().iterator().next().getValue(Player.class);
+                                    if(player != null) {
+                                        textViewError.setVisibility(View.GONE);
+                                        Toast.makeText(LoginActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(LoginActivity.this, Menu.class);
+                                        intent.putExtra("userId", snapshot.getChildren().iterator().next().getKey());
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        textViewError.setText("Authentication failed. Please try again later.");
+                                        textViewError.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                textViewError.setText(error.toString());
+                                textViewError.setVisibility(View.VISIBLE);
+                            }
+                        });
 
                     } else {
                         if (task.getException() instanceof FirebaseAuthUserCollisionException) {

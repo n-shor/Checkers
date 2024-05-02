@@ -20,8 +20,8 @@ public class RoomActivity extends AppCompatActivity {
     private Button btnStartGame;
     private Button btnCloseRoom;
     private Button btnLeaveRoom;
-    private String roomOwnerEmail;
-    private String player2Email;
+    private String roomOwnerId;
+    private String player2Id;
     private String roomId;
     private TextView txtRoomOwner, txtOtherPlayer;
     private DatabaseReference roomRef;
@@ -40,26 +40,26 @@ public class RoomActivity extends AppCompatActivity {
         btnLeaveRoom = findViewById(R.id.btnLeaveRoom);
 
         roomId = getIntent().getStringExtra("roomId");
-        roomOwnerEmail = getIntent().getStringExtra("player1Email");
-        player2Email = getIntent().getStringExtra("player2Email");
+        roomOwnerId = getIntent().getStringExtra("player1Id");
+        player2Id = getIntent().getStringExtra("player2Id");
 
         roomRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomId);
 
         setupRoomListener();
 
-        if (player2Email == null) {
+        if (player2Id == null) {
             // Assume this device belongs to the room owner
             playerColor = Game.WHITE_STRING; // Room owner plays white
-            fetchPlayerDetails(roomOwnerEmail, txtRoomOwner, "Room Owner: ");
+            fetchPlayerDetails(roomOwnerId, txtRoomOwner, "Room Owner: ");
         } else {
             // Assume this device belongs to the second player
             // Update Firebase with the second player's email
             playerColor = Game.BLACK_STRING; // Second player plays black, name technically doesn't matter because we only check if it's different than WHITE
-            roomRef.child("player2Email").setValue(player2Email);
-            fetchPlayerDetails(player2Email, txtOtherPlayer, "Other Player: ");
+            roomRef.child("player2Id").setValue(player2Id);
+            fetchPlayerDetails(player2Id, txtOtherPlayer, "Other Player: ");
         }
 
-        setButtonVisibility(player2Email == null);
+        setButtonVisibility(player2Id == null);
 
         btnStartGame.setOnClickListener(v -> startGame());
         btnCloseRoom.setOnClickListener(v -> closeRoom());
@@ -94,17 +94,17 @@ public class RoomActivity extends AppCompatActivity {
 
     private void updateUI(Room room) {
         // Update room owner name if available, otherwise indicate waiting for room owner
-        if (room.getRoomOwnerEmail() != null && !room.getRoomOwnerEmail().isEmpty()) {
+        if (room.getRoomOwnerId() != null) {
             // Fetch and display the room owner's username based on their email
-            fetchPlayerDetails(room.getRoomOwnerEmail(), txtRoomOwner, "Room Owner: ");
+            fetchPlayerDetails(room.getRoomOwnerId(), txtRoomOwner, "Room Owner: ");
         } else {
             txtRoomOwner.setText("Room Owner: Waiting...");
         }
 
         // Update second player's name if available, otherwise indicate that the player slot is open
-        if (room.getPlayer2Email() != null && !room.getPlayer2Email().isEmpty()) {
+        if (room.getPlayer2Id() != null) {
             // Fetch and display the second player's username based on their email
-            fetchPlayerDetails(room.getPlayer2Email(), txtOtherPlayer, "Other Player: ");
+            fetchPlayerDetails(room.getPlayer2Id(), txtOtherPlayer, "Other Player: ");
             roomRef.child("isJoinable").setValue(false); // Set the room to unjoinable if second player is present
         } else {
             txtOtherPlayer.setText("Other Player: Waiting for player...");
@@ -114,19 +114,18 @@ public class RoomActivity extends AppCompatActivity {
     }
 
 
-    private void fetchPlayerDetails(String email, TextView textView, String prefix) {
+    private void fetchPlayerDetails(String userId, TextView textView, String prefix) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        usersRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Player player = snapshot.getValue(Player.class);
-                        if (player != null && player.getUsername() != null) {
-                            textView.setText(prefix + player.getUsername());
-                        }
+                    Player player = dataSnapshot.getValue(Player.class);
+                    if (player != null && player.getUsername() != null) {
+                        textView.setText(prefix + player.getUsername());
                     }
-                } else {
+                }
+                else {
                     textView.setText(prefix + "[Name not found]");
                 }
             }
@@ -177,16 +176,16 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void setupDisconnectHandling() {
-        if (player2Email != null) {
+        if (player2Id != null) {
             // Set the player2Email to null on disconnect only if the current user is the second player
-            DatabaseReference player2Ref = roomRef.child("player2Email");
+            DatabaseReference player2Ref = roomRef.child("player2Id");
             player2Ref.onDisconnect().setValue(null);
         }
     }
 
     private void leaveRoom() {
         // The current user is not the room owner, so simply clear their field in the database
-        roomRef.child("player2Email").setValue(null).addOnCompleteListener(task -> {
+        roomRef.child("player2Id").setValue(null).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(RoomActivity.this, "You have successfully left the room.", Toast.LENGTH_SHORT).show();
             } else {
@@ -219,8 +218,8 @@ public class RoomActivity extends AppCompatActivity {
                 Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
                 intent.putExtra("gameId", roomId);
                 intent.putExtra("playerColor", playerColor);
-                intent.putExtra("player1Email", roomOwnerEmail);
-                intent.putExtra("player2Email", player2Email);
+                intent.putExtra("player1Id", roomOwnerEmail);
+                intent.putExtra("player2Id", player2Email);
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Why is this necessary?
 

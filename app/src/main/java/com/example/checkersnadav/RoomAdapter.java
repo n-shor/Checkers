@@ -35,7 +35,7 @@ public class RoomAdapter extends ArrayAdapter<Room>
             {
                 tvRoom.setTextColor(Color.RED); // Ongoing game
             }
-            else if (room.getPlayer2Email() != null)
+            else if (room.getPlayer2Id() != null)
             {
                 tvRoom.setTextColor(Color.GRAY); // Full room
             }

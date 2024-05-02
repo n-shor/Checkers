@@ -28,7 +28,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
     private EditText roomNameEditText;
     private RoomAdapter roomAdapter;
     private List<Room> roomList = new ArrayList<>();
-    private String currentUserEmail;
+    private String userId;
 
 
     /**
@@ -52,7 +52,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
         roomNameEditText = findViewById(R.id.roomNameEditText);
 
         // Retrieve the current user's email from the intent
-        currentUserEmail = getIntent().getStringExtra("userEmail");
+        userId = getIntent().getStringExtra("userId");
 
         // Setup the room list view adapter
         roomAdapter = new RoomAdapter(this, roomList);
@@ -82,14 +82,14 @@ public class CreateAndJoinRoom extends AppCompatActivity
 
         DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
         String roomId = roomsRef.push().getKey();
-        Room newRoom = new Room(roomId, currentUserEmail, roomName);
+        Room newRoom = new Room(roomId, userId, roomName);
         roomsRef.child(roomId).setValue(newRoom)
                 .addOnSuccessListener(aVoid -> Toast.makeText(CreateAndJoinRoom.this, "Room created successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(CreateAndJoinRoom.this, "Failed to create room", Toast.LENGTH_SHORT).show());
 
         // Redirect to the room activity as the room creator
         Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
-        intent.putExtra("player1Email", currentUserEmail);
+        intent.putExtra("player1Id", userId);
         intent.putExtra("roomId", roomId);
         startActivity(intent);
     }
@@ -130,7 +130,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
         Room room = roomList.get(position);
         if (room.canJoin()) {
             Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
-            intent.putExtra("player2Email", currentUserEmail);
+            intent.putExtra("player2Id", userId);
             intent.putExtra("roomId", room.getRoomId());
             startActivity(intent);
         } else {

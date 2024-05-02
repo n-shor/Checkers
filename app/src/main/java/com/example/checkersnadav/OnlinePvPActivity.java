@@ -27,8 +27,8 @@ public class OnlinePvPActivity extends AppCompatActivity {
     private GridView gridView;
     private CheckersAdapter adapter;
     private String playerColor;
-    private String player1Email;
-    private String player2Email;
+    private String player1Id;
+    private String player2Id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +37,15 @@ public class OnlinePvPActivity extends AppCompatActivity {
 
         // Retrieving data from intent
         playerColor = getIntent().getStringExtra("playerColor");
-        player1Email = getIntent().getStringExtra("player1Email");
-        player2Email = getIntent().getStringExtra("player2Email");
+        player1Id = getIntent().getStringExtra("player1Id");
+        player2Id = getIntent().getStringExtra("player2Id");
         String gameId = getIntent().getStringExtra("gameId");
 
         try
         {
             // When the game is over an exception will get thrown
             // Initialize game object
-            game = new OnlineGame(gameId, playerColor, player1Email, player2Email);
+            game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
         }
         catch (Exception e)
         {

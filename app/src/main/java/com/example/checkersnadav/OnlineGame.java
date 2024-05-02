@@ -21,8 +21,8 @@ import java.util.Objects;
  */
 public class OnlineGame extends Game
 {
-    private String whiteEmail;
-    private String blackEmail;
+    private final String whiteId;
+    private final String blackId;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
     private int playerMoves;
@@ -34,14 +34,14 @@ public class OnlineGame extends Game
      *
      * @param gameId The unique identifier for the game session on Firebase.
      * @param playerColor The color assigned to the player ("WHITE" or "BLACK").
-     * @param whiteEmail The email of the player that is using the white pieces.
-     * @param blackEmail The email of the player that is using the black pieces.
+     * @param whiteId The email of the player that is using the white pieces.
+     * @param blackId The email of the player that is using the black pieces.
      */
-    public OnlineGame(String gameId, String playerColor, String whiteEmail, String blackEmail) throws Exception
+    public OnlineGame(String gameId, String playerColor, String whiteId, String blackId) throws Exception
     {
         super(); // Initializes the board and sets the game to active
-        this.whiteEmail = whiteEmail;
-        this.blackEmail = blackEmail;
+        this.whiteId = whiteId;
+        this.blackId = blackId;
         this.playerColor = playerColor;
         playerMoves = 0;
         setupFirebase(gameId);
@@ -109,8 +109,8 @@ public class OnlineGame extends Game
         if (Objects.equals(playerColor, Game.WHITE_STRING))
         {
             // Initialize the board
-            gameRef.child("whiteEmail").setValue(whiteEmail);
-            gameRef.child("blackEmail").setValue(blackEmail);
+            gameRef.child("whiteId").setValue(whiteId);
+            gameRef.child("blackId").setValue(blackId);
             updateGameStateInFirebase();
         }
     }
@@ -257,17 +257,17 @@ public class OnlineGame extends Game
     }
 
     public void finishGame() throws Exception {
-        String playerEmail = playerColor.equals(Game.WHITE_STRING) ? whiteEmail : blackEmail;
+        String playerId = playerColor.equals(Game.WHITE_STRING) ? whiteId : blackId;
 
         // Firebase reference to the statistics node of this player
         DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference("users");
 
-        statsRef.orderByChild("email").equalTo(playerEmail).limitToFirst(1).addValueEventListener(new ValueEventListener() {
+        statsRef.child(playerId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Extract player's statistics
-                    Statistics stats = dataSnapshot.child(playerEmail).child("stats").getValue(Statistics.class);
+                    Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
 
                     Statistics.Outcomes outcome;
 
@@ -288,7 +288,7 @@ public class OnlineGame extends Game
                     stats.updateStatistics(outcome, playerMoves);
 
                     // Push the updated statistics back to Firebase
-                    statsRef.child(playerEmail).child("stats").setValue(stats);
+                    statsRef.child(playerId).child("stats").setValue(stats);
                 }
             }
 
