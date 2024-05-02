@@ -50,6 +50,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
         createRoomButton = findViewById(R.id.createRoomButton);
         joinRoomButton = findViewById(R.id.joinRoomButton);
         roomNameEditText = findViewById(R.id.roomNameEditText);
+        Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
         // Retrieve the current user's email from the intent
         userId = getIntent().getStringExtra("userId");
@@ -58,6 +59,11 @@ public class CreateAndJoinRoom extends AppCompatActivity
         roomAdapter = new RoomAdapter(this, roomList);
         roomListView.setAdapter(roomAdapter);
         roomListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE); // Enable single choice mode
+
+        backToMenuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreateAndJoinRoom.this, Menu.class);
+            startActivity(intent);
+        });
 
         // Attach event listeners to buttons
         createRoomButton.setOnClickListener(v -> createRoom());
