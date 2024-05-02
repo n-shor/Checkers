@@ -44,12 +44,12 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
+                    Statistics stats = dataSnapshot.getChildren().iterator().next().child("stats").getValue(Statistics.class);
 
                     // Display the statistics
                     String userStats = String.format(
                             "Statistics for %s:\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nMost Moves in One Game: %d",
-                            dataSnapshot.child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
+                            dataSnapshot.getChildren().iterator().next().child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );
 

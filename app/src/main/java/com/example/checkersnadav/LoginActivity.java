@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()){
-                                    Player player = snapshot.getValue(Player.class);
+                                    Player player = snapshot.getChildren().iterator().next().getValue(Player.class);
                                     if(player != null) {
                                         textViewError.setVisibility(View.GONE);
                                         Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
