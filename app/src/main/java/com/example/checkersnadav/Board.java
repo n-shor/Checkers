@@ -9,7 +9,7 @@ public class Board {
     public static final boolean WHITE = false;
     public static final boolean BLACK = !WHITE;
     public static final int BOARD_SIZE = 8;
-    private Piece[][] state;
+    private final Piece[][] state;
     private boolean turn;
     private int movesSinceCaptureOrKing = 0;
     private int lastMoveX = BOARD_SIZE - 1; // Making sure these are on a black square initially so the logic won't think that white needs to do a capture chain
@@ -563,20 +563,6 @@ public class Board {
         return false;
     }
 
-    public void flipState() {
-        int size = Board.BOARD_SIZE;
-        Piece[][] newState = new Piece[size][size];
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                // Flip the board by 180 degrees
-                newState[size - 1 - i][size - 1 - j] = this.getState()[i][j];
-            }
-        }
-
-        this.setState(newState);
-    }
-
 
     // Required for online play - lets the turn be switched on the other player's device if needed.
     public void setTurn(boolean turn) {
@@ -613,8 +599,4 @@ public class Board {
         this.movesSinceCaptureOrKing = movesSinceCaptureOrKing;
     }
 
-    public void setState(Piece[][] state)
-    {
-        this.state = state;
-    }
 }
