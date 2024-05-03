@@ -61,17 +61,24 @@ public class OnlinePvPActivity extends AppCompatActivity {
                     // Extract player's statistics
                     Boolean isGameActive = dataSnapshot.child("isActive").getValue(Boolean.class);
 
-                    if (isGameActive != null && !isGameActive) {
+                    if (isGameActive != null && !isGameActive)
+                    {
                         Intent intent;
 
-                        if (Objects.equals(game.getBoard().checkGameStatus(), playerColor)) {
+                        if (Objects.equals(game.getBoard().checkGameStatus(), playerColor))
+                        {
                             intent = new Intent(OnlinePvPActivity.this, WinScreen.class);
-                        } else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING)) {
+                        }
+                        else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING))
+                        {
                             intent = new Intent(OnlinePvPActivity.this, DrawScreen.class);
-                        } else {
+                        }
+                        else
+                        {
                             intent = new Intent(OnlinePvPActivity.this, LoseScreen.class);
                         }
 
+                        intent.putExtra("userId", playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id);
                         startActivity(intent);
                         finish();
                     }
