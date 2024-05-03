@@ -62,7 +62,9 @@ public class CreateAndJoinRoom extends AppCompatActivity
 
         backToMenuButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreateAndJoinRoom.this, Menu.class);
+            intent.putExtra("userId", userId);
             startActivity(intent);
+            finish();
         });
 
         // Attach event listeners to buttons

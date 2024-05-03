@@ -32,6 +32,7 @@ public class StatsActivity extends AppCompatActivity {
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
             Intent intent1 = new Intent(StatsActivity.this, Menu.class);
+            intent1.putExtra("userId", userId);
             startActivity(intent1);
             finish();
         });

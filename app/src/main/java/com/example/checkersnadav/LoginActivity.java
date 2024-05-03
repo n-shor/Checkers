@@ -70,9 +70,9 @@ public class LoginActivity extends AppCompatActivity {
         // Firebase Authentication with username check
         mAuth.signInWithEmailAndPassword(email, hashedPassword)
                 .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-
-                        mDatabase.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
+                    if (task.isSuccessful())
+                    {
+                        mDatabase.child("users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()){
@@ -129,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                         saveUserToDatabase(username, email, hashedPassword);
 
                         // Retrieving user ID and forwarding it to the next activity
-                        mDatabase.child("users").orderByChild("email").equalTo(email).addValueEventListener(new ValueEventListener() {
+                        mDatabase.child("users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()){

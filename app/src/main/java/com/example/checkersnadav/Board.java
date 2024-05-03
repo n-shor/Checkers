@@ -242,7 +242,7 @@ public class Board {
     public String checkGameStatus()
     {
         String winner = getWinner();
-        if (!winner.equals(Game.NONE_STRING) && !winner.equals(Game.DRAW_STRING))
+        if (!winner.equals(Game.NONE_STRING))
         {
             return winner;
         }
@@ -563,6 +563,20 @@ public class Board {
         return false;
     }
 
+    public void flipState() {
+        int size = Board.BOARD_SIZE;
+        Piece[][] newState = new Piece[size][size];
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                // Flip the board by 180 degrees
+                newState[size - 1 - i][size - 1 - j] = this.getState()[i][j];
+            }
+        }
+
+        this.setState(newState);
+    }
+
 
     // Required for online play - lets the turn be switched on the other player's device if needed.
     public void setTurn(boolean turn) {
@@ -597,5 +611,10 @@ public class Board {
 
     public void setMovesSinceCaptureOrKing(int movesSinceCaptureOrKing) {
         this.movesSinceCaptureOrKing = movesSinceCaptureOrKing;
+    }
+
+    public void setState(Piece[][] state)
+    {
+        this.state = state;
     }
 }

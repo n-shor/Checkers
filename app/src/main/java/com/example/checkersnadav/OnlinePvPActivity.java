@@ -41,31 +41,8 @@ public class OnlinePvPActivity extends AppCompatActivity {
         player2Id = getIntent().getStringExtra("player2Id");
         String gameId = getIntent().getStringExtra("gameId");
 
-        try
-        {
-            // When the game is over an exception will get thrown
-            // Initialize game object
-            game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
-        }
-        catch (Exception e)
-        {
-            Intent intent;
-
-            if (Objects.equals(game.getBoard().checkGameStatus(), playerColor))
-            {
-                intent = new Intent(this, WinScreen.class);
-            }
-            else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING))
-            {
-                intent = new Intent(this, DrawScreen.class);
-            }
-            else
-            {
-                intent = new Intent(this, LoseScreen.class);
-            }
-
-            startActivity(intent);
-        }
+        // Initialize game object
+        game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
 
         gridView = findViewById(R.id.grid_view);
         adapter = new CheckersAdapter(this, game.getBoard().getState(), !playerColor.equals(Game.WHITE_STRING));
@@ -75,7 +52,41 @@ public class OnlinePvPActivity extends AppCompatActivity {
 
         setupTouchListeners();
 
+        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("games");
+
+        gameRef.child(gameId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Extract player's statistics
+                    Boolean isGameActive = dataSnapshot.child("isActive").getValue(Boolean.class);
+
+                    if (isGameActive != null && !isGameActive) {
+                        Intent intent;
+
+                        if (Objects.equals(game.getBoard().checkGameStatus(), playerColor)) {
+                            intent = new Intent(OnlinePvPActivity.this, WinScreen.class);
+                        } else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING)) {
+                            intent = new Intent(OnlinePvPActivity.this, DrawScreen.class);
+                        } else {
+                            intent = new Intent(OnlinePvPActivity.this, LoseScreen.class);
+                        }
+
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("Failed to fetch player's statistics: " + databaseError.getMessage());
+            }
+        });
+
     }
+
+
 
 
     @SuppressLint("ClickableViewAccessibility")

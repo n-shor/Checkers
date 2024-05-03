@@ -48,7 +48,6 @@ public class Game {
     }
 
 
-
     /**
      * Determines if the game is still active.
      * @return true if the game is active, false if it has ended.

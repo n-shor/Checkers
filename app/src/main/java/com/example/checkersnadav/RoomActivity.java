@@ -192,6 +192,10 @@ public class RoomActivity extends AppCompatActivity {
                 Toast.makeText(RoomActivity.this, "Failed to leave the room.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoom.class);
+        intent.putExtra("userId", player2Id);
+        startActivity(intent);
         finish(); // Return to previous activity
     }
 
@@ -205,21 +209,24 @@ public class RoomActivity extends AppCompatActivity {
                 Toast.makeText(RoomActivity.this, "Failed to close room", Toast.LENGTH_SHORT).show();
             }
         });
-        finish(); // Return to previous activity
+        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoom.class);
+        intent.putExtra("userId", roomOwnerId);
+        startActivity(intent);
+        finish();
     }
 
     private void startOnlinePvPActivity() {
-        roomRef.child("roomOwnerEmail").get().addOnSuccessListener(ownerSnapshot -> {
-            String roomOwnerEmail = ownerSnapshot.getValue(String.class);
+        roomRef.child("roomOwnerId").get().addOnSuccessListener(ownerSnapshot -> {
+            String roomOwnerId = ownerSnapshot.getValue(String.class);
 
-            roomRef.child("player2Email").get().addOnSuccessListener(player2Snapshot -> {
-                String player2Email = player2Snapshot.getValue(String.class);
+            roomRef.child("player2Id").get().addOnSuccessListener(player2Snapshot -> {
+                String player2Id = player2Snapshot.getValue(String.class);
 
                 Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
                 intent.putExtra("gameId", roomId);
                 intent.putExtra("playerColor", playerColor);
-                intent.putExtra("player1Id", roomOwnerEmail);
-                intent.putExtra("player2Id", player2Email);
+                intent.putExtra("player1Id", roomOwnerId);
+                intent.putExtra("player2Id", player2Id);
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Why is this necessary?
 

@@ -23,6 +23,7 @@ public class OnlineGame extends Game
 {
     private final String whiteId;
     private final String blackId;
+    private final String gameId;
     private DatabaseReference gameRef;
     private final String playerColor; // "WHITE" or "BLACK"
     private int playerMoves;
@@ -37,12 +38,13 @@ public class OnlineGame extends Game
      * @param whiteId The email of the player that is using the white pieces.
      * @param blackId The email of the player that is using the black pieces.
      */
-    public OnlineGame(String gameId, String playerColor, String whiteId, String blackId) throws Exception
+    public OnlineGame(String gameId, String playerColor, String whiteId, String blackId)
     {
         super(); // Initializes the board and sets the game to active
         this.whiteId = whiteId;
         this.blackId = blackId;
         this.playerColor = playerColor;
+        this.gameId = gameId;
         playerMoves = 0;
         setupFirebase(gameId);
     }
@@ -67,34 +69,29 @@ public class OnlineGame extends Game
                 String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
                 board.setTurn(!Objects.equals(currentTurn, Game.WHITE_STRING)); // White is false
 
-                // Making sure the integers are initialized in Firebase before reading them
-                if (dataSnapshot.child("lastMoveX").getValue() != null
-                        && dataSnapshot.child("lastMoveY").getValue() != null
-                        && dataSnapshot.child("movesSinceCaptureOrKing").getValue() != null)
+                // Making sure the all the members are initialized in Firebase before reading them
+                if (dataSnapshot.child("lastMoveX").getValue(Integer.class) != null
+                        && dataSnapshot.child("lastMoveY").getValue(Integer.class) != null
+                        && dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class) != null
+                        && dataSnapshot.child("isActive").getValue(Boolean.class) != null
+                        && boardState != null)
                 {
                     board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
                     board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
                     board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
-                }
-
-                // Making sure the board is already initialized in Firebase, if not we'll just update it next time
-                if (boardState != null)
-                {
                     updateLocalBoardState(boardState);
                     adapter.updateGameState(board.getState());
+
+                    if (!dataSnapshot.child("isActive").getValue(Boolean.class))
+                    {
+                        isActive = false;
+                    }
                 }
 
                 // Finish game if necessary
                 if (!isActive)
                 {
-                    try
-                    {
-                        finishGame();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new RuntimeException(e);
-                    }
+                    finishGame();
                 }
             }
 
@@ -111,6 +108,7 @@ public class OnlineGame extends Game
             // Initialize the board
             gameRef.child("whiteId").setValue(whiteId);
             gameRef.child("blackId").setValue(blackId);
+            gameRef.child("isActive").setValue(true);
             updateGameStateInFirebase();
         }
     }
@@ -169,6 +167,7 @@ public class OnlineGame extends Game
         gameRef.child("lastMoveX").setValue(board.getLastMoveX());
         gameRef.child("lastMoveY").setValue(board.getLastMoveY());
         gameRef.child("movesSinceCaptureOrKing").setValue(board.getMovesSinceCaptureOrKing());
+        gameRef.child("isActive").setValue(isActive);
     }
 
     /**
@@ -256,13 +255,13 @@ public class OnlineGame extends Game
         this.adapter = adapter;
     }
 
-    public void finishGame() throws Exception {
+    public void finishGame() {
         String playerId = playerColor.equals(Game.WHITE_STRING) ? whiteId : blackId;
 
         // Firebase reference to the statistics node of this player
         DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference("users");
 
-        statsRef.child(playerId).addValueEventListener(new ValueEventListener() {
+        statsRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -298,9 +297,10 @@ public class OnlineGame extends Game
             }
         });
 
-        // Detach listeners if necessary
-
-        throw new Exception("Game is done!");
+        // We only need to update the game's status once
+        if (playerColor.equals(Game.WHITE_STRING))
+        {
+            FirebaseDatabase.getInstance().getReference("games").child(gameId).child("isActive").setValue(false);
+        }
     }
-
 }
