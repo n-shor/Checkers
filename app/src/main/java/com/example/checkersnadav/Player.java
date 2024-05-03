@@ -5,6 +5,7 @@ public class Player {
     private String email;
     private String hashedPassword;
     private Statistics stats;
+    private String lastWinDate;
 
     public String getUsername() {
         return username;
@@ -38,7 +39,16 @@ public class Player {
         this.stats = stats;
     }
 
-    public Player() {
+    public String getLastWinDate() {
+        return lastWinDate;
+    }
+
+    public void setLastWinDate(String lastWinDate) {
+        this.lastWinDate = lastWinDate;
+    }
+
+    public Player()
+    {
         // Default constructor required for Firebase DataSnapshot.getValue(Player.class)
     }
 
@@ -47,6 +57,7 @@ public class Player {
         this.email = email;
         this.hashedPassword = hashedPassword;
         this.stats = new Statistics();
+        this.lastWinDate = ""; // This way the first comparison for the date of today would always yield false
     }
 
 

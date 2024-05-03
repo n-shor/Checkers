@@ -27,7 +27,7 @@ public class Statistics
     }
 
     // Updates the statistics according to the arguments. Returns true if there was a new topMoves record, otherwise returns false.
-    public boolean updateStatistics(Outcomes outcome, int moves)
+    public boolean updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus)
     {
         int totalGames = wins + losses + draws;
         averageMovesPerGame = (averageMovesPerGame * (totalGames) + moves) / (totalGames + 1);
@@ -36,7 +36,15 @@ public class Statistics
         {
             case WIN:
             {
-                wins++;
+                if (hasDailyBonus)
+                {
+                    wins += 3;
+                }
+                else
+                {
+                    wins++;
+                }
+
                 break;
             }
 

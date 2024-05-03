@@ -94,8 +94,6 @@ public class OnlinePvPActivity extends AppCompatActivity {
     }
 
 
-
-
     @SuppressLint("ClickableViewAccessibility")
     private void setupTouchListeners() {
         gridView.setOnTouchListener(new View.OnTouchListener()

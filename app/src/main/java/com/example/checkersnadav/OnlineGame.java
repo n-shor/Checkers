@@ -12,7 +12,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * Extends the Game class to add online multiplayer capabilities using Firebase.
@@ -259,14 +263,22 @@ public class OnlineGame extends Game
         String playerId = playerColor.equals(Game.WHITE_STRING) ? whiteId : blackId;
 
         // Firebase reference to the statistics node of this player
-        DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        statsRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Extract player's statistics
                     Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
+
+                    // Get the date in Israel right now
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", new Locale("he", "IL"));
+                    sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));  // Set to Israel's time zone
+                    String todayInIsrael = sdf.format(new Date());
+
+                    // Check if the user has a first win of the day bonus
+                    boolean hasDailyBonus = !todayInIsrael.equals(dataSnapshot.child("lastWinDate").getValue(String.class));
 
                     Statistics.Outcomes outcome;
 
@@ -284,23 +296,18 @@ public class OnlineGame extends Game
                     }
 
                     // Update the statistics
-                    stats.updateStatistics(outcome, playerMoves);
+                    stats.updateStatistics(outcome, playerMoves, hasDailyBonus);
 
                     // Push the updated statistics back to Firebase
-                    statsRef.child(playerId).child("stats").setValue(stats);
-                }
+                    usersRef.child(playerId).child("stats").setValue(stats);
+                };
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Failed to fetch player's statistics: " + databaseError.getMessage());
+                System.out.println("Failed to fetch player info: " + databaseError.getMessage());
             }
         });
-
-        // We only need to update the game's status once
-        if (playerColor.equals(Game.WHITE_STRING))
-        {
-            FirebaseDatabase.getInstance().getReference("games").child(gameId).child("isActive").setValue(false);
-        }
     }
 }
