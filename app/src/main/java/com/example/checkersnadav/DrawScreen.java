@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,7 +43,7 @@ public class DrawScreen extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Failed to fetch player's username: " + databaseError.getMessage());
+                Toast.makeText(DrawScreen.this,"Failed to fetch player's username: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

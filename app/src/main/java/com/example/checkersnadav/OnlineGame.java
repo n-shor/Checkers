@@ -4,8 +4,8 @@ import static com.example.checkersnadav.Statistics.Outcomes.DRAW;
 import static com.example.checkersnadav.Statistics.Outcomes.LOSS;
 import static com.example.checkersnadav.Statistics.Outcomes.WIN;
 
-
 import android.util.Log;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -315,7 +315,7 @@ public class OnlineGame extends Game
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Failed to fetch player info: " + databaseError.getMessage());
+                Log.e("Failed to fetch player info", databaseError.getMessage());
             }
         });
     }

@@ -84,7 +84,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Failed to fetch player's statistics: " + databaseError.getMessage());
+                Toast.makeText(OnlinePvPActivity.this,"Failed to fetch player's statistics: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

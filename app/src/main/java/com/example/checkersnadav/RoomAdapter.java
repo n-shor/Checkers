@@ -48,7 +48,7 @@ public class RoomAdapter extends ArrayAdapter<Room>
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.d("Database Error while trying to retrieve room owner username", databaseError.getMessage());
+                    Log.e("Database Error while trying to retrieve room owner username", databaseError.getMessage());
                 }
             });
 
