@@ -262,7 +262,16 @@ public class OnlineGame extends Game
     public void finishGame() {
         String playerId = playerColor.equals(Game.WHITE_STRING) ? whiteId : blackId;
 
-        // Firebase reference to the statistics node of this player
+        // Deleting the game and room from the Firebase database.
+        // It doesn't matter that both players try to delete it, since the second deletion attempt would just do nothing.
+        DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference("games");
+        DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
+
+        // Since game IDs are the same as room IDs, we can use the game ID to access both
+        gamesRef.child(gameId).removeValue();
+        roomsRef.child(gameId).removeValue();
+
+        // Firebase reference to the node of this player
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         usersRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
