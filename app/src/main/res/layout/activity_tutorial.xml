@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="@drawable/activity_background"
-
     tools:context=".TutorialActivity">
 
     <ScrollView
@@ -24,6 +23,7 @@
             android:id="@+id/textViewRules"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/ShadowedText"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:padding="8dp" />

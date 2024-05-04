@@ -8,6 +8,7 @@
     tools:context=".MenuActivity">
 
     <TextView
+        style="@style/ShadowedText"
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

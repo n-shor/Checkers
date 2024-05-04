@@ -17,7 +17,7 @@ public class LocalPvPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_local_pv_pactivity);
+        setContentView(R.layout.activity_local_pvp);
 
         game = new Game();
         gridView = findViewById(R.id.grid_view);

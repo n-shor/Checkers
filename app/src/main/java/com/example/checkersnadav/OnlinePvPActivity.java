@@ -30,7 +30,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_online_pv_pactivity);
+        setContentView(R.layout.activity_online_pvp);
 
         // Retrieving data from intent
         playerColor = getIntent().getStringExtra("playerColor");

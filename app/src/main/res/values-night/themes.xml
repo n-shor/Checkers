@@ -4,4 +4,13 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
+    <style name="Theme.CheckersNadav" parent="Base.Theme.CheckersNadav">
+        <item name="colorPrimary">@color/light_gray</item>
+        <item name="colorPrimaryDark">@color/gray</item>
+        <item name="colorAccent">@color/light_gray</item>
+        <item name="actionMenuTextColor">@color/black</item>
+        <item name="android:textColorHighlight">@color/light_gray</item>
+    </style>
+
 </resources>
