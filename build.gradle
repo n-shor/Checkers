@@ -15,5 +15,5 @@ plugins {
 }
 
 dependencies {
-    "com.google.android.material:material:1.11.0"
+    "com.google.android.material:material:1.9.0"
 }
