@@ -52,6 +52,8 @@ public class RoomAdapter extends ArrayAdapter<Room>
                 }
             });
 
+            tvRoom.setShadowLayer(6, -2, -2, Color.BLACK);
+
             if (room.isGameOngoing())
             {
                 tvRoom.setTextColor(Color.RED); // Ongoing game
@@ -62,7 +64,7 @@ public class RoomAdapter extends ArrayAdapter<Room>
             }
             else
             {
-                tvRoom.setTextColor(Color.BLACK); // Available room
+                tvRoom.setTextColor(Color.WHITE); // Available room
             }
         }
 

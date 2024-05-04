@@ -9,6 +9,10 @@
 
     <EditText
         android:id="@+id/roomNameEditText"
+        android:textColorHint="@android:color/white"
+        style="@style/ShadowedText"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/white"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
