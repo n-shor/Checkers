@@ -100,6 +100,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
         intent.putExtra("player1Id", userId);
         intent.putExtra("roomId", roomId);
         startActivity(intent);
+        finish();
     }
 
     /**
@@ -141,6 +142,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
             intent.putExtra("player2Id", userId);
             intent.putExtra("roomId", room.getRoomId());
             startActivity(intent);
+            finish();
         } else {
             Toast.makeText(this, "Room is full or the game is already ongoing", Toast.LENGTH_SHORT).show();
         }

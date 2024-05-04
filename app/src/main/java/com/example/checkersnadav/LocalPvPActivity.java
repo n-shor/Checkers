@@ -69,6 +69,8 @@ public class LocalPvPActivity extends AppCompatActivity {
                         if (!game.isActive())
                         {
                             // win/lose/draw screen
+
+                            finish();
                         }
 
                         break;

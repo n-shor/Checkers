@@ -196,7 +196,7 @@ public class RoomActivity extends AppCompatActivity {
         Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoom.class);
         intent.putExtra("userId", player2Id);
         startActivity(intent);
-        finish(); // Return to previous activity
+        finish();
     }
 
 
@@ -231,6 +231,7 @@ public class RoomActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Why is this necessary?
 
                 startActivity(intent);
+                finish();
 
             }).addOnFailureListener(e -> Toast.makeText(RoomActivity.this, "Failed to retrieve player 2's email: " + e.getMessage(), Toast.LENGTH_LONG).show());
 
