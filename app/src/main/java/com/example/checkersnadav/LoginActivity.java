@@ -1,7 +1,9 @@
 package com.example.checkersnadav;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -36,6 +39,30 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Check if notifications are enabled. If not, ask for permission to send them
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+
+        if (!notificationManagerCompat.areNotificationsEnabled())
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle("Notification Permission")
+                    .setMessage("Notifications are disabled. Please enable them to receive important updates.")
+                    .setPositiveButton("Settings", (dialog, which) -> {
+                        // Intent to open app notification settings
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                        // for Android 5-7
+                        intent.putExtra("app_package", this.getApplication().getPackageName());
+                        intent.putExtra("app_uid", this.getApplicationInfo().uid);
+                        // for Android 8 and above
+                        intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getApplication().getPackageName());
+                        intent.putExtra(Settings.EXTRA_CHANNEL_ID, this.getApplicationInfo().uid);
+                        this.startActivity(intent);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
 
         AlarmScheduler.scheduleMidnightAlarm(this, this);
 

@@ -2,50 +2,37 @@ package com.example.checkersnadav;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
 public class AlarmReceiver extends BroadcastReceiver {
-    private static final String CHANNEL_ID = "reminder_channel_id"; // Use a constant ID for the notification channel
-    private static final String CHANNEL_NAME = "Reminder Notifications";
-    private static final String CHANNEL_DESCRIPTION = "Notifications for daily reminders";
+    public static final String CHANNEL_ID = "0";
+    public static final String CHANNEL_NAME = "Daily Bonus Reminders";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "Alarm received.", Toast.LENGTH_SHORT).show();
         makeNotification(context);
     }
 
     private void makeNotification(Context context) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.mini_logo)
-                .setContentTitle("Your Title")
-                .setContentText("Your text")
-                .setAutoCancel(true);
+        // create a notification - notice the same CHANNEL_ID!!
+        NotificationCompat.Builder notify = new NotificationCompat.Builder(context.getApplicationContext(), CHANNEL_ID);
+        notify.setContentTitle("Daily Bonus Reminder");
+        notify.setContentText("Don't forget to play a game today to earn your daily triple win bonus if you haven't already!");
+        notify.setSmallIcon(R.drawable.logo);
+        notify.setChannelId(CHANNEL_ID);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(CHANNEL_DESCRIPTION);
-            notificationManager.createNotificationChannel(channel);
-        }
+        // create the notification channel
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+        channel.enableVibration(true);
+        channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
 
-        // Intent to launch when the notification is clicked
-        Intent notificationIntent = new Intent(context, LoginActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        builder.setContentIntent(pendingIntent);
-
-        notificationManager.notify(0, builder.build()); // ID 0 signifies the ID of the notification
+        NotificationManager manager = (NotificationManager) (context.getSystemService(Context.NOTIFICATION_SERVICE));
+        manager.createNotificationChannel(channel);
+        manager.notify(1, notify.build());
     }
 }
