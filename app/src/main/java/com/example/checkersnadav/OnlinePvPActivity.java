@@ -132,7 +132,7 @@ public class OnlinePvPActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(OnlinePvPActivity.this, "Invalid Move, " + (game.isActive() ? "(" + startX + ", " + startY + "), (" + row + ", " + col + ")" : "Game Over! Winner: " + game.getBoard().getWinner()), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OnlinePvPActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
                         }
                         startX = -1;
                         startY = -1;

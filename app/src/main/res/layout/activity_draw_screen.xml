@@ -9,6 +9,7 @@
 
     <TextView
         android:id="@+id/usernameTextView"
+        style="@style/ShadowedText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -18,11 +19,13 @@
         android:textSize="24sp"
         android:text="Username" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/backToMenuButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
         android:text="Back to main menu"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

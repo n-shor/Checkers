@@ -157,17 +157,16 @@ public class RoomActivity extends AppCompatActivity {
                 roomRef.child("gameOngoing").setValue(true)
                         .addOnSuccessListener(aVoid -> {
                             // Game has started successfully
-                            Toast.makeText(getApplicationContext(), "Game started, players are in.", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
                             // Handle failure
-                            Toast.makeText(getApplicationContext(), "Failed to start the game: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Failed to start the game: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
             }
             else
             {
                 // Inform the room leader that the room is not full
-                Toast.makeText(getApplicationContext(), "Please wait for the second player to enter the room before starting the game!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Please wait for the second player before starting the game!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(e -> {
             // Handle failure in getting the value
@@ -228,13 +227,14 @@ public class RoomActivity extends AppCompatActivity {
                 intent.putExtra("player1Id", roomOwnerId);
                 intent.putExtra("player2Id", player2Id);
 
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Why is this necessary?
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+                Toast.makeText(getApplicationContext(), "Game started, players are in.", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
                 finish();
 
-            }).addOnFailureListener(e -> Toast.makeText(RoomActivity.this, "Failed to retrieve player 2's email: " + e.getMessage(), Toast.LENGTH_LONG).show());
+            }).addOnFailureListener(e -> Toast.makeText(RoomActivity.this, "Failed to retrieve player 2's email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
-        }).addOnFailureListener(e -> Toast.makeText(RoomActivity.this, "Failed to retrieve room owner's email: " + e.getMessage(), Toast.LENGTH_LONG).show());
+        }).addOnFailureListener(e -> Toast.makeText(RoomActivity.this, "Failed to retrieve room owner's email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
