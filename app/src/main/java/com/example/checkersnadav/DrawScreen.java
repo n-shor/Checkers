@@ -1,11 +1,11 @@
 package com.example.checkersnadav;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,7 +17,6 @@ import com.google.firebase.database.ValueEventListener;
 public class DrawScreen extends AppCompatActivity {
 
     private TextView usernameTextView;
-    private Button backToMenuButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,7 @@ public class DrawScreen extends AppCompatActivity {
         setContentView(R.layout.activity_lose_screen);
 
         usernameTextView = findViewById(R.id.usernameTextView);
-        backToMenuButton = findViewById(R.id.backToMenuButton);
+        Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
         // Get the userId and username from the intent
         String userId = getIntent().getStringExtra("userId");

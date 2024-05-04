@@ -1,12 +1,12 @@
 package com.example.checkersnadav;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +24,6 @@ public class WinScreen extends AppCompatActivity {
 
     private TextView usernameTextView;
     private TextView bonusActivatedTextView;
-    private Button backToMenuButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +32,7 @@ public class WinScreen extends AppCompatActivity {
 
         usernameTextView = findViewById(R.id.usernameTextView);
         bonusActivatedTextView = findViewById(R.id.bonusActivatedTextView);
-        backToMenuButton = findViewById(R.id.backToMenuButton);
+        Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
         bonusActivatedTextView.setVisibility(View.GONE);
 

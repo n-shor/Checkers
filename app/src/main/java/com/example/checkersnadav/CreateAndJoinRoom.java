@@ -1,12 +1,13 @@
 package com.example.checkersnadav;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,10 +25,9 @@ import java.util.List;
 public class CreateAndJoinRoom extends AppCompatActivity
 {
     private ListView roomListView;
-    private Button createRoomButton, joinRoomButton;
     private EditText roomNameEditText;
     private RoomAdapter roomAdapter;
-    private List<Room> roomList = new ArrayList<>();
+    private final List<Room> roomList = new ArrayList<>();
     private String userId;
 
 
@@ -47,8 +47,8 @@ public class CreateAndJoinRoom extends AppCompatActivity
         setContentView(R.layout.activity_create_and_join_room);
 
         roomListView = findViewById(R.id.roomListView);
-        createRoomButton = findViewById(R.id.createRoomButton);
-        joinRoomButton = findViewById(R.id.joinRoomButton);
+        Button createRoomButton = findViewById(R.id.createRoomButton);
+        Button joinRoomButton = findViewById(R.id.joinRoomButton);
         roomNameEditText = findViewById(R.id.roomNameEditText);
         Button backToMenuButton = findViewById(R.id.backToMenuButton);
 

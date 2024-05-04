@@ -2,6 +2,8 @@ package com.example.checkersnadav;
 
 public class Player {
     private String username;
+
+    // Unused members and methods are here for Firebase Database interactions
     private String email;
     private String hashedPassword;
     private Statistics stats;
@@ -15,32 +17,16 @@ public class Player {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getHashedPassword() {
-        return hashedPassword;
     }
 
     public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
 
-    public Statistics getStats() {
-        return stats;
-    }
-
     public void setStats(Statistics stats) {
         this.stats = stats;
-    }
-
-    public String getLastWinDate() {
-        return lastWinDate;
     }
 
     public void setLastWinDate(String lastWinDate) {
