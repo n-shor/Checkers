@@ -68,18 +68,27 @@ public class RoomActivity extends AppCompatActivity {
 
 
     private void setupRoomListener() {
+        final boolean[] gameStarted = {false};
         roomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    Toast.makeText(RoomActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
-                    finish(); // Exit activity if room is closed
+                    // Exit activity if room is closed and game has not started yet (second condition prevents code from triggering after a game is over)
+                    if (!gameStarted[0]) {
+                        Toast.makeText(RoomActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoomActivity.class);
+                        intent.putExtra("userId", playerColor.equals(Game.WHITE_STRING) ? roomOwnerId : player2Id);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 } else {
                     Room room = dataSnapshot.getValue(Room.class);
                     if (room != null) {
                         updateUI(room);
                     }
                     if (room.isGameOngoing()) {
+                        gameStarted[0] = true;
                         startOnlinePvPActivity(); // Move both players to game activity
                     }
                 }
@@ -174,14 +183,6 @@ public class RoomActivity extends AppCompatActivity {
         });
     }
 
-    private void setupDisconnectHandling() {
-        if (player2Id != null) {
-            // Set the player2Email to null on disconnect only if the current user is the second player
-            DatabaseReference player2Ref = roomRef.child("player2Id");
-            player2Ref.onDisconnect().setValue(null);
-        }
-    }
-
     private void leaveRoom() {
         // The current user is not the room owner, so simply clear their field in the database
         roomRef.child("player2Id").setValue(null).addOnCompleteListener(task -> {
@@ -202,9 +203,7 @@ public class RoomActivity extends AppCompatActivity {
     private void closeRoom() {
         // Remove the room from Firebase, which triggers the onDataChange in the room listener to finish the activity
         roomRef.removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(RoomActivity.this, "Room closed successfully", Toast.LENGTH_SHORT).show();
-            } else {
+            if (!task.isSuccessful()) {
                 Toast.makeText(RoomActivity.this, "Failed to close room", Toast.LENGTH_SHORT).show();
             }
         });

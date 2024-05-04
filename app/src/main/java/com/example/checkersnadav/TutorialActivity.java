@@ -17,13 +17,14 @@ public class TutorialActivity extends AppCompatActivity {
         String userId = getIntent().getStringExtra("userId");
 
         TextView textViewRules = findViewById(R.id.textViewRules);
-        String rulesHtml = "<h1>Welcome to my custom Checkers game!</h1><br>" +
+        String rulesHtml = "<h1>Welcome to my Checkers game!</h1><br>" +
                 "<h2>Basic Rules of Checkers:</h2>" +
                 "<p>- The game is played on an 8x8 board with 12 pieces per player, positioned on the dark squares.<br>" +
                 "- Pieces move diagonally, and only forward, to an adjacent unoccupied square.<br>" +
                 "- If an opponent's piece can be captured by jumping over it to a vacant square immediately beyond it, the jump must be made.<br>" +
                 "- If after capturing your moved piece would be able to capture if it were your turn, the turn will not transfer to the other player, and you will have to capture again with the same piece. This is called a chain capture.<br>" +
-                "- When a piece reaches the furthest row from the player (the king row), it becomes a king. Kings can move forward and backward diagonally, and their move distance is unlimited, as long as they don't jump over more than one piece or just one allied piece. After capturing a piece, kings may choose to land at any square that is behind the captured piece, as long as the path to said square is not occupied.</p><br>" +
+                "- When a piece reaches the furthest row from the player (the king row), it becomes a king. Kings can move forward and backward diagonally, and their move distance is unlimited, as long as they don't jump over more than one piece or just one allied piece. After capturing a piece, kings may choose to land at any square that is behind the captured piece, as long as the path to said square is not occupied.<br>" +
+                "- When a player runs out of pieces or has no possible moves on their turn, they lose, and the other play consequentially wins. If 80 moves (in total, both players' moves count) pass without a capture and without a new king being crowned, the game ends in a draw.</p><br>" +
                 "<h2>Custom Modifications:</h2>" +
                 "<p>- <strong>All pieces can capture backwards, not just kings.</strong> This allows normal pieces to jump backwards during a capture move.<br>" +
                 "- <strong>While capturing is mandatory, you are not required to choose the capture path that results in the most chain captures.</strong> This allows for strategic flexibility in your capturing decisions.</p><br>" +

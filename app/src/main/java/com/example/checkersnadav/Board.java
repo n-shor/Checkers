@@ -111,7 +111,7 @@ public class Board {
         // King promotion
         if (!piece.isKing() && ((xDst == 0 && piece.isBlack() == BLACK) ||
                 (xDst == BOARD_SIZE - 1 && piece.isBlack() == WHITE)))
-        // xDst and not yDst because poor planning led into x coordinates corresponding to rows and not columns
+        // xDst and not yDst because in this implementation x coordinates correspond to rows and not columns
         {
             piece.setKing(true);
             movesSinceCaptureOrKing = 0; // Reset on kinging

@@ -26,8 +26,8 @@ public class Statistics
         this.topMoves = topMoves;
     }
 
-    // Updates the statistics according to the arguments. Returns true if there was a new topMoves record, otherwise returns false.
-    public boolean updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus)
+    // Updates the statistics according to the arguments.
+    public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus)
     {
         int totalGames = wins + losses + draws;
         averageMovesPerGame = (averageMovesPerGame * (totalGames) + moves) / (totalGames + 1);
@@ -69,10 +69,7 @@ public class Statistics
         if (moves > topMoves)
         {
             topMoves = moves;
-            return true;
         }
-
-        return false;
     }
 
 
