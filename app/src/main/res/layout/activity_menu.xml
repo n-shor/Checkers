@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menu_background"
-    tools:context=".Menu">
+    android:background="@drawable/activity_background"
+    tools:context=".MenuActivity">
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -22,8 +22,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLocalPvP"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="@dimen/button_height"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:text="Local PvP"
         android:onClick="goToLocalPvP"
         android:textColor="#FFFFFF"
@@ -31,12 +31,12 @@
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="36dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonOnlinePvP"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="@dimen/button_height"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:text="Online PvP"
         android:onClick="goToCreateOrJoinRoom"
         android:textColor="#FFFFFF"
@@ -44,32 +44,46 @@
         app:layout_constraintTop_toBottomOf="@id/buttonLocalPvP"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="24dp" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/buttonStats"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="@dimen/button_height"
-        android:text="Stats"
-        android:onClick="goToStats"
+        android:id="@+id/buttonTutorial"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="Tutorial"
+        android:onClick="goToTutorial"
         android:textColor="#FFFFFF"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/buttonOnlinePvP"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="24dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonStats"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="Stats"
+        android:onClick="goToStats"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/buttonTutorial"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLogout"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="@dimen/button_height"
-        android:text="Logout"
-        android:onClick="logout"
-        android:textColor="#FFFFFF"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/buttonStats"
-        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="logout"
+        android:text="Logout"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonStats" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

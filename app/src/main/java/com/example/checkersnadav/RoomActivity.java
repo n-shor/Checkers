@@ -193,7 +193,7 @@ public class RoomActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoom.class);
+        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoomActivity.class);
         intent.putExtra("userId", player2Id);
         startActivity(intent);
         finish();
@@ -209,7 +209,7 @@ public class RoomActivity extends AppCompatActivity {
                 Toast.makeText(RoomActivity.this, "Failed to close room", Toast.LENGTH_SHORT).show();
             }
         });
-        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoom.class);
+        Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoomActivity.class);
         intent.putExtra("userId", roomOwnerId);
         startActivity(intent);
         finish();

@@ -1,17 +1,17 @@
 package com.example.checkersnadav;
 
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Intent;
-import android.view.View;
+import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class StatsActivity extends AppCompatActivity {
@@ -31,7 +31,7 @@ public class StatsActivity extends AppCompatActivity {
         // Set up back button to return to MenuActivity
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
-            Intent intent1 = new Intent(StatsActivity.this, Menu.class);
+            Intent intent1 = new Intent(StatsActivity.this, MenuActivity.class);
             intent1.putExtra("userId", userId);
             startActivity(intent1);
             finish();
@@ -49,7 +49,7 @@ public class StatsActivity extends AppCompatActivity {
 
                     // Display the statistics
                     String userStats = String.format(
-                            "Statistics for %s:\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nMost Moves in One Game: %d",
+                            "%s\nGames Won: %d\nGames Lost: %d\nDraws: %d\nAvg Moves/Game: %d\nMost Moves in One Game: %d",
                             dataSnapshot.child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );

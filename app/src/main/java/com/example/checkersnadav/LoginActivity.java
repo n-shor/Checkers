@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if(player != null) {
                                         textViewError.setVisibility(View.GONE);
                                         Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(LoginActivity.this, Menu.class);
+                                        Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                                         intent.putExtra("userId", snapshot.getChildren().iterator().next().getKey());
                                         startActivity(intent);
                                         finish();
@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if(player != null) {
                                         textViewError.setVisibility(View.GONE);
                                         Toast.makeText(LoginActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(LoginActivity.this, Menu.class);
+                                        Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                                         intent.putExtra("userId", snapshot.getChildren().iterator().next().getKey());
                                         startActivity(intent);
                                         finish();

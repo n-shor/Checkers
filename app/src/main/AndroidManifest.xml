@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
     <application
         android:allowBackup="true"
@@ -19,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".TutorialActivity"
+            android:exported="false" />
+        <activity
             android:name=".DrawScreen"
             android:exported="false" />
         <activity
@@ -31,9 +32,9 @@
             android:name=".Room"
             android:exported="false" />
         <activity
-            android:name=".CreateAndJoinRoom"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:name=".CreateAndJoinRoomActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".RoomActivity"
             android:exported="false" />
@@ -47,7 +48,7 @@
             android:name=".LocalPvPActivity"
             android:exported="false" />
         <activity
-            android:name=".Menu"
+            android:name=".MenuActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
@@ -58,10 +59,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".AlarmReceiver"
-            android:exported="true"
-            android:enabled="true">
-        </receiver>
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

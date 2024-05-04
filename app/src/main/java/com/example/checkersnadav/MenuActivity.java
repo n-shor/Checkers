@@ -6,7 +6,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Menu extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity {
 
     private String userId;
 
@@ -22,16 +22,25 @@ public class Menu extends AppCompatActivity {
 
     public void goToLocalPvP(View view) {
         Intent intent = new Intent(this, LocalPvPActivity.class);
+        intent.putExtra("userId", userId); // Pass the user's ID
         startActivity(intent);
         finish();
     }
 
     public void goToCreateOrJoinRoom(View view) {
-        Intent intent = new Intent(this, CreateAndJoinRoom.class);
+        Intent intent = new Intent(this, CreateAndJoinRoomActivity.class);
         intent.putExtra("userId", userId); // Pass the user's ID
         startActivity(intent);
         finish();
     }
+
+    public void goToTutorial(View view) {
+        Intent intent = new Intent(this, TutorialActivity.class);
+        intent.putExtra("userId", userId); // Pass the user's ID
+        startActivity(intent);
+        finish();
+    }
+
 
     public void goToStats(View view) {
         Intent intent = new Intent(this, StatsActivity.class);

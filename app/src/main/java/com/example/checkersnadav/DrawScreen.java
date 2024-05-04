@@ -50,7 +50,7 @@ public class DrawScreen extends AppCompatActivity {
 
         // Set up the back button
         backToMenuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DrawScreen.this, Menu.class);
+            Intent intent = new Intent(DrawScreen.this, MenuActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
             finish();

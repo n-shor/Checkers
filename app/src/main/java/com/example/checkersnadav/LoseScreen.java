@@ -50,7 +50,7 @@ public class LoseScreen extends AppCompatActivity {
 
         // Set up the back button
         backToMenuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(LoseScreen.this, Menu.class);
+            Intent intent = new Intent(LoseScreen.this, MenuActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
             finish();

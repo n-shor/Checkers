@@ -22,7 +22,7 @@ import java.util.List;
  * Activity to create and join rooms for the game.
  * Users can create a new room or join an existing room through the UI provided by this activity.
  */
-public class CreateAndJoinRoom extends AppCompatActivity
+public class CreateAndJoinRoomActivity extends AppCompatActivity
 {
     private ListView roomListView;
     private EditText roomNameEditText;
@@ -61,7 +61,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
         roomListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE); // Enable single choice mode
 
         backToMenuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(CreateAndJoinRoom.this, Menu.class);
+            Intent intent = new Intent(CreateAndJoinRoomActivity.this, MenuActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
             finish();
@@ -92,11 +92,11 @@ public class CreateAndJoinRoom extends AppCompatActivity
         String roomId = roomsRef.push().getKey();
         Room newRoom = new Room(roomId, userId, roomName);
         roomsRef.child(roomId).setValue(newRoom)
-                .addOnSuccessListener(aVoid -> Toast.makeText(CreateAndJoinRoom.this, "Room created successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(CreateAndJoinRoom.this, "Failed to create room", Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid -> Toast.makeText(CreateAndJoinRoomActivity.this, "Room created successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(CreateAndJoinRoomActivity.this, "Failed to create room", Toast.LENGTH_SHORT).show());
 
         // Redirect to the room activity as the room creator
-        Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
+        Intent intent = new Intent(CreateAndJoinRoomActivity.this, RoomActivity.class);
         intent.putExtra("player1Id", userId);
         intent.putExtra("roomId", roomId);
         startActivity(intent);
@@ -121,7 +121,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(CreateAndJoinRoom.this, "Failed to load rooms.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateAndJoinRoomActivity.this, "Failed to load rooms.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -138,7 +138,7 @@ public class CreateAndJoinRoom extends AppCompatActivity
 
         Room room = roomList.get(position);
         if (room.canJoin()) {
-            Intent intent = new Intent(CreateAndJoinRoom.this, RoomActivity.class);
+            Intent intent = new Intent(CreateAndJoinRoomActivity.this, RoomActivity.class);
             intent.putExtra("player2Id", userId);
             intent.putExtra("roomId", room.getRoomId());
             startActivity(intent);
