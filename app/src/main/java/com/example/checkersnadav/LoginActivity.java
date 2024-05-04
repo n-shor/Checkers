@@ -1,12 +1,16 @@
 package com.example.checkersnadav;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,29 +44,48 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Check if notifications are enabled. If not, ask for permission to send them
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
 
-        if (!notificationManagerCompat.areNotificationsEnabled())
-        {
-            new AlertDialog.Builder(this)
-                    .setTitle("Notification Permission")
-                    .setMessage("Notifications are disabled. Please enable them to receive important updates.")
+        // Check if notifications are enabled and if the user has already asked the app to not show this alert again.
+        // If the answer to both questions is no, ask for permission to send notifications
+        if (!notificationManagerCompat.areNotificationsEnabled() &&
+                !getSharedPreferences("app_preferences", MODE_PRIVATE).getBoolean("skip_notification_dialog", false)) {
+            AlertDialog ad = new AlertDialog.Builder(this)
+                    .setTitle("Notifications Permission")
+                    .setMessage("Notifications are disabled. Please enable them to receive important updates, such as reminders to claim your daily win bonuses.")
                     .setPositiveButton("Settings", (dialog, which) -> {
-                        // Intent to open app notification settings
                         Intent intent = new Intent();
                         intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                        // for Android 5-7
-                        intent.putExtra("app_package", this.getApplication().getPackageName());
-                        intent.putExtra("app_uid", this.getApplicationInfo().uid);
-                        // for Android 8 and above
                         intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getApplication().getPackageName());
                         intent.putExtra(Settings.EXTRA_CHANNEL_ID, this.getApplicationInfo().uid);
                         this.startActivity(intent);
                     })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+                    // Add spacing so that the button will be in the middle of the alert box
+                    .setNegativeButton("Don't Ask Again\t\t ", (dialog, which) -> {
+                        SharedPreferences.Editor choiceEditor = getSharedPreferences("app_preferences", MODE_PRIVATE).edit();
+                        choiceEditor.putBoolean("skip_notification_dialog", true);
+                        choiceEditor.apply();
+                    })
+                    .setNeutralButton("Cancel", null)
+                    .create();
+
+            ad.show();
+
+            ad.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+            ad.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+            ad.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+
+            // Access the buttons after the dialog is shown and set them to not use all caps
+            Button positiveButton = ad.getButton(DialogInterface.BUTTON_POSITIVE);
+            Button negativeButton = ad.getButton(DialogInterface.BUTTON_NEGATIVE);
+            Button neutralButton = ad.getButton(DialogInterface.BUTTON_NEUTRAL);
+
+            if (positiveButton != null) positiveButton.setAllCaps(false);
+            if (negativeButton != null) negativeButton.setAllCaps(false);
+            if (neutralButton != null) neutralButton.setAllCaps(false);
         }
+
+
 
         AlarmScheduler.scheduleMidnightAlarm(this, this);
 
