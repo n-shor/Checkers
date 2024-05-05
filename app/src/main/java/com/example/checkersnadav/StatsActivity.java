@@ -49,7 +49,7 @@ public class StatsActivity extends AppCompatActivity {
 
                     // Display the statistics
                     String userStats = String.format(
-                            " Player stats of %s:\n\n\n Games Won: %d\n\n Games Lost: %d\n\n Draws: %d\n\n Avg Moves/Game: %d\n\n Most Moves in\n One Game: %d",
+                            " Player Stats of %s:\n\n\n Games Won: %d\n\n Games Lost: %d\n\n Draws: %d\n\n Avg Moves/Game: %d\n\n Most Moves in\n One Game: %d",
                             dataSnapshot.child("username").getValue(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );

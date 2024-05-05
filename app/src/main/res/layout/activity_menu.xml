@@ -21,6 +21,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
 
+    <TextView
+        android:id="@+id/playerName"
+        style="@style/ShadowedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="63dp"
+        android:text="player name"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLogout"
+        app:layout_constraintVertical_bias="0.1" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLocalPvP"
         android:layout_width="@dimen/button_width"

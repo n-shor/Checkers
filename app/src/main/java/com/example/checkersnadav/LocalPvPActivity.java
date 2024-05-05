@@ -1,6 +1,7 @@
 package com.example.checkersnadav;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +19,8 @@ public class LocalPvPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_pvp);
+
+        String userId = getIntent().getStringExtra("userId");
 
         game = new Game();
         gridView = findViewById(R.id.grid_view);
@@ -68,8 +71,10 @@ public class LocalPvPActivity extends AppCompatActivity {
 
                         if (!game.isActive())
                         {
-                            // win/lose/draw screen
-
+                            Intent intent = new Intent(LocalPvPActivity.this, OfflineEndScreenActivity.class);
+                            intent.putExtra("userId", userId);
+                            intent.putExtra("winner", game.getBoard().getWinner());
+                            startActivity(intent);
                             finish();
                         }
 

@@ -234,5 +234,4 @@ public class LoginActivity extends AppCompatActivity {
         ref.child("users").push().setValue(user);
     }
 
-
 }

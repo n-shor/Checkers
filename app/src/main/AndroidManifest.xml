@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".OfflineEndScreenActivity"
+            android:exported="false" />
+        <activity
             android:name=".TutorialActivity"
             android:exported="false" />
         <activity
@@ -63,7 +66,7 @@
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
     </application>
 
 </manifest>
