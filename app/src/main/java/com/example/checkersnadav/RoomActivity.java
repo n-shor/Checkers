@@ -15,7 +15,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class RoomActivity extends AppCompatActivity {
+/**
+ * Activity to manage a specific game room for the online PvP feature of the checkers game.
+ * It sets up the room's components and shows helpful information,
+ * and allows players to continue to the online game, or to go back to the room selection screen.
+ */
+public class RoomActivity extends AppCompatActivity
+{
 
     private Button btnStartGame;
     private Button btnCloseRoom;
@@ -28,7 +34,8 @@ public class RoomActivity extends AppCompatActivity {
     private String playerColor;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
 
@@ -47,11 +54,14 @@ public class RoomActivity extends AppCompatActivity {
 
         setupRoomListener();
 
-        if (player2Id == null) {
+        if (player2Id == null)
+        {
             // Assume this device belongs to the room owner
             playerColor = Game.WHITE_STRING; // Room owner plays white
             fetchPlayerDetails(roomOwnerId, txtRoomOwner, "Room Owner: ");
-        } else {
+        }
+        else
+        {
             // Assume this device belongs to the second player
             // Update Firebase with the second player's email
             playerColor = Game.BLACK_STRING; // Second player plays black, name technically doesn't matter because we only check if it's different than WHITE
@@ -66,15 +76,22 @@ public class RoomActivity extends AppCompatActivity {
         btnLeaveRoom.setOnClickListener(v -> leaveRoom());
     }
 
-
-    private void setupRoomListener() {
+    /**
+     * Sets up a ValueEventListener that will listen to changes in the room in the database and update its local state accordingly.
+     */
+    private void setupRoomListener()
+    {
         final boolean[] gameStarted = {false};
-        roomRef.addValueEventListener(new ValueEventListener() {
+        roomRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 if (!dataSnapshot.exists()) {
+
                     // Exit activity if room is closed and game has not started yet (second condition prevents code from triggering after a game is over)
-                    if (!gameStarted[0]) {
+                    if (!gameStarted[0])
+                    {
                         Toast.makeText(RoomActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RoomActivity.this, CreateAndJoinRoomActivity.class);
                         intent.putExtra("userId", playerColor.equals(Game.WHITE_STRING) ? roomOwnerId : player2Id);
@@ -82,12 +99,16 @@ public class RoomActivity extends AppCompatActivity {
                         finish();
                     }
 
-                } else {
+                }
+                else
+                {
                     Room room = dataSnapshot.getValue(Room.class);
-                    if (room != null) {
+                    if (room != null)
+                    {
                         updateUI(room);
                     }
-                    if (room.isGameOngoing()) {
+                    if (room.isGameOngoing())
+                    {
                         gameStarted[0] = true;
                         startOnlinePvPActivity(); // Move both players to game activity
                     }
@@ -95,79 +116,121 @@ public class RoomActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Toast.makeText(RoomActivity.this, "Failed to monitor room state.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void updateUI(Room room) {
+    /**
+     * Updates the activity's UI based on the information stored in the room object that it receives as input.
+     * @param room The said room object.
+     */
+    private void updateUI(Room room)
+    {
         // Update room owner name if available, otherwise indicate waiting for room owner
-        if (room.getRoomOwnerId() != null) {
+        if (room.getRoomOwnerId() != null)
+        {
             // Fetch and display the room owner's username based on their email
             fetchPlayerDetails(room.getRoomOwnerId(), txtRoomOwner, "Room Owner: ");
-        } else {
+        }
+        else
+        {
             txtRoomOwner.setText("Room Owner: Waiting...");
         }
 
         // Update second player's name if available, otherwise indicate that the player slot is open
-        if (room.getPlayer2Id() != null) {
+        if (room.getPlayer2Id() != null)
+        {
             // Fetch and display the second player's username based on their email
             fetchPlayerDetails(room.getPlayer2Id(), txtOtherPlayer, "Other Player: ");
             roomRef.child("isJoinable").setValue(false); // Set the room to unjoinable if second player is present
-        } else {
+        }
+        else
+        {
             txtOtherPlayer.setText("Other Player: Waiting for player...");
             roomRef.child("isJoinable").setValue(true); // Set the room to joinable if no second player
         }
 
     }
 
-
-    private void fetchPlayerDetails(String userId, TextView textView, String prefix) {
+    /**
+     * Updates a TextView components' text to a certain prefix and right after it the name of a player whose ID is passed as an argument to the method.
+     * @param userId The ID of said user.
+     * @param textView The TextView component that would get updated.
+     * @param prefix The prefix that would come before the player's name.
+     */
+    private void fetchPlayerDetails(String userId, TextView textView, String prefix)
+    {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
                     Player player = dataSnapshot.getValue(Player.class);
-                    if (player != null && player.getUsername() != null) {
+                    if (player != null && player.getUsername() != null)
+                    {
                         textView.setText(prefix + player.getUsername());
                     }
                 }
-                else {
+                else
+                {
                     textView.setText(prefix + "[Name not found]");
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Toast.makeText(RoomActivity.this, "Failed to fetch player details", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void setButtonVisibility(boolean isOwner) {
-        if (!isOwner) {
+    /**
+     * Changes the visibility of buttons in the activity based on the player's identity.
+     * @param isOwner The player's room ownership status.
+     */
+    private void setButtonVisibility(boolean isOwner)
+    {
+        if (!isOwner)
+        {
+            // If the player doesn't own the room, only let them leave the room
             btnStartGame.setVisibility(View.GONE);
             btnCloseRoom.setVisibility(View.GONE);
             btnLeaveRoom.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else
+        {
+            // If the player owns the room, only let them start the game and close the room
             btnStartGame.setVisibility(View.VISIBLE);
             btnCloseRoom.setVisibility(View.VISIBLE);
             btnLeaveRoom.setVisibility(View.GONE);
         }
     }
 
-    private void startGame() {
-        roomRef.child("isJoinable").get().addOnSuccessListener(snapshot -> {
+    /**
+     * Changes the game's status in the database to 'ongoing' if it is eligible to start (both players are in the room).
+     */
+    private void startGame()
+    {
+        roomRef.child("isJoinable").get().addOnSuccessListener(snapshot ->
+        {
             // Check if the room is not joinable
-            if (!Boolean.TRUE.equals(snapshot.getValue(Boolean.class))) {
+            if (!Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+            {
                 // Set "gameOngoing" to true
                 roomRef.child("gameOngoing").setValue(true)
-                        .addOnSuccessListener(aVoid -> {
+                        .addOnSuccessListener(aVoid ->
+                        {
                             // Game has started successfully
                         })
-                        .addOnFailureListener(e -> {
+                        .addOnFailureListener(e ->
+                        {
                             // Handle failure
                             Toast.makeText(getApplicationContext(), "Failed to start the game: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
@@ -177,18 +240,27 @@ public class RoomActivity extends AppCompatActivity {
                 // Inform the room leader that the room is not full
                 Toast.makeText(getApplicationContext(), "Please wait for the second player before starting the game!", Toast.LENGTH_SHORT).show();
             }
-        }).addOnFailureListener(e -> {
+        }).addOnFailureListener(e ->
+        {
             // Handle failure in getting the value
             Toast.makeText(getApplicationContext(), "Failed to check if room is joinable: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void leaveRoom() {
+    /**
+     * Removes this player from the room entry in the database and goes back to the room selection and/or creation activity.
+     */
+    private void leaveRoom()
+    {
         // The current user is not the room owner, so simply clear their field in the database
-        roomRef.child("player2Id").setValue(null).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+        roomRef.child("player2Id").setValue(null).addOnCompleteListener(task ->
+        {
+            if (task.isSuccessful())
+            {
                 Toast.makeText(RoomActivity.this, "You have successfully left the room.", Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else
+            {
                 Toast.makeText(RoomActivity.this, "Failed to leave the room.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -199,11 +271,16 @@ public class RoomActivity extends AppCompatActivity {
         finish();
     }
 
-
-    private void closeRoom() {
+    /**
+     * Deletes this room from the database and sends both players back to the room selection and/or creation activity.
+     */
+    private void closeRoom()
+    {
         // Remove the room from Firebase, which triggers the onDataChange in the room listener to finish the activity
-        roomRef.removeValue().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
+        roomRef.removeValue().addOnCompleteListener(task ->
+        {
+            if (!task.isSuccessful())
+            {
                 Toast.makeText(RoomActivity.this, "Failed to close room", Toast.LENGTH_SHORT).show();
             }
         });
@@ -213,13 +290,19 @@ public class RoomActivity extends AppCompatActivity {
         finish();
     }
 
-    private void startOnlinePvPActivity() {
-        roomRef.child("roomOwnerId").get().addOnSuccessListener(ownerSnapshot -> {
+    /**
+     * Sends the player into the OnlinePvP activity and sends necessary information along the way.
+     */
+    private void startOnlinePvPActivity()
+    {
+        roomRef.child("roomOwnerId").get().addOnSuccessListener(ownerSnapshot ->
+        {
             String roomOwnerId = ownerSnapshot.getValue(String.class);
 
-            roomRef.child("player2Id").get().addOnSuccessListener(player2Snapshot -> {
+            roomRef.child("player2Id").get().addOnSuccessListener(player2Snapshot ->
+            {
                 String player2Id = player2Snapshot.getValue(String.class);
-
+                // Add necessary information for the online game to function
                 Intent intent = new Intent(RoomActivity.this, OnlinePvPActivity.class);
                 intent.putExtra("gameId", roomId);
                 intent.putExtra("playerColor", playerColor);
