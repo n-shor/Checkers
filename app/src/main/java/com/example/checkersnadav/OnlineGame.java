@@ -23,15 +23,14 @@ import java.util.TimeZone;
  * This class handles synchronization of the game state with a Firebase backend,
  * ensuring that all moves made by players are updated in real-time across different sessions.
  */
-public class OnlineGame extends Game
-{
-    private final String whiteId;
-    private final String blackId;
-    private final String gameId;
-    private DatabaseReference gameRef;
-    private final String playerColor; // "WHITE" or "BLACK"
-    private int playerMoves;
-    private CheckersAdapter adapter;
+public class OnlineGame extends Game {
+    private final String whiteId; // Firebase user ID for the player using white pieces.
+    private final String blackId; // Firebase user ID for the player using black pieces.
+    private final String gameId; // Unique game identifier for the Firebase database.
+    private DatabaseReference gameRef; // Firebase database reference for this game.
+    private final String playerColor; // "WHITE" or "BLACK", indicates the player's color.
+    private int playerMoves; // Counter for the player's moves.
+    private CheckersAdapter adapter; // Adapter to interact with the board view.
 
     /**
      * Constructor for OnlineGame. Initializes the game board and sets up Firebase
@@ -68,34 +67,38 @@ public class OnlineGame extends Game
         gameRef.addValueEventListener(new ValueEventListener()
         {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String boardState = dataSnapshot.child("boardState").getValue(String.class);
-                String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
-                board.setTurn(!Objects.equals(currentTurn, Game.WHITE_STRING)); // White is false
-
-                // Making sure the all the members are initialized in Firebase before reading them
-                if (dataSnapshot.child("lastMoveX").getValue(Integer.class) != null
-                        && dataSnapshot.child("lastMoveY").getValue(Integer.class) != null
-                        && dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class) != null
-                        && dataSnapshot.child("isActive").getValue(Boolean.class) != null
-                        && boardState != null)
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
                 {
-                    board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
-                    board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
-                    board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
-                    updateLocalBoardState(boardState);
-                    adapter.updateGameState(board.getState());
+                    // Sync the board state based on Firebase
+                    String boardState = dataSnapshot.child("boardState").getValue(String.class);
+                    // Sync the game turn based on Firebase
+                    String currentTurn = dataSnapshot.child("currentTurn").getValue(String.class);
+                    board.setTurn(!Objects.equals(currentTurn, Game.WHITE_STRING)); // White is false
 
-                    if (!dataSnapshot.child("isActive").getValue(Boolean.class))
+                    if (dataSnapshot.hasChild("lastMoveX") && dataSnapshot.hasChild("lastMoveY") &&
+                            dataSnapshot.hasChild("movesSinceCaptureOrKing") && dataSnapshot.hasChild("isActive") &&
+                            boardState != null)
                     {
-                        isActive = false;
-                    }
-                }
+                        // Update internal state tracking based on Firebase data
+                        board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
+                        board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
+                        board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
+                        updateLocalBoardState(boardState);
+                        adapter.updateGameState(board.getState());
 
-                // Finish game if necessary
-                if (!isActive)
-                {
-                    finishGame();
+                        if (!dataSnapshot.child("isActive").getValue(Boolean.class))
+                        {
+                            isActive = false;
+                        }
+                    }
+
+                    // Handle game ending
+                    if (!isActive)
+                    {
+                        finishGame();
+                    }
                 }
             }
 
@@ -186,6 +189,8 @@ public class OnlineGame extends Game
 
     /**
      * Serializes the current state of the game board into a string format for storage in Firebase.
+     * Uppercase letters signify black pieces, while lowercase letters signify white pieces.
+     * The letter 'p' signifies a normal piece, and the letter 'k' signifies a king.
      *
      * @return A string representation of the game board.
      */
@@ -219,6 +224,8 @@ public class OnlineGame extends Game
 
     /**
      * Deserializes the board state from a string representation and applies it to the local game board.
+     * Uppercase letters signify black pieces, while lowercase letters signify white pieces.
+     * The letter 'p' signifies a normal piece, and the letter 'k' signifies a king.
      *
      * @param boardState The serialized string representation of the game board.
      */
@@ -254,68 +261,82 @@ public class OnlineGame extends Game
         }
     }
 
-
-    public void setAdapter(CheckersAdapter adapter) {
+    /**
+     * Set the adapter for updating the UI based on game state changes.
+     * @param adapter CheckersAdapter for the game board UI.
+     */
+    public void setAdapter(CheckersAdapter adapter)
+    {
         this.adapter = adapter;
     }
 
-    public void finishGame() {
+    /**
+     * Concludes the game by deleting Firebase records and updating player statistics.
+     * It also ensures the final game state is consistent across devices.
+     */
+    public void finishGame()
+    {
         String playerId = playerColor.equals(Game.WHITE_STRING) ? whiteId : blackId;
 
-        // Deleting the game and room from the Firebase database.
-        // It doesn't matter that both players try to delete it, since the second deletion attempt would just do nothing.
+        // References to the games and rooms in Firebase
         DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference("games");
         DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
 
-        // Since game IDs are the same as room IDs, we can use the game ID to access both
+        // Delete the game and room from Firebase, using game ID
         gamesRef.child(gameId).removeValue();
         roomsRef.child(gameId).removeValue();
 
-        // Firebase reference to the node of this player
+        // Reference to the users in Firebase
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        usersRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener() {
+        // Fetch player details and update statistics
+        usersRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Extract player's statistics
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
+                    // Extract and update player statistics
                     Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
-
-                    // Get the date in Israel right now
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", new Locale("he", "IL"));
-                    sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));  // Set to Israel's time zone
+                    sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));
                     String todayInIsrael = sdf.format(new Date());
 
-                    // Check if the user has a first win of the day bonus
+                    // Determine if the player earns a daily bonus
                     boolean hasDailyBonus = !todayInIsrael.equals(dataSnapshot.child("lastWinDate").getValue(String.class));
+                    Statistics.Outcomes outcome = determineOutcome();
 
-                    Statistics.Outcomes outcome;
-
-                    if (Objects.equals(board.checkGameStatus(), playerColor))
-                    {
-                        outcome = WIN;
-                    }
-                    else if (Objects.equals(board.checkGameStatus(), Game.DRAW_STRING))
-                    {
-                        outcome = DRAW;
-                    }
-                    else
-                    {
-                        outcome = LOSS;
-                    }
-
-                    // Update the statistics
+                    // Update statistics based on game outcome
                     stats.updateStatistics(outcome, playerMoves, hasDailyBonus);
-
-                    // Push the updated statistics back to Firebase
                     usersRef.child(playerId).child("stats").setValue(stats);
-                };
-
+                }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Log.e("Failed to fetch player info", databaseError.getMessage());
+            }
+
+            /**
+             * Determines the outcome of the game based on the board's status.
+             * @return Outcome of the game (WIN, LOSS, DRAW).
+             */
+            private Statistics.Outcomes determineOutcome()
+            {
+                if (Objects.equals(board.checkGameStatus(), playerColor))
+                {
+                    return WIN;
+                }
+                else if (Objects.equals(board.checkGameStatus(), Game.DRAW_STRING))
+                {
+                    return DRAW;
+                }
+                else
+                {
+                    return LOSS;
+                }
             }
         });
     }

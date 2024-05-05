@@ -19,8 +19,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
-
-public class OnlinePvPActivity extends AppCompatActivity {
+/**
+ * This activity manages an online Player vs. Player game of checkers.
+ * It initializes the game board, sets up Firebase listeners to synchronize game state across devices,
+ * and updates the UI based on game progress.
+ */
+public class OnlinePvPActivity extends AppCompatActivity
+{
     private OnlineGame game;
     private GridView gridView;
     private CheckersAdapter adapter;
@@ -31,64 +36,72 @@ public class OnlinePvPActivity extends AppCompatActivity {
     private TextView tvBottom;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_pvp);
 
-        // Retrieving data from intent
+        // Retrieve player information and game ID from intent
         playerColor = getIntent().getStringExtra("playerColor");
         player1Id = getIntent().getStringExtra("player1Id");
         player2Id = getIntent().getStringExtra("player2Id");
         String gameId = getIntent().getStringExtra("gameId");
 
-        // Initialize game object
+        // Setup the game environment
         game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
 
+        // Setup TextViews for displaying player names
         tvTop = findViewById(R.id.tv_top);
         tvBottom = findViewById(R.id.tv_bottom);
 
+        // Firebase reference to user details
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
                     String opponentName = dataSnapshot.child(playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
                     String playerName = dataSnapshot.child(!playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
 
-                    tvTop.setText(opponentName); // The opponent is at the top
-                    tvBottom.setText(playerName); // The player is at the bottom
+                    tvTop.setText(opponentName); // Display opponent name at the top
+                    tvBottom.setText(playerName); // Display player name at the bottom
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(OnlinePvPActivity.this,"Failed to fetch players' names: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(DatabaseError databaseError)
+            {
+                Toast.makeText(OnlinePvPActivity.this, "Failed to fetch players' names: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
-
+        // Setup the game board view
         gridView = findViewById(R.id.grid_view);
         adapter = new CheckersAdapter(this, game.getBoard().getState(), !playerColor.equals(Game.WHITE_STRING));
         gridView.setAdapter(adapter);
-
         game.setAdapter(adapter);
 
+        // Setup touch listeners for making moves
         setupTouchListeners();
 
+        // Monitor game status changes
         DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference("games");
-
-        gamesRef.child(gameId).addValueEventListener(new ValueEventListener() {
+        gamesRef.child(gameId).addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Extract player's statistics
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists())
+                {
                     Boolean isGameActive = dataSnapshot.child("isActive").getValue(Boolean.class);
 
+                    // Check if the game has ended
                     if (isGameActive != null && !isGameActive)
                     {
                         Intent intent;
-
                         if (Objects.equals(game.getBoard().checkGameStatus(), playerColor))
                         {
                             intent = new Intent(OnlinePvPActivity.this, WinScreen.class);
@@ -110,18 +123,22 @@ public class OnlinePvPActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(OnlinePvPActivity.this,"Failed to fetch player's statistics: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(DatabaseError databaseError)
+            {
+                Toast.makeText(OnlinePvPActivity.this, "Failed to fetch player's statistics: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-
+    /**
+     * Sets up touch listeners on the grid view to detect player moves.
+     */
     @SuppressLint("ClickableViewAccessibility")
-    private void setupTouchListeners() {
+    private void setupTouchListeners()
+    {
         gridView.setOnTouchListener(new View.OnTouchListener()
         {
+            // Starting in an invalid position to avoid bugs, just to be safe
             private int startX = -1;
             private int startY = -1;
 
@@ -139,9 +156,10 @@ public class OnlinePvPActivity extends AppCompatActivity {
                 int row = position / Board.BOARD_SIZE;
                 int col = position % Board.BOARD_SIZE;
 
-                // Adjust for any GUI board flipping like in the local PvP, but only for the white player
+                // Adjust for GUI board flipping for the white player
                 if (playerColor.equals(Game.WHITE_STRING))
                 {
+
                     row = Board.BOARD_SIZE - 1 - row;
                     col = Board.BOARD_SIZE - 1 - col;
                 }
@@ -161,14 +179,13 @@ public class OnlinePvPActivity extends AppCompatActivity {
                         {
                             Toast.makeText(OnlinePvPActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
                         }
+                        // Resetting the move
                         startX = -1;
                         startY = -1;
-
                         break;
                 }
                 return true;
             }
         });
     }
-
 }
