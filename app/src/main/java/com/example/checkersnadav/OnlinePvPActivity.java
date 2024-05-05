@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,8 @@ public class OnlinePvPActivity extends AppCompatActivity {
     private String playerColor;
     private String player1Id;
     private String player2Id;
+    private TextView tvTop;
+    private TextView tvBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,30 @@ public class OnlinePvPActivity extends AppCompatActivity {
         // Initialize game object
         game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
 
+        tvTop = findViewById(R.id.tv_top);
+        tvBottom = findViewById(R.id.tv_bottom);
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String opponentName = dataSnapshot.child(playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
+                    String playerName = dataSnapshot.child(!playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
+
+                    tvTop.setText(opponentName); // The opponent is at the top
+                    tvBottom.setText(playerName); // The player is at the bottom
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(OnlinePvPActivity.this,"Failed to fetch players' names: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         gridView = findViewById(R.id.grid_view);
         adapter = new CheckersAdapter(this, game.getBoard().getState(), !playerColor.equals(Game.WHITE_STRING));
         gridView.setAdapter(adapter);
@@ -49,9 +76,9 @@ public class OnlinePvPActivity extends AppCompatActivity {
 
         setupTouchListeners();
 
-        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("games");
+        DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference("games");
 
-        gameRef.child(gameId).addValueEventListener(new ValueEventListener() {
+        gamesRef.child(gameId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
