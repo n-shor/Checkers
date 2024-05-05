@@ -21,7 +21,7 @@ public class OfflineEndScreenActivity extends AppCompatActivity {
 
         TextView tvWinner = findViewById(R.id.tvWinner);
 
-        if (Game.NONE_STRING.equals(winner))
+        if (Game.DRAW_STRING.equals(winner))
         {
             tvWinner.setText("DRAW!");
         }

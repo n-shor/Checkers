@@ -2,94 +2,87 @@ package com.example.checkersnadav;
 
 /**
  * Represents the game board for a checkers game.
- * This class manages the game state, including the positions of pieces,
- * whose turn it is, and the rules for moving and capturing pieces.
+ * Manages the game state including the positions of pieces, whose turn it is, and the rules for moving and capturing pieces.
  */
-public class Board {
-    public static final boolean WHITE = false;
-    public static final boolean BLACK = !WHITE;
-    public static final int BOARD_SIZE = 8;
-    private final Piece[][] state;
-    private boolean turn;
-    private int movesSinceCaptureOrKing = 0;
-    private int lastMoveX = BOARD_SIZE - 1; // Making sure these are on a black square initially so the logic won't think that white needs to do a capture chain
-    private int lastMoveY = BOARD_SIZE - 2;
-
+public class Board
+{
+    public static final boolean WHITE = false; // Represents the White player.
+    public static final boolean BLACK = !WHITE; // Represents the Black player, opposite of White.
+    public static final int BOARD_SIZE = 8; // The size of the game board (8x8).
+    private final Piece[][] state; // Array to store the pieces on the board.
+    private boolean turn; // Boolean flag to indicate whose turn it is; true for Black, false for White.
+    private int movesSinceCaptureOrKing = 0; // Counts moves since the last capture or kinging to check for draws.
+    private int lastMoveX = BOARD_SIZE - 1; // Tracks the x-coordinate of the last move.
+    private int lastMoveY = BOARD_SIZE - 2; // Tracks the y-coordinate of the last move, ensuring it's initially set on a black square.
 
     /**
-     * Constructs a new Board with pieces in their initial positions for a standard game of checkers.
+     * Initializes a new Board with pieces in their standard positions for a game of checkers.
      */
-    public Board() {
+    public Board()
+    {
         state = new Piece[BOARD_SIZE][BOARD_SIZE];
-        turn = WHITE; // White starts in checkers
+        turn = WHITE; // White starts the game.
 
-        // Initialize the board with alternating empty and filled squares
+        // Initialize board: placing pieces in the correct starting positions.
         for (int i = 0; i < BOARD_SIZE; i++)
         {
             for (int j = 0; j < BOARD_SIZE; j++)
             {
                 if ((i + j) % 2 != 0)
-                {
+                { // Pieces are placed on squares where the sum of indices is odd.
                     if (i <= 2)
                     {
-                        state[i][j] = new Piece(WHITE);
+                        state[i][j] = new Piece(WHITE); // Initial positions for White pieces.
                     }
                     else if (i >= 5)
                     {
-                        state[i][j] = new Piece(BLACK);
+                        state[i][j] = new Piece(BLACK); // Initial positions for Black pieces.
                     }
                     else
                     {
-                        state[i][j] = null;
+                        state[i][j] = null; // Empty squares.
                     }
                 }
                 else
                 {
-                    state[i][j] = null;
+                    state[i][j] = null; // Empty squares where the sum of indices is even.
                 }
             }
         }
-
     }
-
 
     /**
      * Attempts to move a piece from the source to the destination coordinates.
-     * It checks if the move is valid, performs the move, captures if applicable,
-     * and switches turns if no further captures are possible.
+     * Validates the move, performs the move, handles captures, and switches turns if applicable.
      *
-     * @param xSrc Source x-coordinate
-     * @param ySrc Source y-coordinate
-     * @param xDst Destination x-coordinate
-     * @param yDst Destination y-coordinate
-     * @return true if the move is successful, false otherwise
+     * @param xSrc Source x-coordinate of the piece being moved.
+     * @param ySrc Source y-coordinate of the piece being moved.
+     * @param xDst Destination x-coordinate for the move.
+     * @param yDst Destination y-coordinate for the move.
+     * @return true if the move is successfully made, false if the move is invalid.
      */
     public boolean move(int xSrc, int ySrc, int xDst, int yDst)
     {
         if (!isValidMove(xSrc, ySrc, xDst, yDst))
         {
-            return false; // Move is invalid
+            return false; // Move is invalid if it does not comply with the rules of Checkers.
         }
 
         Piece piece = state[xSrc][ySrc];
-        state[xDst][yDst] = piece;
-        state[xSrc][ySrc] = null;
+        state[xDst][yDst] = piece; // Move the piece to the new position.
+        state[xSrc][ySrc] = null; // Clear the original position.
 
-        movesSinceCaptureOrKing++;
+        movesSinceCaptureOrKing++; // Increment the move counter for draw conditions.
 
-        // Handle captures
-        // Piece capture
+        // Handle captures for regular pieces and kings.
         if (!piece.isKing() && Math.abs(xDst - xSrc) == 2)
         {
             performPieceCapture(xSrc, ySrc, xDst, yDst);
-
-            // Determine if further captures are possible for multi-jump, using the current location of the piece, which is the move's destination
             if (pieceHasMandatoryCapture(xDst, yDst))
             {
-                turn = !turn; // Reverse the incoming turn switch
+                turn = !turn; // Maintain the turn if further captures are possible.
             }
-
-            movesSinceCaptureOrKing = 0; // Reset on capture
+            movesSinceCaptureOrKing = 0; // Reset the counter after a capture.
         }
         // King capture
         // making sure the path is not clear - meaning there is something to capture
@@ -98,94 +91,90 @@ public class Board {
         else if (!isPathClear(xSrc, ySrc, xDst, yDst))
         {
             performKingCapture(xSrc, ySrc, xDst, yDst);
-
-            // Determine if further captures are possible for multi-jump, using the current location of the king, which is the move's destination
             if (kingHasMandatoryCapture(xDst, yDst))
             {
-                turn = !turn; // Reverse the incoming turn switch
+                turn = !turn; // Maintain the turn if further captures are possible.
             }
-
-            movesSinceCaptureOrKing = 0; // Reset on capture
+            movesSinceCaptureOrKing = 0; // Reset the counter after a capture.
         }
 
-        // King promotion
-        if (!piece.isKing() && ((xDst == 0 && piece.isBlack() == BLACK) ||
-                (xDst == BOARD_SIZE - 1 && piece.isBlack() == WHITE)))
-        // xDst and not yDst because in this implementation x coordinates correspond to rows and not columns
+        // Handle promotion to King.
+        if (!piece.isKing() && ((xDst == 0 && piece.isBlack() == BLACK) || (xDst == BOARD_SIZE - 1 && piece.isBlack() == WHITE)))
         {
             piece.setKing(true);
-            movesSinceCaptureOrKing = 0; // Reset on kinging
+            movesSinceCaptureOrKing = 0; // Reset the counter on kinging.
         }
 
-        turn = !turn; // Turn switch
+        turn = !turn; // Switch turns if the move completes without further capture options.
 
-        // Updating the last move
-        lastMoveX = xDst;
+        lastMoveX = xDst; // Update the last move coordinates.
         lastMoveY = yDst;
 
         return true;
     }
 
-
     /**
-     * Checks if the specified piece at the given location can make any legal move.
+     * Checks if the specified piece at the given board location can legally move or capture.
+     * This method checks all potential simple moves and captures for the piece, including special moves if the piece is a king.
+     *
      * @param x The x-coordinate of the piece on the board.
      * @param y The y-coordinate of the piece on the board.
-     * @return true if there is at least one valid move available, false otherwise.
+     * @return true if there is at least one legal move or capture available, false otherwise.
      */
-    private boolean canMove(int x, int y) {
+    private boolean canMove(int x, int y)
+    {
         Piece piece = state[x][y];
-
-        if (piece == null) {
-            return false;
+        if (piece == null)
+        {
+            return false; // No piece at this position, so it cannot move.
         }
 
-        // Possible directions to check for moves or captures
+        // Define possible move increments for checkers (move one or jump two)
         int[] possibleMoves = {1, -1};
-        for (int dx : possibleMoves) {
-            for (int dy : possibleMoves) {
+        for (int dx : possibleMoves)
+        {
+            for (int dy : possibleMoves)
+            {
                 int newX = x + dx;
                 int newY = y + dy;
 
-                // Check simple move
+                // Check simple moves
                 if (isValidMove(x, y, newX, newY))
                 {
-                    return true;
+                    return true; // Return immediately if a valid move is found
                 }
 
-                // Check capture
+                // Check captures
                 newX = x + 2 * dx;
                 newY = y + 2 * dy;
-
                 if (isValidMove(x, y, newX, newY))
                 {
-                    return true;
+                    return true; // Return immediately if a valid capture is found
                 }
 
-                // Check more moves if the piece is a king
+                // Additional checks for king moves that can move multiple squares in one turn
                 if (piece.isKing())
                 {
                     for (int i = 2; i < BOARD_SIZE; i++)
                     {
                         newX = x + i * dx;
                         newY = y + i * dy;
-
                         if (isValidMove(x, y, newX, newY))
                         {
-                            return true;
+                            return true; // Return immediately if a valid king move is found
                         }
                     }
                 }
             }
         }
-
-        return false;
+        return false; // No valid moves found
     }
 
-
     /**
-     * Determines the winner of the game based on the remaining pieces and possible moves.
-     * @return 'BLACK' if black wins, 'WHITE' if white wins, 'DRAW' if the game is a draw, 'NONE' if the game is not over.
+     * Determines the winner of the game by checking the presence and mobility of pieces for each player.
+     * It evaluates the board to decide if either player has no pieces or cannot move, which would end the game.
+     *
+     * @return A string indicating the winner ('BLACK' or 'WHITE'), 'DRAW' for a stalemate, or 'NONE' if the game continues.
      */
     public String getWinner()
     {
@@ -194,7 +183,7 @@ public class Board {
         boolean whiteHasMoves = false;
         boolean blackHasMoves = false;
 
-        // Scan the board to check for pieces and possible moves
+        // Iterate through the board to find pieces and check for possible moves.
         for (int i = 0; i < BOARD_SIZE; i++)
         {
             for (int j = 0; j < BOARD_SIZE; j++)
@@ -206,142 +195,140 @@ public class Board {
                     {
                         blackHasPieces = true;
                         if (!blackHasMoves)
-                        { // Only check for moves if not already found
-                            blackHasMoves = canMove(i, j);
+                        {
+                            blackHasMoves = canMove(i, j); // Check for moves if not already found
                         }
                     }
                     else
                     {
                         whiteHasPieces = true;
                         if (!whiteHasMoves)
-                        { // Only check for moves if not already found
-                            whiteHasMoves = canMove(i, j);
+                        {
+                            whiteHasMoves = canMove(i, j); // Check for moves if not already found
                         }
                     }
                 }
             }
         }
 
-        // Determine winner based on pieces and moves left
+        // Determine the winner based on pieces left and possible moves.
         if (!whiteHasPieces || (!whiteHasMoves && turn == WHITE))
         {
-            return Game.BLACK_STRING; // Black wins if white has no pieces or moves
+            return Game.BLACK_STRING; // Black wins if White has no pieces or cannot move
         }
         if (!blackHasPieces || (!blackHasMoves && turn == BLACK))
         {
-            return Game.WHITE_STRING; // White wins if black has no pieces or moves
+            return Game.WHITE_STRING; // White wins if Black has no pieces or cannot move
         }
-        return Game.NONE_STRING; // No winner yet
+        return Game.NONE_STRING; // No winner if the game is still ongoing
     }
 
-
     /**
-     * Checks if the game is over due to a win or a draw.
-     * @return 'BLACK' if black wins, 'WHITE' if white wins, 'DRAW' if the game is a draw, 'NONE' if the game is not over.
+     * Checks if the game is over by evaluating if a win or a draw condition has been met.
+     * This method uses the getWinner method and checks for draw conditions based on consecutive non-capturing moves.
+     *
+     * @return A string indicating the game outcome ('BLACK', 'WHITE', 'DRAW'), or 'NONE' if the game is not over.
      */
     public String checkGameStatus()
     {
         String winner = getWinner();
         if (!winner.equals(Game.NONE_STRING))
         {
-            return winner;
+            return winner; // Return the winner if one has been determined
         }
         if (movesSinceCaptureOrKing >= 80)
-        { // 40 moves by each player without capture or kinging
-            return Game.DRAW_STRING;
+        {
+            return Game.DRAW_STRING; // Declare a draw if there are 80 moves by both players without a capture or kinging
         }
-        return Game.NONE_STRING;
+        return Game.NONE_STRING; // The game continues if no end condition is met
     }
 
-
+    /**
+     * Returns the current state of the game board as a 2D array of Pieces.
+     * This can be used to visualize the board or analyze the game state.
+     *
+     * @return The 2D array representing the current arrangement of pieces on the board.
+     */
     public Piece[][] getState()
     {
         return state;
     }
 
-
     /**
      * Checks if the specified move is valid according to the rules of checkers.
-     * This includes bounds checking, ensuring the move is to a legal board square,
-     * and that the movement is consistent with checkers rules for simple moves and captures.
+     * This includes ensuring the move stays within the bounds of the board, lands on a black square,
+     * the destination square is empty, and the movement adheres to the rules of checkers for both kings and normal pieces.
      *
-     * @param xSrc Source x-coordinate
-     * @param ySrc Source y-coordinate
-     * @param xDst Destination x-coordinate
-     * @param yDst Destination y-coordinate
-     * @return true if the move is valid, false otherwise
+     * @param xSrc Source x-coordinate on the board.
+     * @param ySrc Source y-coordinate on the board.
+     * @param xDst Destination x-coordinate on the board.
+     * @param yDst Destination y-coordinate on the board.
+     * @return true if the move is valid according to checkers rules, false otherwise.
      */
     public boolean isValidMove(int xSrc, int ySrc, int xDst, int yDst)
     {
-        // Make sure the move is in the bounds of the board
+        // Check for out-of-bounds moves.
         if (xDst < 0 || xDst >= BOARD_SIZE || yDst < 0 || yDst >= BOARD_SIZE)
         {
             return false;
         }
 
-        // Make sure the destination of the move is a black square, and that it does not contain another piece
+        // Ensure the move is to a black square and the destination is empty.
         if ((xDst + yDst) % 2 == 0 || state[xDst][yDst] != null)
         {
             return false;
         }
 
         Piece piece = state[xSrc][ySrc];
-
-        // Make sure the square that we are attempting to move a piece from contains a piece of the correct color
+        // Validate that there is a piece at the source and it belongs to the current player.
         if (piece == null || piece.isBlack() != turn)
         {
             return false;
         }
 
-        // If the first half of the condition is true, it means we are in a situation of a chain capture and that only that piece can move
+        // Special handling to ensure only the piece involved in a multi-capture continues moving.
         if (state[lastMoveX][lastMoveY].isBlack() == turn && (lastMoveX != xSrc || lastMoveY != ySrc))
         {
             return false;
         }
 
-        // King logic
-        if (piece.isKing())
-        {
-            // Make sure the king is moving in a diagonal
+        // Additional rules for kings and non-kings.
+        if (piece.isKing()) {
+            // Check diagonal movement for kings.
             if (Math.abs(xDst - xSrc) != Math.abs(yDst - ySrc))
             {
                 return false;
             }
 
-            // Check if it's a normal king move
+            // For king moves, check if the path is clear and if capturing is mandatory.
             if (isPathClear(xSrc, ySrc, xDst, yDst))
             {
-                // The player must capture if possible
                 return !playerHasMandatoryCapture();
             }
             else
             {
-                // Check if it's a capture or an invalid move
+                // Verify capture validity for king moves.
                 return hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst);
             }
         }
-        // Non-king logic
         else
         {
+            // Rules for normal pieces.
             int dx = Math.abs(xDst - xSrc);
             int dy = Math.abs(yDst - ySrc);
 
-            // Normal move
+            // Ensure normal moves are in the correct direction and capturing is not mandatory.
             if (dx == 1 && dy == 1)
             {
-                // The player must capture if possible
                 if (playerHasMandatoryCapture())
                 {
                     return false;
                 }
-
-                // Make sure the piece is going in the right direction
                 return (piece.isBlack() && xDst - xSrc == -1) || (!piece.isBlack() && xDst - xSrc == 1);
             }
-            // Capture
             else if (dx == 2 && dy == 2)
             {
-                // Make sure the capture is possible
+                // Ensure captures are legally executable.
                 return hasOpponentPieceInBetween(xSrc, ySrc, xDst, yDst);
             }
         }
@@ -349,146 +336,148 @@ public class Board {
         return false;
     }
 
-
     /**
-     * Performs the capture of an opponent's piece located between the source and destination squares.
-     * The captured piece is removed from the board.
+     * Performs the capture of an opponent's piece located between the source and destination squares during a move.
+     * This method assumes that the capture is valid and updates the board to remove the captured piece.
+     *
+     * @param xSrc Source x-coordinate from where the piece is capturing.
+     * @param ySrc Source y-coordinate from where the piece is capturing.
+     * @param xDst Destination x-coordinate to where the piece is moving.
+     * @param yDst Destination y-coordinate to where the piece is moving.
      */
     private void performPieceCapture(int xSrc, int ySrc, int xDst, int yDst)
     {
-        int capturedX = (xSrc + xDst) / 2;
-        int capturedY = (ySrc + yDst) / 2;
-        state[capturedX][capturedY] = null;
-
-        movesSinceCaptureOrKing = 0;
+        int capturedX = (xSrc + xDst) / 2; // Calculate the x-coordinate of the captured piece.
+        int capturedY = (ySrc + yDst) / 2; // Calculate the y-coordinate of the captured piece.
+        state[capturedX][capturedY] = null; // Remove the captured piece from the board.
     }
 
-
     /**
-     * Performs a capture by a king, removing the first encountered opponent's piece from the board.
-     * This function assumes that the path to the destination is already verified to be clear.
+     * Performs a capture by a king, removing the first opponent's piece encountered along the diagonal move.
+     * This method assumes the path has been verified to be clear up to the first encountered piece.
      *
-     * @param xSrc Source x-coordinate
-     * @param ySrc Source y-coordinate
-     * @param xDst Destination x-coordinate
-     * @param yDst Destination y-coordinate
+     * @param xSrc Source x-coordinate from where the king is capturing.
+     * @param ySrc Source y-coordinate from where the king is capturing.
+     * @param xDst Destination x-coordinate to where the king is moving.
+     * @param yDst Destination y-coordinate to where the king is moving.
      */
     private void performKingCapture(int xSrc, int ySrc, int xDst, int yDst)
     {
-        int stepX = Integer.signum(xDst - xSrc);
-        int stepY = Integer.signum(yDst - ySrc);
+        int stepX = Integer.signum(xDst - xSrc); // Calculate horizontal step direction.
+        int stepY = Integer.signum(yDst - ySrc); // Calculate vertical step direction.
         int curX = xSrc + stepX;
         int curY = ySrc + stepY;
         boolean capturePerformed = false;
 
-        // Move along the diagonal until the destination or an opponent's piece is found
-        while (curX != xDst && curY != yDst && !capturePerformed)
-        {
+        // Traverse the path until a piece is captured or the destination is reached.
+        while (curX != xDst && curY != yDst && !capturePerformed) {
             if (state[curX][curY] != null && state[curX][curY].isBlack() != turn)
             {
-                // Remove the first encountered opponent piece
-                state[curX][curY] = null;
-                capturePerformed = true;
-                // continue to update coordinates but stop checking for captures
-                curX += stepX;
-                curY += stepY;
-                continue;
+                state[curX][curY] = null; // Capture the opponent's piece.
+                capturePerformed = true; // Mark that a capture has been made.
             }
+            // Continue moving along the diagonal.
             curX += stepX;
             curY += stepY;
         }
-
-        movesSinceCaptureOrKing = 0;
     }
 
-
     /**
-     * Checks if the path between the source and destination is clear, which is necessary for king moves.
-     * This method verifies that all intermediate squares between the starting and ending position are empty.
+     * Checks if the path between the source and destination squares is clear of any pieces, which is necessary for a valid king move.
+     *
+     * @param xSrc Source x-coordinate.
+     * @param ySrc Source y-coordinate.
+     * @param xDst Destination x-coordinate.
+     * @param yDst Destination y-coordinate.
+     * @return true if the path is clear of pieces, false otherwise.
      */
     private boolean isPathClear(int xSrc, int ySrc, int xDst, int yDst)
     {
-        int stepX = Integer.signum(xDst - xSrc);
-        int stepY = Integer.signum(yDst - ySrc);
+        int stepX = Integer.signum(xDst - xSrc); // Determine step direction horizontally.
+        int stepY = Integer.signum(yDst - ySrc); // Determine step direction vertically.
         int curX = xSrc + stepX, curY = ySrc + stepY;
+
+        // Check each square along the diagonal until reaching the destination.
         while (curX != xDst && curY != yDst)
         {
             if (state[curX][curY] != null)
             {
-                return false;
+                return false; // Path is not clear if any square contains a piece.
             }
-
             curX += stepX;
             curY += stepY;
         }
         return true;
     }
 
-
     /**
-     * Checks if there is exactly one of the opponent's pieces between the source and destination and nothing else.
-     * Assumes the move is along a diagonal.
+     * Determines if there is exactly one opponent's piece in the path between the source and destination squares.
      *
-     * @param xSrc Source x-coordinate
-     * @param ySrc Source y-coordinate
-     * @param xDst Destination x-coordinate
-     * @param yDst Destination y-coordinate
-     * @return true if exactly one opponent's piece is between the source and destination and nothing else, false otherwise.
+     * @param xSrc Source x-coordinate.
+     * @param ySrc Source y-coordinate.
+     * @param xDst Destination x-coordinate.
+     * @param yDst Destination y-coordinate.
+     * @return true if there is exactly one opponent's piece in between and nothing else, false otherwise.
      */
     private boolean hasOpponentPieceInBetween(int xSrc, int ySrc, int xDst, int yDst)
     {
-        int stepX = Integer.signum(xDst - xSrc);
-        int stepY = Integer.signum(yDst - ySrc);
-        int opponentCount = 0;
+        int stepX = Integer.signum(xDst - xSrc); // Calculate horizontal movement step.
+        int stepY = Integer.signum(yDst - ySrc); // Calculate vertical movement step.
+        int opponentCount = 0; // Counter for opponent pieces encountered.
 
         int curX = xSrc + stepX;
         int curY = ySrc + stepY;
 
+        // Traverse the path and count opponent pieces.
         while (curX != xDst && curY != yDst)
         {
-            if (state[curX][curY] != null)
+            if (state[curX][curY] != null && state[curX][curY].isBlack() != turn)
             {
-                if (state[curX][curY].isBlack() != turn && opponentCount == 0)
-                {
-                    // First opponent piece encountered
+                if (opponentCount == 0)
+                { // First opponent piece encountered.
                     opponentCount++;
                 }
                 else
                 {
-                    // More than one piece or encountering a non-opponent piece
-                    return false;
+                    return false; // Invalid move if more than one opponent piece is encountered.
                 }
             }
             curX += stepX;
             curY += stepY;
         }
 
-        // Return true only if an opponent piece was found (because we can get through the for loop without finding anything)
+        // Valid capture if exactly one opponent piece is encountered.
         return opponentCount == 1;
     }
 
-
     /**
-     * Checks if there is a mandatory capture from the given position - only for non-king pieces.
+     * Checks for mandatory captures available from the given board position for non-king pieces.
+     * A mandatory capture exists if an adjacent opponent piece can be jumped over onto an empty square.
+     *
+     * @param x The x-coordinate of the piece on the board.
+     * @param y The y-coordinate of the piece on the board.
+     * @return true if a mandatory capture is available, false otherwise.
      */
     private boolean pieceHasMandatoryCapture(int x, int y)
     {
-        int[][] directionVectors = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        int[][] directionVectors = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}; // Possible directions for a capture.
+
         for (int[] dir : directionVectors)
         {
-            int jumpX = x + 2 * dir[0];
+            int jumpX = x + 2 * dir[0]; // Target square after the jump.
             int jumpY = y + 2 * dir[1];
+
+            // Check for valid capture conditions.
             if (jumpX >= 0 && jumpX < BOARD_SIZE && jumpY >= 0 && jumpY < BOARD_SIZE &&
                     state[x + dir[0]][y + dir[1]] != null &&
                     state[x + dir[0]][y + dir[1]].isBlack() != turn &&
                     state[jumpX][jumpY] == null)
             {
-                return true;
+                return true; // Capture is mandatory.
             }
         }
-        return false;
+        return false; // No mandatory capture found.
     }
-
 
     /**
      * Checks if there is a mandatory capture available from the given position for a king.
@@ -540,9 +529,11 @@ public class Board {
         return false;
     }
 
-
     /**
-     * Checks if there is a mandatory capture for any piece of the current player in the given position.
+     * Checks if there is a mandatory capture available for any of the current player's pieces.
+     * This method iterates over all pieces of the current player to determine if any captures are obligatory.
+     *
+     * @return true if at least one mandatory capture is available, false otherwise.
      */
     private boolean playerHasMandatoryCapture()
     {
@@ -550,53 +541,106 @@ public class Board {
         {
             for (int j = 0; j < BOARD_SIZE; j++)
             {
-                if (state[i][j] != null && state[i][j].isBlack() == turn)
+                Piece piece = state[i][j];
+                if (piece != null && piece.isBlack() == turn)
                 {
-                    if (state[i][j].isKing() && kingHasMandatoryCapture(i, j) || !state[i][j].isKing() && pieceHasMandatoryCapture(i, j))
+                    // Check both king and non-king pieces for mandatory captures.
+                    if ((piece.isKing() && kingHasMandatoryCapture(i, j)) ||
+                            (!piece.isKing() && pieceHasMandatoryCapture(i, j)))
                     {
                         return true;
                     }
                 }
             }
         }
-
         return false;
     }
 
-
-    // Required for online play - lets the turn be switched on the other player's device if needed.
-    public void setTurn(boolean turn) {
+    /**
+     * Sets the turn for the current game.
+     * This method is used in online play to synchronize the turn state across devices.
+     *
+     * @param turn The current turn state to set.
+     */
+    public void setTurn(boolean turn)
+    {
         this.turn = turn;
     }
 
-    // All of these are also required in online play in order to sync up the boards.
+    /**
+     * Gets the current turn state of the game.
+     * Useful in online play for synchronizing the game state across different clients.
+     *
+     * @return the current turn state.
+     */
     public boolean getTurn()
     {
         return turn;
     }
-    public int getLastMoveX() {
+
+    /**
+     * Gets the x-coordinate of the last move made on the board.
+     * This is used in online play to synchronize game state across devices.
+     *
+     * @return the x-coordinate of the last move.
+     */
+    public int getLastMoveX()
+    {
         return lastMoveX;
     }
 
-    public void setLastMoveX(int lastMoveX) {
+    /**
+     * Sets the x-coordinate of the last move.
+     * This is important in online play for maintaining consistent game state across sessions.
+     *
+     * @param lastMoveX The x-coordinate of the last move to be set.
+     */
+    public void setLastMoveX(int lastMoveX)
+    {
         this.lastMoveX = lastMoveX;
     }
 
-    public int getLastMoveY() {
+    /**
+     * Gets the y-coordinate of the last move made on the board.
+     * This method is crucial in online play for ensuring all players see the same game state.
+     *
+     * @return the y-coordinate of the last move.
+     */
+    public int getLastMoveY()
+    {
         return lastMoveY;
     }
 
-    public void setLastMoveY(int lastMoveY) {
+    /**
+     * Sets the y-coordinate of the last move.
+     * Used in online play to update and synchronize the position of the last move across devices.
+     *
+     * @param lastMoveY The y-coordinate of the last move to be set.
+     */
+    public void setLastMoveY(int lastMoveY)
+    {
         this.lastMoveY = lastMoveY;
     }
 
+    /**
+     * Gets the number of moves since the last capture or kinging event.
+     * This is used to determine draw conditions based on inactivity or non-progressive play.
+     *
+     * @return the number of moves since the last capture or kinging.
+     */
     public int getMovesSinceCaptureOrKing()
     {
         return movesSinceCaptureOrKing;
     }
 
-    public void setMovesSinceCaptureOrKing(int movesSinceCaptureOrKing) {
+    /**
+     * Sets the number of moves since the last capture or kinging event.
+     * Important for tracking game progress and determining draws in prolonged games without captures or promotions.
+     *
+     * @param movesSinceCaptureOrKing The number of moves to set since the last significant game event.
+     */
+    public void setMovesSinceCaptureOrKing(int movesSinceCaptureOrKing)
+    {
         this.movesSinceCaptureOrKing = movesSinceCaptureOrKing;
     }
-
 }

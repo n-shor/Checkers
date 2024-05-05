@@ -73,7 +73,7 @@ public class LocalPvPActivity extends AppCompatActivity {
                         {
                             Intent intent = new Intent(LocalPvPActivity.this, OfflineEndScreenActivity.class);
                             intent.putExtra("userId", userId);
-                            intent.putExtra("winner", game.getBoard().getWinner());
+                            intent.putExtra("winner", game.getBoard().checkGameStatus());
                             startActivity(intent);
                             finish();
                         }
