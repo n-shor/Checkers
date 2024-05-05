@@ -7,15 +7,31 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class TutorialActivity extends AppCompatActivity {
+/**
+ * Activity class that provides a tutorial for the Checkers game.
+ * Displays game rules and instructions formatted in HTML to enhance readability and user experience.
+ */
+public class TutorialActivity extends AppCompatActivity
+{
 
+    /**
+     * Called when the activity is starting.
+     * Initializes the UI, sets up the tutorial text, and provides navigation options.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise it is null.
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
 
+        // Retrieve the user's ID from the intent used to start this activity
         String userId = getIntent().getStringExtra("userId");
 
+        // Find the TextView and prepare the HTML content for the tutorial
         TextView textViewRules = findViewById(R.id.textViewRules);
         String rulesHtml = "<h1>Welcome to my Checkers game!</h1><br>" +
                 "<h2>Basic Rules of Checkers:</h2>" +
@@ -40,13 +56,14 @@ public class TutorialActivity extends AppCompatActivity {
                 "<p>- Every day, your first online win will award you 3 wins (the wins will be added to your user statistics)!</p><br>" +
                 "<p><strong>Enjoy the game, and may the best strategist win!</strong></p>";
 
-        // Apply the html code to the text box
+        // Apply the HTML formatted text to the TextView
         textViewRules.setText(Html.fromHtml(rulesHtml, Html.FROM_HTML_MODE_COMPACT));
-        // Adjust line spacing multiplier and additional spacing
+        // Customize line spacing for better readability
         textViewRules.setLineSpacing(1.2f, 1.5f);
 
-
-        findViewById(R.id.buttonBack).setOnClickListener(v -> {
+        // Set up a back button that navigates to the MenuActivity
+        findViewById(R.id.buttonBack).setOnClickListener(v ->
+        {
             Intent intent = new Intent(TutorialActivity.this, MenuActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
