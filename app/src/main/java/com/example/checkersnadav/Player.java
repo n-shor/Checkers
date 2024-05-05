@@ -1,51 +1,88 @@
 package com.example.checkersnadav;
 
-public class Player {
-    private String username;
+/**
+ * Represents a player in the application, holding all relevant information
+ * such as username, email, password (hashed), and game statistics.
+ */
+public class Player
+{
+    private String username;           // Username of the player.
+    private String email;              // Email address of the player, used for login.
+    private String hashedPassword;     // Hashed password for secure storage and authentication.
+    private Statistics stats;          // Player's game statistics.
+    private String lastWinDate;        // Date of the last win to manage rewards or achievements.
 
-    // Unused members and methods are here for Firebase Database interactions
-    private String email;
-    private String hashedPassword;
-    private Statistics stats;
-    private String lastWinDate;
+    /**
+     * Default constructor required for Firebase DataSnapshot.getValue(Player.class).
+     */
+    public Player()
+    {
+        // Firebase requires a no-argument constructor to deserialize custom objects.
+    }
 
-    public String getUsername() {
+    /**
+     * Constructs a new Player with specified details.
+     * @param username The username of the player.
+     * @param email The email address of the player.
+     * @param hashedPassword The hashed password for secure authentication.
+     */
+    public Player(String username, String email, String hashedPassword)
+    {
+        this.username = username;
+        this.email = email;
+        this.hashedPassword = hashedPassword;
+        this.stats = new Statistics();  // Initialize default statistics.
+        this.lastWinDate = "";          // Initialize with an empty string to handle first win comparisons.
+    }
+
+    // Getters and setters
+    public String getUsername()
+    {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(String username)
+    {
         this.username = username;
     }
 
-    public void setEmail(String email) {
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail(String email)
+    {
         this.email = email;
     }
 
-    public void setHashedPassword(String hashedPassword) {
+    public String getHashedPassword()
+    {
+        return hashedPassword;
+    }
+
+    public void setHashedPassword(String hashedPassword)
+    {
         this.hashedPassword = hashedPassword;
     }
 
-    public void setStats(Statistics stats) {
+    public Statistics getStats()
+    {
+        return stats;
+    }
+
+    public void setStats(Statistics stats)
+    {
         this.stats = stats;
     }
 
-    public void setLastWinDate(String lastWinDate) {
+    public String getLastWinDate()
+    {
+        return lastWinDate;
+    }
+
+    public void setLastWinDate(String lastWinDate)
+    {
         this.lastWinDate = lastWinDate;
     }
-
-    public Player()
-    {
-        // Default constructor required for Firebase DataSnapshot.getValue(Player.class)
-    }
-
-    public Player(String username, String email, String hashedPassword) {
-        this.username = username;
-        this.email = email;
-        this.hashedPassword = hashedPassword;
-        this.stats = new Statistics();
-        this.lastWinDate = ""; // This way the first comparison for the date of today would always yield false
-    }
-
-
-
 }

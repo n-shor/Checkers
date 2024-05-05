@@ -7,20 +7,28 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class OfflineEndScreenActivity extends AppCompatActivity {
+/**
+ * This activity represents the end screen for offline games, displaying the game outcome and
+ * providing a navigation option to return to the main menu.
+ */
+public class OfflineEndScreenActivity extends AppCompatActivity
+{
 
-    private String userId;
+    private String userId;  // Identifier for the user, used for passing between activities.
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline_end_screen);
 
+        // Retrieve user ID and the game outcome from the intent.
         userId = getIntent().getStringExtra("userId");
         String winner = getIntent().getStringExtra("winner");
 
         TextView tvWinner = findViewById(R.id.tvWinner);
 
+        // Display the game result based on the 'winner' string received.
         if (Game.DRAW_STRING.equals(winner))
         {
             tvWinner.setText("DRAW!");
@@ -29,15 +37,17 @@ public class OfflineEndScreenActivity extends AppCompatActivity {
         {
             tvWinner.setText("Winner:\n" + winner + "!");
         }
-
     }
 
-
-    public void goToMainMenu(View view) {
+    /**
+     * Navigates back to the main menu when the user chooses to leave the end screen.
+     * @param view The view (button) that was clicked to trigger this method.
+     */
+    public void goToMainMenu(View view)
+    {
         Intent intent = new Intent(OfflineEndScreenActivity.this, MenuActivity.class);
-        intent.putExtra("userId", userId); // Pass the user's ID
+        intent.putExtra("userId", userId); // Ensure the user ID is carried forward to maintain session state.
         startActivity(intent);
-        finish();
+        finish(); // Finish this activity to remove it from the back stack.
     }
-
 }

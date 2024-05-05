@@ -15,7 +15,8 @@ import android.widget.ImageView;
  * each cell on the board, including setting the appropriate background,
  * piece images, and king images based on the game state.
  */
-public class CheckersAdapter extends BaseAdapter {
+public class CheckersAdapter extends BaseAdapter
+{
     private final Context context; // Context in which the adapter is running
     private Piece[][] boardState; // Current state of the board
     boolean color; // Required for online play, so we know how to display the board
@@ -25,7 +26,8 @@ public class CheckersAdapter extends BaseAdapter {
      * @param context The current context.
      * @param boardState The 2D array representing the state of the checkers board.
      */
-    public CheckersAdapter(Context context, Piece[][] boardState, boolean color) {
+    public CheckersAdapter(Context context, Piece[][] boardState, boolean color)
+    {
         this.context = context;
         this.boardState = boardState;
         this.color = color;
@@ -36,7 +38,8 @@ public class CheckersAdapter extends BaseAdapter {
      * @return The number of items in the data set.
      */
     @Override
-    public int getCount() {
+    public int getCount()
+    {
         return Board.BOARD_SIZE * Board.BOARD_SIZE; // Total number of cells on the board
     }
 
@@ -46,7 +49,8 @@ public class CheckersAdapter extends BaseAdapter {
      * @return The object at the specified position.
      */
     @Override
-    public Object getItem(int position) {
+    public Object getItem(int position)
+    {
         int row = position / Board.BOARD_SIZE;
         int col = position % Board.BOARD_SIZE;
         return boardState[row][col];
@@ -58,7 +62,8 @@ public class CheckersAdapter extends BaseAdapter {
      * @return The id of the item at the specified position.
      */
     @Override
-    public long getItemId(int position) {
+    public long getItemId(int position)
+    {
         return position;
     }
 
@@ -70,14 +75,18 @@ public class CheckersAdapter extends BaseAdapter {
      * @return A View corresponding to the data at the specified position.
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
         Log.d("CheckersAdapter", "Getting view for position: " + position);
         ImageView imageView;
-        if (convertView == null) {
+        if (convertView == null)
+        {
             imageView = new ImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 150)); // Check size
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        } else {
+        }
+        else
+        {
             imageView = (ImageView) convertView;
         }
 
@@ -115,10 +124,18 @@ public class CheckersAdapter extends BaseAdapter {
         return imageView;
     }
 
-    // Required for online play - the board representation needs to be updated according to the move the other player made on their device
-    public void updateGameState(Piece[][] newBoardState) {
-        this.boardState = newBoardState; // Update the internal representation
-        notifyDataSetChanged(); // Notify the adapter to refresh the UI
+    /**
+     * Updates the game state with a new board configuration.
+     * This method is typically used in online play to synchronize the board state across different devices.
+     * Upon updating the board state, it notifies any observers that the data has changed to refresh the user interface.
+     *
+     * @param newBoardState A 2D array of Piece objects representing the new state of the board.
+     */
+    public void updateGameState(Piece[][] newBoardState)
+    {
+        this.boardState = newBoardState; // Update the internal representation of the board
+        notifyDataSetChanged(); // Notify the adapter that the data has changed, prompting a UI update
     }
+
 
 }

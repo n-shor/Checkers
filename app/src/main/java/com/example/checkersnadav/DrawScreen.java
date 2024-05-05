@@ -14,42 +14,52 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * Activity that displays a draw screen for the game, indicating that the game ended without a winner.
+ * It fetches and shows the player's username and provides an option to return to the main menu.
+ */
+public class DrawScreen extends AppCompatActivity
+{
 
-public class DrawScreen extends AppCompatActivity {
-
-    private TextView usernameTextView;
+    private TextView usernameTextView; // TextView to display the user's username
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lose_screen);
+        setContentView(R.layout.activity_lose_screen); // Note: Uses the lose screen layout, might want to rename or confirm this is intentional.
 
         usernameTextView = findViewById(R.id.usernameTextView);
         Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
-        // Get the userId and username from the intent
+        // Retrieve the user ID and username from the passed intent.
         String userId = getIntent().getStringExtra("userId");
 
+        // Reference to the user's data in Firebase.
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 if (dataSnapshot.exists())
                 {
-                    // Set the username in the TextView
+                    // Display the username on the screen if it exists in the database.
                     usernameTextView.setText(dataSnapshot.child("username").getValue(String.class));
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(DrawScreen.this,"Failed to fetch player's username: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(DatabaseError databaseError)
+            {
+                // Show error message if there is a failure fetching the username.
+                Toast.makeText(DrawScreen.this, "Failed to fetch player's username: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
-
-        // Set up the back button
-        backToMenuButton.setOnClickListener(v -> {
+        // Setup the back button to navigate back to the Menu screen.
+        backToMenuButton.setOnClickListener(v ->
+        {
             Intent intent = new Intent(DrawScreen.this, MenuActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);

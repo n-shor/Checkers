@@ -1,28 +1,42 @@
 package com.example.checkersnadav;
 
-
 import java.util.Objects;
 
-public class Game {
-    protected Board board;
-    protected boolean isActive;
-    public static final String WHITE_STRING = "WHITE";
-    public static final String BLACK_STRING = "BLACK";
-    public static final String DRAW_STRING = "DRAW";
-    public static final String NONE_STRING = "NONE";
+/**
+ * Represents a game of checkers, managing the game board and state.
+ */
+public class Game
+{
+    protected Board board;  // The game board containing the pieces and state.
+    protected boolean isActive;  // Indicates whether the game is currently active.
 
+    public static final String WHITE_STRING = "WHITE";  // Constant for representing the white player.
+    public static final String BLACK_STRING = "BLACK";  // Constant for representing the black player.
+    public static final String DRAW_STRING = "DRAW";  // Constant for a draw outcome.
+    public static final String NONE_STRING = "NONE";  // Constant for no specific outcome.
 
-    public Game() {
-        board = new Board();
-        isActive = true;
+    /**
+     * Constructs a new Game instance initializing the board and setting the game as active.
+     */
+    public Game()
+    {
+        board = new Board();  // Initialize the game board.
+        isActive = true;  // Set the game as active.
     }
 
-    public Board getBoard() {
+    /**
+     * Retrieves the game board.
+     * @return the current state of the board.
+     */
+    public Board getBoard()
+    {
         return board;
     }
 
     /**
-     * Executes a move if it is valid, and switches turns.
+     * Attempts to make a move on the board from a source position to a destination.
+     * It validates the move with the board, updates the game status, and toggles player turns.
+     *
      * @param xSrc The x-coordinate of the piece to move.
      * @param ySrc The y-coordinate of the piece to move.
      * @param xDst The x-coordinate of the destination.
@@ -33,27 +47,27 @@ public class Game {
     {
         if (!isActive)
         {
-            return false;
+            return false;  // Return false if the game is no longer active.
         }
         if (board.move(xSrc, ySrc, xDst, yDst))
         {
+            // Check if the move has changed the game status.
             if (!Objects.equals(board.checkGameStatus(), Game.NONE_STRING))
             {
-                isActive = false;
+                isActive = false;  // Set game as inactive if the status is not NONE.
             }
-            return true;
+            return true;  // Move was successful.
         }
 
-        return false;
+        return false;  // Move was not successful.
     }
-
 
     /**
-     * Determines if the game is still active.
-     * @return true if the game is active, false if it has ended.
+     * Checks if the game is currently active.
+     * @return true if the game is ongoing, false if it has concluded.
      */
-    public boolean isActive() {
+    public boolean isActive()
+    {
         return isActive;
     }
-
 }
