@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity
         // Notification permission check and configuration dialog
         configureNotificationSettings();
 
-        // Schedule daily notifications
+        // Schedule daily notifications, these won't show up if the user doesn't allow them to
         AlarmScheduler.scheduleMidnightAlarm(this, this);
     }
 
@@ -140,8 +140,10 @@ public class LoginActivity extends AppCompatActivity
             return;
         }
 
+        String hashedPassword = hashPassword(password);
+
         // Authenticate using Firebase
-        mAuth.signInWithEmailAndPassword(email, password)
+        mAuth.signInWithEmailAndPassword(email, hashedPassword)
                 .addOnCompleteListener(this, task ->
                 {
                     if (task.isSuccessful())
