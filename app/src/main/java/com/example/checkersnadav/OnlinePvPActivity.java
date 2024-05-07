@@ -1,6 +1,5 @@
 package com.example.checkersnadav;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -133,7 +132,6 @@ public class OnlinePvPActivity extends AppCompatActivity
     /**
      * Sets up touch listeners on the grid view to detect player moves.
      */
-    @SuppressLint("ClickableViewAccessibility")
     private void setupTouchListeners()
     {
         gridView.setOnTouchListener(new View.OnTouchListener()

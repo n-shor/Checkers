@@ -1,12 +1,12 @@
 package com.example.checkersnadav;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
@@ -19,12 +19,13 @@ public class LocalPvPActivity extends AppCompatActivity
     private GridView gridView; // The grid view that displays the checkers board.
     private CheckersAdapter adapter; // Adapter to manage the interaction between the GridView and the game data.
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_pvp);
+
+        String userId = getIntent().getStringExtra("userId");
 
         game = new Game();
         gridView = findViewById(R.id.grid_view);
@@ -82,6 +83,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         {
                             Intent intent = new Intent(LocalPvPActivity.this, OfflineEndScreenActivity.class);
                             intent.putExtra("winner", game.getBoard().checkGameStatus()); // Pass the game result.
+                            intent.putExtra("userId", userId);
                             startActivity(intent);
                             finish();
                         }
