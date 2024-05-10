@@ -230,6 +230,7 @@ public class LoginActivity extends AppCompatActivity
                     {
                         // Save user data to Firebase Database
                         saveUserToDatabase(username, email, hashedPassword);
+                        Toast.makeText(LoginActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
                         retrieveAndNavigateToMenu(email);
                     }
                     else
