@@ -100,7 +100,7 @@ public class OnlinePvPActivity extends AppCompatActivity
                 if (dataSnapshot.exists())
                 {
                     // Update the current turn on the board based on the Firebase data
-                    String turnText = "Current Turn: " + (Game.WHITE_STRING.equals(dataSnapshot.child("turn").getValue(String.class)) ? "White" : "Black");
+                    String turnText = "Current Turn: " + (Game.WHITE_STRING.equals(dataSnapshot.child("currentTurn").getValue(String.class)) ? "White" : "Black");
                     turnIndicator.setText(turnText);
 
                     Boolean isGameActive = dataSnapshot.child("isActive").getValue(Boolean.class);
