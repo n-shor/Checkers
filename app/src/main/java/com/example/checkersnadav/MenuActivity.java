@@ -44,7 +44,7 @@ public class MenuActivity extends AppCompatActivity
             {
                 if (dataSnapshot.exists()) {
                     // Display the logged-in user's username in the main menu.
-                    tvPlayerNameDisplay.setText("Logged As:\n" + dataSnapshot.child("username").getValue(String.class));
+                    tvPlayerNameDisplay.setText("Logged in As:\n" + dataSnapshot.child("username").getValue(String.class));
                 }
             }
 

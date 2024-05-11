@@ -33,6 +33,7 @@ public class OnlinePvPActivity extends AppCompatActivity
     private String player2Id;
     private TextView tvTop;
     private TextView tvBottom;
+    private TextView turnIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,9 +50,12 @@ public class OnlinePvPActivity extends AppCompatActivity
         // Setup the game environment
         game = new OnlineGame(gameId, playerColor, player1Id, player2Id);
 
-        // Setup TextViews for displaying player names
+        // Setup TextViews for displaying player names and current turn
         tvTop = findViewById(R.id.tv_top);
         tvBottom = findViewById(R.id.tv_bottom);
+        turnIndicator = findViewById(R.id.turn_indicator);
+
+        turnIndicator.setText("Current Turn: White");
 
         // Firebase reference to user details
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -95,6 +99,10 @@ public class OnlinePvPActivity extends AppCompatActivity
             {
                 if (dataSnapshot.exists())
                 {
+                    // Update the current turn on the board based on the Firebase data
+                    String turnText = "Current Turn: " + (Game.WHITE_STRING.equals(dataSnapshot.child("turn").getValue(String.class)) ? "White" : "Black");
+                    turnIndicator.setText(turnText);
+
                     Boolean isGameActive = dataSnapshot.child("isActive").getValue(Boolean.class);
 
                     // Check if the game has ended
@@ -171,7 +179,11 @@ public class OnlinePvPActivity extends AppCompatActivity
                     case MotionEvent.ACTION_UP:
                         if (game.makeMove(startX, startY, row, col))
                         {
+                            // Update the GUI of the board
                             adapter.notifyDataSetChanged();
+                            // Updating the turn indicator based on the local state of the game
+                            String turnText = "Current Turn: " + (game.getBoard().getTurn() ? "Black" : "White");
+                            turnIndicator.setText(turnText);
                         }
                         else
                         {

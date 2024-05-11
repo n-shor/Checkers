@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,7 @@ public class LocalPvPActivity extends AppCompatActivity
     private Game game; // The game logic handler.
     private GridView gridView; // The grid view that displays the checkers board.
     private CheckersAdapter adapter; // Adapter to manage the interaction between the GridView and the game data.
+    private TextView turnIndicator; // TextView to display the current turn.
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,8 +31,11 @@ public class LocalPvPActivity extends AppCompatActivity
 
         game = new Game();
         gridView = findViewById(R.id.grid_view);
+        turnIndicator = findViewById(R.id.turn_indicator);
         adapter = new CheckersAdapter(this, game.getBoard().getState(), Board.WHITE); // Set the board perspective to white for local PvP.
         gridView.setAdapter(adapter);
+
+        updateTurnIndicator();
 
         // Handle touch events on the grid view for move operations.
         gridView.setOnTouchListener(new View.OnTouchListener()
@@ -68,6 +73,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         if (game.makeMove(startX, startY, flippedRow, flippedCol))
                         {
                             adapter.notifyDataSetChanged(); // Update the board if move was successful.
+                            updateTurnIndicator(); // Update turn indicator after a successful move.
                         }
                         else
                         {
@@ -92,5 +98,11 @@ public class LocalPvPActivity extends AppCompatActivity
                 return true; // Touch event was handled.
             }
         });
+    }
+
+    private void updateTurnIndicator()
+    {
+        String turnText = "Current Turn: " + (game.getBoard().getTurn() ? "Black" : "White");
+        turnIndicator.setText(turnText);
     }
 }

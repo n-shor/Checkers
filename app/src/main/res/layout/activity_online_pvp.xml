@@ -7,6 +7,21 @@
     android:background="@drawable/activity_background"
     tools:context=".OnlinePvPActivity">
 
+    <TextView
+        android:id="@+id/turn_indicator"
+        style="@style/ShadowedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Turn: White"
+        android:textColor="#FFFFFF"
+        android:textSize="38sp"
+        app:layout_constraintBottom_toTopOf="@id/grid_view"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <GridView
         android:id="@+id/grid_view"
         android:layout_width="wrap_content"
@@ -31,10 +46,10 @@
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@id/grid_view"
         app:layout_constraintEnd_toEndOf="@id/grid_view"
-        app:layout_constraintVertical_bias="0.5"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@id/grid_view"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/turn_indicator"
+        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/tv_bottom"
