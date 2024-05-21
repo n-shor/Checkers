@@ -9,7 +9,7 @@ public class Statistics
     /**
      * Enumeration of possible game outcomes.
      */
-    enum Outcomes { WIN, LOSS, DRAW }
+    public enum Outcomes { WIN, LOSS, DRAW }
 
     private int wins;
     private int losses;

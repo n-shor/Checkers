@@ -1,31 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="deploymentTargetDropDown">
-    <runningDeviceTargetSelectedWithDropDown>
+    <targetSelectedWithDropDown>
       <Target>
-        <type value="RUNNING_DEVICE_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="adb-6c4f4de2-Xkn9y4._adb-tls-connect._tcp" />
-          </Key>
-        </deviceKey>
-      </Target>
-    </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2024-05-11T17:01:21.604796800Z" />
-    <multipleDevicesSelectedInDropDown value="true" />
-    <runningDeviceTargetsSelectedWithDialog>
-      <Target>
-        <type value="RUNNING_DEVICE_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="adb-6c4f4de2-Xkn9y4._adb-tls-connect._tcp" />
-          </Key>
-        </deviceKey>
-      </Target>
-      <Target>
-        <type value="RUNNING_DEVICE_TARGET" />
+        <type value="QUICK_BOOT_TARGET" />
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
@@ -33,6 +11,19 @@
           </Key>
         </deviceKey>
       </Target>
-    </runningDeviceTargetsSelectedWithDialog>
+    </targetSelectedWithDropDown>
+    <timeTargetWasSelectedWithDropDown value="2024-05-20T14:36:04.850159100Z" />
+    <multipleDevicesSelectedInDropDown value="true" />
+    <targetsSelectedWithDialog>
+      <Target>
+        <type value="QUICK_BOOT_TARGET" />
+        <deviceKey>
+          <Key>
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\Asus\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd" />
+          </Key>
+        </deviceKey>
+      </Target>
+    </targetsSelectedWithDialog>
   </component>
 </project>

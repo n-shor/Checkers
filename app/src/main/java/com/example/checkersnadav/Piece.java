@@ -3,7 +3,7 @@ package com.example.checkersnadav;
 /**
  * Represents a single checkers piece with attributes to determine its color and whether it's a king.
  */
-class Piece
+public class Piece
 {
     private final boolean color;  // true for black, false for white
     private boolean isKing;       // true if the piece is promoted to a king

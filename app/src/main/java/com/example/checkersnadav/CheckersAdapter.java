@@ -19,7 +19,7 @@ public class CheckersAdapter extends BaseAdapter
 {
     private final Context context; // Context in which the adapter is running
     private Piece[][] boardState; // Current state of the board
-    boolean color; // Required for online play, so we know how to display the board
+    private final boolean color; // Required for online play, so we know how to display the board
 
     /**
      * Constructs a new CheckersAdapter.

@@ -262,6 +262,26 @@ public class OnlineGame extends Game {
     }
 
     /**
+     * Determines the outcome of the game based on the board's status.
+     * @return Outcome of the game (WIN, LOSS, DRAW).
+     */
+    private Statistics.Outcomes determineOutcome()
+    {
+        if (Objects.equals(board.checkGameStatus(), playerColor))
+        {
+            return WIN;
+        }
+        else if (Objects.equals(board.checkGameStatus(), Game.DRAW_STRING))
+        {
+            return DRAW;
+        }
+        else
+        {
+            return LOSS;
+        }
+    }
+
+    /**
      * Set the adapter for updating the UI based on game state changes.
      * @param adapter CheckersAdapter for the game board UI.
      */
@@ -317,26 +337,6 @@ public class OnlineGame extends Game {
             public void onCancelled(DatabaseError databaseError)
             {
                 Log.e("Failed to fetch player info", databaseError.getMessage());
-            }
-
-            /**
-             * Determines the outcome of the game based on the board's status.
-             * @return Outcome of the game (WIN, LOSS, DRAW).
-             */
-            private Statistics.Outcomes determineOutcome()
-            {
-                if (Objects.equals(board.checkGameStatus(), playerColor))
-                {
-                    return WIN;
-                }
-                else if (Objects.equals(board.checkGameStatus(), Game.DRAW_STRING))
-                {
-                    return DRAW;
-                }
-                else
-                {
-                    return LOSS;
-                }
             }
         });
     }
