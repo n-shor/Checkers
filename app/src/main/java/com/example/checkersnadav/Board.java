@@ -78,7 +78,9 @@ public class Board
         if (!piece.isKing() && Math.abs(xDst - xSrc) == 2)
         {
             performPieceCapture(xSrc, ySrc, xDst, yDst);
-            if (pieceHasMandatoryCapture(xDst, yDst))
+            // Check for a mandatory capture for a piece, or a mandatory capture for a king in case the piece just got promoted.
+            if (pieceHasMandatoryCapture(xDst, yDst) ||
+                    (((xDst == 0 && piece.isBlack() == BLACK) || (xDst == BOARD_SIZE - 1 && piece.isBlack() == WHITE)) && kingHasMandatoryCapture(xDst, yDst)))
             {
                 turn = !turn; // Maintain the turn if further captures are possible.
             }

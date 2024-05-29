@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * This activity represents the end screen for offline games, displaying the game outcome and
  * providing a navigation option to return to the main menu.
  */
-public class OfflineEndScreenActivity extends AppCompatActivity
+public class LocalEndScreenActivity extends AppCompatActivity
 {
 
     private String userId;  // Identifier for the user, used for passing between activities.
@@ -20,7 +20,7 @@ public class OfflineEndScreenActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_offline_end_screen);
+        setContentView(R.layout.activity_local_end_screen);
 
         // Retrieve user ID and the game outcome from the intent.
         userId = getIntent().getStringExtra("userId");
@@ -45,7 +45,7 @@ public class OfflineEndScreenActivity extends AppCompatActivity
      */
     public void goToMainMenu(View view)
     {
-        Intent intent = new Intent(OfflineEndScreenActivity.this, MenuActivity.class);
+        Intent intent = new Intent(LocalEndScreenActivity.this, MenuActivity.class);
         intent.putExtra("userId", userId); // Ensure the user ID is carried forward to maintain session state.
         startActivity(intent);
         finish(); // Finish this activity to remove it from the back stack.

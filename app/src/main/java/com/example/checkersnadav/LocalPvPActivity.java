@@ -20,6 +20,7 @@ public class LocalPvPActivity extends AppCompatActivity
     private GridView gridView; // The grid view that displays the checkers board.
     private CheckersAdapter adapter; // Adapter to manage the interaction between the GridView and the game data.
     private TextView turnIndicator; // TextView to display the current turn.
+    private TextView turnIndicator2; // Flipped turn indicator for the second player to look at.
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,10 +33,11 @@ public class LocalPvPActivity extends AppCompatActivity
         game = new Game();
         gridView = findViewById(R.id.grid_view);
         turnIndicator = findViewById(R.id.turn_indicator);
+        turnIndicator2 = findViewById(R.id.turn_indicator2);
         adapter = new CheckersAdapter(this, game.getBoard().getState(), Board.WHITE); // Set the board perspective to white for local PvP.
         gridView.setAdapter(adapter);
 
-        updateTurnIndicator();
+        updateTurnIndicators();
 
         // Handle touch events on the grid view for move operations.
         gridView.setOnTouchListener(new View.OnTouchListener()
@@ -73,7 +75,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         if (game.makeMove(startX, startY, flippedRow, flippedCol))
                         {
                             adapter.notifyDataSetChanged(); // Update the board if move was successful.
-                            updateTurnIndicator(); // Update turn indicator after a successful move.
+                            updateTurnIndicators(); // Update turn indicator after a successful move.
                         }
                         else
                         {
@@ -87,7 +89,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         // Check if the game has ended and move to the end screen if so.
                         if (!game.isActive())
                         {
-                            Intent intent = new Intent(LocalPvPActivity.this, OfflineEndScreenActivity.class);
+                            Intent intent = new Intent(LocalPvPActivity.this, LocalEndScreenActivity.class);
                             intent.putExtra("winner", game.getBoard().checkGameStatus()); // Pass the game result.
                             intent.putExtra("userId", userId);
                             startActivity(intent);
@@ -100,9 +102,10 @@ public class LocalPvPActivity extends AppCompatActivity
         });
     }
 
-    private void updateTurnIndicator()
+    private void updateTurnIndicators()
     {
         String turnText = "Current Turn: " + (game.getBoard().getTurn() ? "Black" : "White");
         turnIndicator.setText(turnText);
+        turnIndicator2.setText(turnText);
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/offline_end_screen"
-    tools:context=".OfflineEndScreenActivity">
+    tools:context=".LocalEndScreenActivity">
 
     <TextView
         android:id="@+id/tvWinner"

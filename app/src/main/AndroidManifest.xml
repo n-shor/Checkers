@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".OfflineEndScreenActivity"
+            android:name=".LocalEndScreenActivity"
             android:exported="false" />
         <activity
             android:name=".TutorialActivity"
