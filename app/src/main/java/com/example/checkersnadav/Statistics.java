@@ -11,6 +11,7 @@ public class Statistics
      */
     public enum Outcomes { WIN, LOSS, DRAW }
 
+    private int elo;
     private int wins;
     private int losses;
     private int draws;
@@ -22,6 +23,7 @@ public class Statistics
      */
     public Statistics()
     {
+        elo = 1000; // This is the default elo value, which is also the average of the elo of all players.
         wins = 0;
         losses = 0;
         draws = 0;
@@ -40,6 +42,7 @@ public class Statistics
      */
     public Statistics(int wins, int losses, int draws, int averageMovesPerGame, int topMoves)
     {
+        elo = 1000; // This is the default elo value, which is also the average of the elo of all players.
         this.wins = wins;
         this.losses = losses;
         this.draws = draws;
@@ -48,22 +51,46 @@ public class Statistics
     }
 
     /**
-     * Updates the player's statistics based on the outcome of a game and the number of moves made.
+     * Updates the player's statistics based on the outcome of a game, the opponent's elo and the number of moves made.
      *
+     * @param opponentElo  The opposing player's elo.
      * @param outcome      The outcome of the game (win, loss, or draw).
      * @param moves        The number of moves made in the game.
      * @param hasDailyBonus Flag indicating whether a daily bonus is applied to wins.
      */
-    public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus)
+    public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus, int opponentElo)
     {
         int totalGames = wins + losses + draws;
         averageMovesPerGame = (averageMovesPerGame * totalGames + moves) / (totalGames + 1);
+
+        // To calculate the Winning probability of this player
+        float p1 = probability(elo, opponentElo);
+
+        // To calculate the winning probability of the other player
+        float p2 = 1 - p1;
+
+        // If this player won
+        if (outcome == Outcomes.WIN)
+        {
+            elo = elo + (int)(30 * (1 - p1));
+        }
+        // If the other player won
+        else if (outcome == Outcomes.LOSS)
+        {
+            elo = elo + (int)(30 * (0 - p1));
+        }
+        // Draw, so we'll give each player a win and then a loss
+        else
+        {
+            elo = elo + (int)(30 * (1 - p1));
+            elo = elo + (int)(30 * (0 - p1));
+        }
 
         switch (outcome)
         {
             case WIN:
             {
-                wins += hasDailyBonus ? 3 : 1;
+                wins += hasDailyBonus ? 3 : 1; // 3 wins for daily bonus and only 1 win for winning normally.
                 break;
             }
             case LOSS:
@@ -140,4 +167,26 @@ public class Statistics
     {
         this.topMoves = topMoves;
     }
+
+    public int getElo()
+    {
+        return elo;
+    }
+
+    public void setElo(int elo)
+    {
+        this.elo = elo;
+    }
+
+    /**
+     * Helper function to calculate the probability of a victory for a player to win a game against another player
+     * @param rating1 the first player's rating.
+     * @param rating2 the second player's rating.
+     * @return the probability of the first player to win a game against the second player.
+     */
+    static float probability(float rating1, float rating2)
+    {
+        return 1.0f / (1 * (float)(Math.pow(10, (rating2 - rating1) / 400)));
+    }
+
 }
