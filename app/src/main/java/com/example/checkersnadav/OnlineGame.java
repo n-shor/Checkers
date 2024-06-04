@@ -310,7 +310,7 @@ public class OnlineGame extends Game {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         // Fetch player details and update statistics
-        usersRef.child(playerId).addListenerForSingleValueEvent(new ValueEventListener()
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -318,17 +318,18 @@ public class OnlineGame extends Game {
                 if (dataSnapshot.exists())
                 {
                     // Extract and update player statistics
-                    Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
+                    Statistics stats = dataSnapshot.child(playerId).child("stats").getValue(Statistics.class);
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", new Locale("he", "IL"));
                     sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));
                     String todayInIsrael = sdf.format(new Date());
 
                     // Determine if the player earns a daily bonus
-                    boolean hasDailyBonus = !todayInIsrael.equals(dataSnapshot.child("lastWinDate").getValue(String.class));
+                    boolean hasDailyBonus = !todayInIsrael.equals(dataSnapshot.child(playerId).child("lastWinDate").getValue(String.class));
                     Statistics.Outcomes outcome = determineOutcome();
 
                     // Update statistics based on game outcome
-                    stats.updateStatistics(outcome, playerMoves, hasDailyBonus);
+                    String opponentId = playerColor.equals(Game.WHITE_STRING) ? blackId : whiteId;
+                    stats.updateStatistics(outcome, playerMoves, hasDailyBonus, dataSnapshot.child(opponentId).child("stats").child("elo").getValue(Integer.class));
                     usersRef.child(playerId).child("stats").setValue(stats);
                 }
             }
