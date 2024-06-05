@@ -22,6 +22,7 @@ public class LoseScreen extends AppCompatActivity
 {
 
     private TextView usernameTextView;  // TextView to display the player's username.
+    private TextView newEloTextView; // TextView for displaying the user's new elo after the game
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,6 +31,7 @@ public class LoseScreen extends AppCompatActivity
         setContentView(R.layout.activity_lose_screen);
 
         usernameTextView = findViewById(R.id.usernameTextView);
+        newEloTextView = findViewById(R.id.newEloTextView);
         Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
         // Retrieve the userId passed from the previous activity.
@@ -48,6 +50,7 @@ public class LoseScreen extends AppCompatActivity
                 {
                     // Set the username in the TextView.
                     usernameTextView.setText(dataSnapshot.child("username").getValue(String.class));
+                    newEloTextView.setText("New Elo: " + dataSnapshot.child("stats").child("elo").getValue(Integer.class));
                 }
                 else
                 {

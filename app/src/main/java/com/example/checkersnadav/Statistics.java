@@ -53,9 +53,9 @@ public class Statistics
     /**
      * Updates the player's statistics based on the outcome of a game, the opponent's elo and the number of moves made.
      *
-     * @param opponentElo  The opposing player's elo.
-     * @param outcome      The outcome of the game (win, loss, or draw).
-     * @param moves        The number of moves made in the game.
+     * @param opponentElo   The opposing player's elo.
+     * @param outcome       The outcome of the game (win, loss, or draw).
+     * @param moves         The number of moves made in the game.
      * @param hasDailyBonus Flag indicating whether a daily bonus is applied to wins.
      */
     public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus, int opponentElo)
@@ -64,42 +64,28 @@ public class Statistics
         averageMovesPerGame = (averageMovesPerGame * totalGames + moves) / (totalGames + 1);
 
         // To calculate the Winning probability of this player
-        float p1 = probability(elo, opponentElo);
+        float p = probability(elo, opponentElo);
 
-        // To calculate the winning probability of the other player
-        float p2 = 1 - p1;
-
-        // If this player won
-        if (outcome == Outcomes.WIN)
-        {
-            elo = elo + (int)(30 * (1 - p1));
-        }
-        // If the other player won
-        else if (outcome == Outcomes.LOSS)
-        {
-            elo = elo + (int)(30 * (0 - p1));
-        }
-        // Draw, so we'll give each player a win and then a loss
-        else
-        {
-            elo = elo + (int)(30 * (1 - p1));
-            elo = elo + (int)(30 * (0 - p1));
-        }
-
+        // Elo change calculation
+        int k = 30;
+        float eloChange;
         switch (outcome)
         {
             case WIN:
             {
+                eloChange = k * (1 - p);
                 wins += hasDailyBonus ? 3 : 1; // 3 wins for daily bonus and only 1 win for winning normally.
                 break;
             }
             case LOSS:
             {
+                eloChange = k * (0 - p);
                 losses++;
                 break;
             }
             case DRAW:
             {
+                eloChange = k * (0.5f - p);
                 draws++;
                 break;
             }
@@ -108,6 +94,8 @@ public class Statistics
                 throw new IllegalArgumentException("Unknown game outcome");
             }
         }
+
+        elo = elo + (int)eloChange;
 
         if (moves > topMoves)
         {
@@ -186,7 +174,6 @@ public class Statistics
      */
     static float probability(float rating1, float rating2)
     {
-        return 1.0f / (1 * (float)(Math.pow(10, (rating2 - rating1) / 400)));
+        return 1.0f / (1.0f + (float)(Math.pow(10, (rating2 - rating1) / 400)));
     }
-
 }

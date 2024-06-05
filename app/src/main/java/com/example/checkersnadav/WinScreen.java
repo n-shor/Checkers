@@ -27,6 +27,7 @@ public class WinScreen extends AppCompatActivity
 {
 
     private TextView usernameTextView; // TextView for displaying the user's username
+    private TextView newEloTextView; // TextView for displaying the user's new elo after the game
     private TextView bonusActivatedTextView; // TextView for indicating the daily bonus activation
 
     /**
@@ -43,6 +44,7 @@ public class WinScreen extends AppCompatActivity
         setContentView(R.layout.activity_win_screen);
 
         usernameTextView = findViewById(R.id.usernameTextView);
+        newEloTextView = findViewById(R.id.newEloTextView);
         bonusActivatedTextView = findViewById(R.id.bonusActivatedTextView);
         Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
@@ -62,7 +64,7 @@ public class WinScreen extends AppCompatActivity
                 {
                     // Display the username in the username TextView
                     usernameTextView.setText(dataSnapshot.child("username").getValue(String.class));
-
+                    newEloTextView.setText("New Elo: " + dataSnapshot.child("stats").child("elo").getValue(Integer.class));
                     // Format the current date to check against the last win date
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", new Locale("he", "IL"));
                     sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));  // Set timezone to Israel

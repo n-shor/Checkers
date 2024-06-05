@@ -104,11 +104,13 @@ public class CheckersAdapter extends BaseAdapter
 
         if ((row + col) % 2 == 0)
         {
-            imageView.setBackgroundColor(Color.rgb(249, 228, 200)); // Light squares
+            //482B19
+            //EBD1B8
+            imageView.setBackgroundColor(Color.rgb(235, 209, 184)); // Light squares
         }
         else
         {
-            imageView.setBackgroundColor(Color.rgb(101, 67, 33)); // Dark squares
+            imageView.setBackgroundColor(Color.rgb(72, 43, 25)); // Dark squares
         }
 
         // Set the piece image based on the type of piece and whether it's a king

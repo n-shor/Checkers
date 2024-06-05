@@ -7,28 +7,38 @@
     android:background="@drawable/activity_background"
     tools:context=".StatsActivity">
 
-    <!-- TextView for displaying user statistics -->
 
-    <!-- Button to go back to MenuActivity -->
+    <TextView
+        android:id="@+id/titleTextView"
+        style="@style/ShadowedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="32dp"
+        android:text="Title"
+        android:textSize="42sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/statsTextView"
         style="@style/ShadowedText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="User Stats Here"
-        android:textSize="30dp"
-        app:layout_constraintHorizontal_bias="0.2"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="32dp"
+        android:text="User Stats"
+        android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/backButton"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="70dp"
         android:background="@drawable/button_background"
         android:text="Back"
         android:textColor="#FFFFFF"

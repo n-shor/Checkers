@@ -69,8 +69,11 @@ public class OnlinePvPActivity extends AppCompatActivity
                     String opponentName = dataSnapshot.child(!playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
                     String playerName = dataSnapshot.child(playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("username").getValue(String.class);
 
-                    tvTop.setText(opponentName); // Display opponent name at the top
-                    tvBottom.setText(playerName); // Display player name at the bottom
+                    int opponentElo = dataSnapshot.child(!playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("stats").child("elo").getValue(Integer.class);
+                    int playerElo = dataSnapshot.child(playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id).child("stats").child("elo").getValue(Integer.class);
+
+                    tvTop.setText(opponentName + " (" + opponentElo + ")"); // Display opponent name and elo at the top
+                    tvBottom.setText(playerName + " (" + playerElo + ")"); // Display player name and elo at the bottom
                 }
             }
 

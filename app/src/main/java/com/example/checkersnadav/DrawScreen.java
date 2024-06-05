@@ -22,6 +22,7 @@ public class DrawScreen extends AppCompatActivity
 {
 
     private TextView usernameTextView; // TextView to display the user's username
+    private TextView newEloTextView; // TextView for displaying the user's new elo after the game
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,6 +31,7 @@ public class DrawScreen extends AppCompatActivity
         setContentView(R.layout.activity_lose_screen); // Note: Uses the lose screen layout, might want to rename or confirm this is intentional.
 
         usernameTextView = findViewById(R.id.usernameTextView);
+        newEloTextView = findViewById(R.id.newEloTextView);
         Button backToMenuButton = findViewById(R.id.backToMenuButton);
 
         // Retrieve the user ID and username from the passed intent.
@@ -46,6 +48,7 @@ public class DrawScreen extends AppCompatActivity
                 {
                     // Display the username on the screen if it exists in the database.
                     usernameTextView.setText(dataSnapshot.child("username").getValue(String.class));
+                    newEloTextView.setText("New Elo: " + dataSnapshot.child("stats").child("elo").getValue(Integer.class));
                 }
             }
 

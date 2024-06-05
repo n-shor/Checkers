@@ -20,6 +20,8 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class StatsActivity extends AppCompatActivity
 {
+    private TextView titleTextView; // TextView for displaying the title of the screen
+    private TextView statsTextView; // TextView for displaying the user's statistics
 
     /**
      * Called when the activity is starting.
@@ -38,6 +40,9 @@ public class StatsActivity extends AppCompatActivity
         // Retrieve the user's ID from the intent passed to this activity
         Intent intent = getIntent();
         String userId = intent.getStringExtra("userId");
+
+        titleTextView = findViewById(R.id.titleTextView);
+        statsTextView = findViewById(R.id.statsTextView);
 
         // Fetch and display user's statistics
         fetchUserStats(userId);
@@ -73,15 +78,16 @@ public class StatsActivity extends AppCompatActivity
                 {
                     Statistics stats = dataSnapshot.child("stats").getValue(Statistics.class);
 
+                    titleTextView.setText(String.format("Player stats of %s:", dataSnapshot.child("username").getValue()));
+
                     // Construct a string that represents the user statistics
                     String userStats = String.format(
-                            " Player Stats of %s:\n\n\n Elo: %d\n\nGames Won: %d\n\n Games Lost: %d\n\n Draws: %d\n\n Avg Moves/Game: %d\n\n Most Moves in\n One Game: %d",
-                            dataSnapshot.child("username").getValue(), stats.getElo(), stats.getWins(), stats.getLosses(), stats.getDraws(),
+                            "Elo: %d\n\nGames Won: %d\n\nGames Lost: %d\n\nDraws: %d\n\nAvg Moves/Game: %d\n\nMost Moves in One Game: %d",
+                            stats.getElo(), stats.getWins(), stats.getLosses(), stats.getDraws(),
                             stats.getAverageMovesPerGame(), stats.getTopMoves()
                     );
 
                     // Update the TextView in the UI to display the statistics
-                    TextView statsTextView = findViewById(R.id.statsTextView);
                     statsTextView.setText(userStats);
                 }
             }
