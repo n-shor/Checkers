@@ -64,7 +64,7 @@ public class Statistics
         averageMovesPerGame = (averageMovesPerGame * totalGames + moves) / (totalGames + 1);
 
         // To calculate the Winning probability of this player
-        float p = probability(elo, opponentElo);
+        float p = winProbability(elo, opponentElo);
 
         // Elo change calculation
         int k = 30;
@@ -172,7 +172,7 @@ public class Statistics
      * @param rating2 the second player's rating.
      * @return the probability of the first player to win a game against the second player.
      */
-    static float probability(float rating1, float rating2)
+    private static float winProbability(float rating1, float rating2)
     {
         return 1.0f / (1.0f + (float)(Math.pow(10, (rating2 - rating1) / 400)));
     }

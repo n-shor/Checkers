@@ -159,6 +159,7 @@
 +class Statistics
 {
     +public enum Outcomes
+    -private int elo
     -private int wins
     -private int losses
     -private int draws
@@ -166,7 +167,7 @@
     -private int topMoves
     +public Statistics()
     +public Statistics(int wins, int losses, int draws, int averageMovesPerGame, int topMoves)
-    +public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus)
+    +public void updateStatistics(Outcomes outcome, int moves, boolean hasDailyBonus, int opponentElo)
     +public int getWins()
     +public void setWins(int wins)
     +public int getLosses()
@@ -177,6 +178,9 @@
     +public void setAverageMovesPerGame(int averageMovesPerGame)
     +public int getTopMoves()
     +public void setTopMoves(int topMoves)
+    +public int getElo()
+    +public void setElo(int elo)
+    -private static float winProbability(float rating1, float rating2)
 }
 
 Game *-- Board
