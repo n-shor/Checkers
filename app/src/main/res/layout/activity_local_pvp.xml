@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,6 +5,35 @@
     android:layout_height="match_parent"
     android:background="@drawable/activity_background"
     tools:context=".LocalPvPActivity">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backToMenuButtonReversed"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="Back to main menu"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"
+        android:rotation="180"
+        app:layout_constraintBottom_toTopOf="@id/turn_indicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <TextView
+        android:id="@+id/turn_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/ShadowedText"
+        android:text="Current Turn: White"
+        android:textColor="#FFFFFF"
+        android:textSize="38sp"
+        app:layout_constraintBottom_toTopOf="@id/grid_view"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backToMenuButtonReversed"
+        app:layout_constraintVertical_bias="0.5" />
 
     <GridView
         android:id="@+id/grid_view"
@@ -16,27 +44,10 @@
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp"
         android:stretchMode="columnWidth"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/turn_indicator"
+        app:layout_constraintBottom_toTopOf="@id/turn_indicator2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
-
-
-    <TextView
-        android:id="@+id/turn_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/ShadowedText"
-        android:layout_marginTop="16dp"
-        android:text="Current Turn: White"
-        android:textColor="#FFFFFF"
-        android:textSize="38sp"
-        app:layout_constraintBottom_toTopOf="@id/grid_view"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/turn_indicator2"
@@ -47,10 +58,23 @@
         android:text="Current Turn: White"
         android:textColor="#FFFFFF"
         android:textSize="38sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grid_view"
+        app:layout_constraintBottom_toTopOf="@id/backToMenuButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grid_view"
         app:layout_constraintVertical_bias="0.5" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backToMenuButton"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="Back to main menu"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/turn_indicator2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
 </androidx.constraintlayout.widget.ConstraintLayout>

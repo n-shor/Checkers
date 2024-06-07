@@ -1,14 +1,17 @@
 package com.example.checkersnadav;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
@@ -30,6 +33,12 @@ public class LocalPvPActivity extends AppCompatActivity
     private int heldPosition; // The position of the currently held piece
     private Piece heldPiece; // The currently held piece
 
+    /**
+     * Called when the activity is first created.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -161,8 +170,51 @@ public class LocalPvPActivity extends AppCompatActivity
                 return true; // Touch event was handled.
             }
         });
+
+        // Set up the back buttons
+        Button buttonBackReversed = findViewById(R.id.backToMenuButtonReversed);
+        buttonBackReversed.setOnClickListener(view -> showBackConfirmationDialog(userId));
+
+        Button buttonBack = findViewById(R.id.backToMenuButton);
+        buttonBack.setOnClickListener(view -> showBackConfirmationDialog(userId));
     }
 
+    /**
+     * Shows a confirmation dialog to confirm if the user wants to navigate back to the main menu.
+     *
+     * @param userId The user ID to be passed back to the main menu.
+     */
+    private void showBackConfirmationDialog(String userId) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Confirm")
+                .setMessage("Are you sure you want to go back to the main menu?")
+                .setPositiveButton(android.R.string.yes, (dialogInterface, which) -> navigateBackToMainMenu(userId))
+                .setNeutralButton(android.R.string.no, null)
+                .setIcon(R.drawable.logo)
+                .show();
+
+        // Set the text color of the dialog buttons to black
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+    }
+
+    /**
+     * Navigates back to the main menu, passing the user ID via SharedPreferences.
+     *
+     * @param userId The user ID to be passed back to the main menu.
+     */
+    private void navigateBackToMainMenu(String userId)
+    {
+        // Create an Intent to navigate to MainMenuActivity
+        Intent intent = new Intent(LocalPvPActivity.this, MenuActivity.class);
+        intent.putExtra("userId", userId);
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Updates the turn indicators based on the current player's turn.
+     */
     private void updateTurnIndicators()
     {
         String turnText = "Current Turn: " + (game.getBoard().getTurn() ? "Black" : "White");
