@@ -49,11 +49,11 @@ public class TutorialActivity extends AppCompatActivity
                 "- If an illegal move is played, a message will display, informing the player that the move is illegal.</p><br>" +
                 "<h2>Game Modes:</h2>" +
                 "<p>- Local PvP: Play offline against a friend on the same device.<br>" +
-                "- Online PvP: Create a room or join an existing one to play against other players online.</p><br>" +
+                "- Online PvP: Create a room or join an existing one to play against other players online. This game mode features an ELO based rating system, where each player has a rating that changes based on the results of their games.</p><br>" +
                 "<h2>Statistics:</h2>" +
                 "<p>- Visit the Stats page to view your game statistics and performance. Note that statistics only apply to online games.</p><br>" +
                 "<p><h2>Daily Bonuses:</h2>" +
-                "<p>- Every day, your first online win will award you 3 wins (the wins will be added to your user statistics)!</p><br>" +
+                "<p>- Every day, your first online win will award you 3 wins, and will triple the points added to your ELO rating that game (the wins will be added to your user statistics)!</p><br>" +
                 "<p><strong>Enjoy the game, and may the best strategist win!</strong></p>";
 
         // Apply the HTML formatted text to the TextView

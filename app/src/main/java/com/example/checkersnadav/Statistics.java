@@ -23,7 +23,7 @@ public class Statistics
      */
     public Statistics()
     {
-        elo = 1000; // This is the default elo value, which is also the average of the elo of all players.
+        elo = 1000; // This is the default elo value
         wins = 0;
         losses = 0;
         draws = 0;
@@ -42,7 +42,7 @@ public class Statistics
      */
     public Statistics(int wins, int losses, int draws, int averageMovesPerGame, int topMoves)
     {
-        elo = 1000; // This is the default elo value, which is also the average of the elo of all players.
+        elo = 1000; // This is the default elo value
         this.wins = wins;
         this.losses = losses;
         this.draws = draws;
@@ -73,7 +73,7 @@ public class Statistics
         {
             case WIN:
             {
-                eloChange = k * (1 - p);
+                eloChange = (hasDailyBonus ? 3 : 1) * k * (1 - p);
                 wins += hasDailyBonus ? 3 : 1; // 3 wins for daily bonus and only 1 win for winning normally.
                 break;
             }
