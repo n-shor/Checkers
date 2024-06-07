@@ -84,10 +84,7 @@ public class CheckersAdapter extends BaseAdapter
         if (convertView == null)
         {
             imageView = new SquareImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-            ));
+            imageView.setLayoutParams(new GridView.LayoutParams(140, 140));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setAdjustViewBounds(true);
         }

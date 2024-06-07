@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -58,16 +57,20 @@ public class LocalPvPActivity extends AppCompatActivity
 
                 if (position == GridView.INVALID_POSITION)
                 {
-                    if (action == MotionEvent.ACTION_UP && draggedPiece != null)
+                    if (draggedPiece != null)
                     {
                         // Remove dragged piece and highlighting if dropped outside the board
                         ((ViewGroup) gridView.getParent()).removeView(draggedPiece);
                         draggedPiece = null;
-                        adapter.setHighlightedPosition(-1);
-                        if (originalView != null) {
+                        if (originalView != null)
+                        {
                             originalView.setVisibility(View.VISIBLE);
                         }
+                        adapter.setDraggingPosition(-1);
+                        game.getBoard().setPieceInPosition(heldPiece, heldPosition); // Put the held piece back in
+                        adapter.notifyDataSetChanged();
                     }
+                    adapter.setHighlightedPosition(-1);
                     return false; // Invalid touch position, outside of grid bounds.
                 }
 
@@ -118,12 +121,15 @@ public class LocalPvPActivity extends AppCompatActivity
                         adapter.setDraggingPosition(-1);
                         adapter.setHighlightedPosition(-1);
                         game.getBoard().setPieceInPosition(heldPiece, heldPosition); // Put the held piece back in for board evaluations
+                        adapter.notifyDataSetChanged();
+
                         if (draggedPiece != null)
                         {
                             ((ViewGroup) gridView.getParent()).removeView(draggedPiece);
                             draggedPiece = null;
                         }
-                        if (originalView != null && originalView instanceof ImageView) {
+                        if (originalView != null && originalView instanceof ImageView)
+                        {
                             Piece originalPiece = (Piece) adapter.getItem(position);
                             if (originalPiece != null)
                             {
@@ -135,10 +141,6 @@ public class LocalPvPActivity extends AppCompatActivity
                         {
                             adapter.notifyDataSetChanged(); // Update the board if move was successful.
                             updateTurnIndicators(); // Update turn indicator after a successful move.
-                        }
-                        else
-                        {
-                            Toast.makeText(LocalPvPActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
                         }
 
                         // Reset the start positions for the next move.
