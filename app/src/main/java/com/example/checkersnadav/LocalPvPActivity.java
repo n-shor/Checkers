@@ -49,7 +49,7 @@ public class LocalPvPActivity extends AppCompatActivity
             public boolean onTouch(View v, MotionEvent event)
             {
                 int action = event.getActionMasked();
-                int position = gridView.pointToPosition((int)event.getX(), (int)event.getY());
+                int position = gridView.pointToPosition((int) event.getX(), (int) event.getY());
 
                 if (position == GridView.INVALID_POSITION)
                 {
@@ -69,9 +69,15 @@ public class LocalPvPActivity extends AppCompatActivity
                         // Record the start position of a drag (potential move).
                         startX = flippedRow;
                         startY = flippedCol;
+                        adapter.setDraggingPosition(position);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        adapter.setHighlightedPosition(position);
                         break;
                     case MotionEvent.ACTION_UP:
                         // Attempt to make a move from the start position to the end position.
+                        adapter.setDraggingPosition(-1);
+                        adapter.setHighlightedPosition(-1);
                         if (game.makeMove(startX, startY, flippedRow, flippedCol))
                         {
                             adapter.notifyDataSetChanged(); // Update the board if move was successful.

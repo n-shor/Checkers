@@ -20,6 +20,8 @@ public class CheckersAdapter extends BaseAdapter
     private final Context context; // Context in which the adapter is running
     private Piece[][] boardState; // Current state of the board
     private final boolean color; // Required for online play, so we know how to display the board
+    private int draggingPosition = -1; // Position being dragged
+    private int highlightedPosition = -1; // Position currently highlighted
 
     /**
      * Constructs a new CheckersAdapter.
@@ -78,16 +80,20 @@ public class CheckersAdapter extends BaseAdapter
     public View getView(int position, View convertView, ViewGroup parent)
     {
         Log.d("CheckersAdapter", "Getting view for position: " + position);
-        ImageView imageView;
+        SquareImageView imageView;
         if (convertView == null)
         {
-            imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 150)); // Check size
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView = new SquareImageView(context);
+            imageView.setLayoutParams(new GridView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            ));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imageView.setAdjustViewBounds(true);
         }
         else
         {
-            imageView = (ImageView) convertView;
+            imageView = (SquareImageView) convertView;
         }
 
         int row = position / Board.BOARD_SIZE;
@@ -102,15 +108,29 @@ public class CheckersAdapter extends BaseAdapter
 
         Piece piece = boardState[row][col];
 
-        if ((row + col) % 2 == 0)
+        int lightSquareColor = Color.rgb(235, 209, 184);
+        int darkSquareColor = Color.rgb(72, 43, 25);
+        int highlightedLightColor = Color.rgb(255, 239, 214);
+        int highlightedDarkColor = Color.rgb(152, 123, 95);
+
+        if (position == highlightedPosition)
         {
-            //482B19
-            //EBD1B8
-            imageView.setBackgroundColor(Color.rgb(235, 209, 184)); // Light squares
+            if ((row + col) % 2 == 0)
+            {
+                imageView.setBackgroundColor(highlightedLightColor); // Highlighted light square
+            }
+            else
+            {
+                imageView.setBackgroundColor(highlightedDarkColor); // Highlighted dark square
+            }
+        }
+        else if ((row + col) % 2 == 0)
+        {
+            imageView.setBackgroundColor(lightSquareColor); // Light squares
         }
         else
         {
-            imageView.setBackgroundColor(Color.rgb(72, 43, 25)); // Dark squares
+            imageView.setBackgroundColor(darkSquareColor); // Dark squares
         }
 
         // Set the piece image based on the type of piece and whether it's a king
@@ -139,5 +159,23 @@ public class CheckersAdapter extends BaseAdapter
         notifyDataSetChanged(); // Notify the adapter that the data has changed, prompting a UI update
     }
 
+    /**
+     * Sets the position currently being dragged.
+     * @param position The position of the item being dragged.
+     */
+    public void setDraggingPosition(int position)
+    {
+        this.draggingPosition = position;
+        notifyDataSetChanged(); // Notify the adapter to update the view
+    }
 
+    /**
+     * Sets the position currently highlighted.
+     * @param position The position of the item to highlight.
+     */
+    public void setHighlightedPosition(int position)
+    {
+        this.highlightedPosition = position;
+        notifyDataSetChanged(); // Notify the adapter to update the view
+    }
 }
