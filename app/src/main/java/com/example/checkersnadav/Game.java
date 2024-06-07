@@ -9,7 +9,6 @@ public class Game
 {
     protected Board board;  // The game board containing the pieces and state.
     protected boolean isActive;  // Indicates whether the game is currently active.
-
     public static final String WHITE_STRING = "WHITE";  // Constant for representing the white player.
     public static final String BLACK_STRING = "BLACK";  // Constant for representing the black player.
     public static final String DRAW_STRING = "DRAW";  // Constant for a draw outcome.
@@ -69,5 +68,16 @@ public class Game
     public boolean isActive()
     {
         return isActive;
+    }
+
+    /**
+     * Forfeits the game for the player of the given color.
+     *
+     * @param color The player's color.
+     */
+    public void forfeitGame(String color)
+    {
+        board.forfeit(color);
+        isActive = false;
     }
 }

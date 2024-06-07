@@ -15,6 +15,8 @@ public class Board
     private int lastMoveX = BOARD_SIZE - 1; // Tracks the x-coordinate of the last move.
     private int lastMoveY = BOARD_SIZE - 2; // Tracks the y-coordinate of the last move, ensuring it's initially set on a black square.
 
+    private String forfeit; // The color of the player who forfeited the game
+
     /**
      * Initializes a new Board with pieces in their standard positions for a game of checkers.
      */
@@ -22,6 +24,7 @@ public class Board
     {
         state = new Piece[BOARD_SIZE][BOARD_SIZE];
         turn = WHITE; // White starts the game.
+        forfeit = null;
 
         // Initialize board: placing pieces in the correct starting positions.
         for (int i = 0; i < BOARD_SIZE; i++)
@@ -180,6 +183,15 @@ public class Board
      */
     public String getWinner()
     {
+        if (Game.WHITE_STRING.equals(forfeit))
+        {
+            return Game.BLACK_STRING;
+        }
+        else if (Game.BLACK_STRING.equals(forfeit))
+        {
+            return Game.WHITE_STRING;
+        }
+
         boolean whiteHasPieces = false;
         boolean blackHasPieces = false;
         boolean whiteHasMoves = false;
@@ -568,6 +580,27 @@ public class Board
     public void setPieceInPosition(Piece piece, int position)
     {
         state[position / BOARD_SIZE][position % BOARD_SIZE] = piece;
+    }
+
+    /**
+     * Forfeits the game by setting the forfeiter's color to the given argument.
+     *
+     * @param color The color of the forfeiter.
+     */
+    public void forfeit(String color)
+    {
+        forfeit = color;
+    }
+
+    /**
+     * Gets the color of the player who forfeited, if a player forfeited.
+     * This method is used in online play to synchronize the turn state across devices.
+     *
+     * @return The color of the player who forfeited (or null if nobody forfeited yet).
+     */
+    public String getForfeit()
+    {
+        return forfeit;
     }
 
     /**

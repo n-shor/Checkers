@@ -23,7 +23,8 @@ import java.util.TimeZone;
  * This class handles synchronization of the game state with a Firebase backend,
  * ensuring that all moves made by players are updated in real-time across different sessions.
  */
-public class OnlineGame extends Game {
+public class OnlineGame extends Game
+{
     private final String whiteId; // Firebase user ID for the player using white pieces.
     private final String blackId; // Firebase user ID for the player using black pieces.
     private final String gameId; // Unique game identifier for the Firebase database.
@@ -84,6 +85,7 @@ public class OnlineGame extends Game {
                         // Update internal state tracking based on Firebase data
                         board.setLastMoveX(dataSnapshot.child("lastMoveX").getValue(Integer.class));
                         board.setLastMoveY(dataSnapshot.child("lastMoveY").getValue(Integer.class));
+                        board.forfeit(dataSnapshot.child("forfeit").getValue(String.class));
                         board.setMovesSinceCaptureOrKing(dataSnapshot.child("movesSinceCaptureOrKing").getValue(Integer.class));
                         updateLocalBoardState(boardState);
                         adapter.updateGameState(board.getState());
@@ -175,6 +177,7 @@ public class OnlineGame extends Game {
         gameRef.child("lastMoveY").setValue(board.getLastMoveY());
         gameRef.child("movesSinceCaptureOrKing").setValue(board.getMovesSinceCaptureOrKing());
         gameRef.child("isActive").setValue(isActive);
+        gameRef.child("forfeit").setValue(board.getForfeit());
     }
 
     /**
@@ -288,6 +291,20 @@ public class OnlineGame extends Game {
     public void setAdapter(CheckersAdapter adapter)
     {
         this.adapter = adapter;
+    }
+
+    /**
+     * Forfeits the game for the player of the given color, and makes sure to update the state of the board in the database.
+     *
+     * @param color The player's color.
+     */
+    @Override
+    public void forfeitGame(String color)
+    {
+        board.forfeit(color);
+        isActive = false;
+        updateGameStateInFirebase();
+        finishGame();
     }
 
     /**

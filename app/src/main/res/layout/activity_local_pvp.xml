@@ -7,10 +7,10 @@
     tools:context=".LocalPvPActivity">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backToMenuButtonReversed"
+        android:id="@+id/forfeitButtonReversed"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-        android:text="Back to main menu"
+        android:text="Forfeit"
         android:background="@drawable/button_background"
         android:textColor="#FFFFFF"
         android:rotation="180"
@@ -32,7 +32,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/backToMenuButtonReversed"
+        app:layout_constraintTop_toBottomOf="@id/forfeitButtonReversed"
         app:layout_constraintVertical_bias="0.5" />
 
     <GridView
@@ -59,17 +59,17 @@
         android:textColor="#FFFFFF"
         android:textSize="38sp"
         app:layout_constraintTop_toBottomOf="@id/grid_view"
-        app:layout_constraintBottom_toTopOf="@id/backToMenuButton"
+        app:layout_constraintBottom_toTopOf="@id/forfeitButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backToMenuButton"
+        android:id="@+id/forfeitButton"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-        android:text="Back to main menu"
+        android:text="Forfeit"
         android:background="@drawable/button_background"
         android:textColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/turn_indicator2"

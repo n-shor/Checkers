@@ -122,7 +122,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         {
                             draggedPiece.setVisibility(View.VISIBLE);
                             draggedPiece.setX(event.getRawX() - draggedPiece.getWidth() / 2);
-                            draggedPiece.setY(event.getRawY() - draggedPiece.getHeight());
+                            draggedPiece.setY(event.getRawY() - (draggedPiece.getHeight()));
                         }
                         break;
                     case MotionEvent.ACTION_UP:
@@ -171,24 +171,25 @@ public class LocalPvPActivity extends AppCompatActivity
             }
         });
 
-        // Set up the back buttons
-        Button buttonBackReversed = findViewById(R.id.backToMenuButtonReversed);
-        buttonBackReversed.setOnClickListener(view -> showBackConfirmationDialog(userId));
+        // Set up the forfeit buttons
+        Button buttonBackReversed = findViewById(R.id.forfeitButtonReversed);
+        buttonBackReversed.setOnClickListener(view -> showBackConfirmationDialog(userId, Game.BLACK_STRING));
 
-        Button buttonBack = findViewById(R.id.backToMenuButton);
-        buttonBack.setOnClickListener(view -> showBackConfirmationDialog(userId));
+        Button buttonBack = findViewById(R.id.forfeitButton);
+        buttonBack.setOnClickListener(view -> showBackConfirmationDialog(userId, Game.WHITE_STRING));
     }
 
     /**
-     * Shows a confirmation dialog to confirm if the user wants to navigate back to the main menu.
+     * Shows a confirmation dialog to confirm if the user wants to forfeit.
      *
      * @param userId The user ID to be passed back to the main menu.
+     * @param color The color of the forfeiting user.
      */
-    private void showBackConfirmationDialog(String userId) {
+    private void showBackConfirmationDialog(String userId, String color) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Confirm")
-                .setMessage("Are you sure you want to go back to the main menu?")
-                .setPositiveButton(android.R.string.yes, (dialogInterface, which) -> navigateBackToMainMenu(userId))
+                .setMessage("Are you sure you want to forfeit?")
+                .setPositiveButton(android.R.string.yes, (dialogInterface, which) -> forfeit(userId, color))
                 .setNeutralButton(android.R.string.no, null)
                 .setIcon(R.drawable.logo)
                 .show();
@@ -203,10 +204,11 @@ public class LocalPvPActivity extends AppCompatActivity
      *
      * @param userId The user ID to be passed back to the main menu.
      */
-    private void navigateBackToMainMenu(String userId)
+    private void forfeit(String userId, String color)
     {
-        // Create an Intent to navigate to MainMenuActivity
-        Intent intent = new Intent(LocalPvPActivity.this, MenuActivity.class);
+        game.forfeitGame(color);
+        Intent intent = new Intent(LocalPvPActivity.this, LocalEndScreenActivity.class);
+        intent.putExtra("winner", game.getBoard().checkGameStatus()); // Pass the game result.
         intent.putExtra("userId", userId);
         startActivity(intent);
         finish();

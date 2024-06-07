@@ -1,15 +1,18 @@
 package com.example.checkersnadav;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +47,12 @@ public class OnlinePvPActivity extends AppCompatActivity
     private int heldPosition; // The position of the currently held piece
     private Piece heldPiece; // The currently held piece
 
+    /**
+     * Called when the activity is first created.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -120,23 +129,7 @@ public class OnlinePvPActivity extends AppCompatActivity
                     // Check if the game has ended
                     if (isGameActive != null && !isGameActive)
                     {
-                        Intent intent;
-                        if (Objects.equals(game.getBoard().checkGameStatus(), playerColor))
-                        {
-                            intent = new Intent(OnlinePvPActivity.this, WinScreen.class);
-                        }
-                        else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING))
-                        {
-                            intent = new Intent(OnlinePvPActivity.this, DrawScreen.class);
-                        }
-                        else
-                        {
-                            intent = new Intent(OnlinePvPActivity.this, LoseScreen.class);
-                        }
-
-                        intent.putExtra("userId", playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id);
-                        startActivity(intent);
-                        finish();
+                        moveToResultsScreen();
                     }
                 }
             }
@@ -147,6 +140,61 @@ public class OnlinePvPActivity extends AppCompatActivity
                 Toast.makeText(OnlinePvPActivity.this, "Failed to fetch player's statistics: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Set up the forfeit button
+        Button forfeitButton = findViewById(R.id.forfeitButton);
+        forfeitButton.setOnClickListener(view -> showForfeitConfirmationDialog());
+    }
+
+    /**
+     * Shows a confirmation dialog to confirm if the user wants to forfeit the game.
+     */
+    private void showForfeitConfirmationDialog()
+    {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Confirm")
+                .setMessage("Are you sure you want to forfeit the game?")
+                .setPositiveButton(android.R.string.yes, (dialogInterface, which) -> forfeitGame())
+                .setNeutralButton(android.R.string.no, null)
+                .setIcon(R.drawable.logo) // Set the icon to the app's logo
+                .show();
+
+        // Set the text color of the dialog buttons to black
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+    }
+
+    /**
+     * Forfeits the game.
+     */
+    private void forfeitGame()
+    {
+        game.forfeitGame(playerColor);
+        moveToResultsScreen();
+    }
+
+    /**
+     * Moves to the relevant result screen based on the player's result in the game that just ended.
+     */
+    private void moveToResultsScreen()
+    {
+        Intent intent;
+        if (Objects.equals(game.getBoard().checkGameStatus(), playerColor))
+        {
+            intent = new Intent(OnlinePvPActivity.this, WinScreen.class);
+        }
+        else if (Objects.equals(game.getBoard().checkGameStatus(), Game.DRAW_STRING))
+        {
+            intent = new Intent(OnlinePvPActivity.this, DrawScreen.class);
+        }
+        else
+        {
+            intent = new Intent(OnlinePvPActivity.this, LoseScreen.class);
+        }
+
+        intent.putExtra("userId", playerColor.equals(Game.WHITE_STRING) ? player1Id : player2Id);
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -223,7 +271,7 @@ public class OnlinePvPActivity extends AppCompatActivity
                         {
                             draggedPiece.setVisibility(View.VISIBLE);
                             draggedPiece.setX(event.getRawX() - draggedPiece.getWidth() / 2);
-                            draggedPiece.setY(event.getRawY() - draggedPiece.getHeight());
+                            draggedPiece.setY(event.getRawY() - (int)(draggedPiece.getHeight()));
                         }
                         break;
                     case MotionEvent.ACTION_UP:

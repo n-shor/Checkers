@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -30,12 +29,10 @@
         android:gravity="center"
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp"
-        android:background="#000000"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
-
 
     <TextView
         android:id="@+id/tv_top"
@@ -58,11 +55,24 @@
         android:layout_height="wrap_content"
         android:text="Player 2"
         android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/forfeitButton"
         app:layout_constraintEnd_toEndOf="@id/grid_view"
-        app:layout_constraintVertical_bias="0.5"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@id/grid_view"
         app:layout_constraintTop_toBottomOf="@id/grid_view" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/forfeitButton"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:background="@drawable/button_background"
+        android:text="Forfeit"
+        android:layout_marginTop="48dp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grid_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
