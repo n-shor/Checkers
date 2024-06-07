@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,11 @@ public class LocalPvPActivity extends AppCompatActivity
     private CheckersAdapter adapter; // Adapter to manage the interaction between the GridView and the game data.
     private TextView turnIndicator; // TextView to display the current turn.
     private TextView turnIndicator2; // Flipped turn indicator for the second player to look at.
+
+    private int startX = -1; // Start row for move.
+    private int startY = -1; // Start column for move.
+    private ImageView draggedPiece; // ImageView to represent the dragged piece
+    private View originalView; // Original view of the dragged piece
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,12 +46,8 @@ public class LocalPvPActivity extends AppCompatActivity
 
         updateTurnIndicators();
 
-        // Handle touch events on the grid view for move operations.
         gridView.setOnTouchListener(new View.OnTouchListener()
         {
-            private int startX = -1; // Start row for move.
-            private int startY = -1; // Start column for move.
-
             @Override
             public boolean onTouch(View v, MotionEvent event)
             {
@@ -53,6 +56,16 @@ public class LocalPvPActivity extends AppCompatActivity
 
                 if (position == GridView.INVALID_POSITION)
                 {
+                    if (action == MotionEvent.ACTION_UP && draggedPiece != null)
+                    {
+                        // Remove dragged piece and highlighting if dropped outside the board
+                        ((ViewGroup) gridView.getParent()).removeView(draggedPiece);
+                        draggedPiece = null;
+                        adapter.setHighlightedPosition(-1);
+                        if (originalView != null) {
+                            originalView.setVisibility(View.VISIBLE);
+                        }
+                    }
                     return false; // Invalid touch position, outside of grid bounds.
                 }
 
@@ -69,15 +82,48 @@ public class LocalPvPActivity extends AppCompatActivity
                         // Record the start position of a drag (potential move).
                         startX = flippedRow;
                         startY = flippedCol;
-                        adapter.setDraggingPosition(position);
+                        adapter.setDraggingPosition(Board.BOARD_SIZE * Board.BOARD_SIZE - 1 - position); // Reversing the position to account for the reversed board
+                        Piece piece = (Piece) adapter.getItem(Board.BOARD_SIZE * Board.BOARD_SIZE - 1 - position);
+                        if (piece != null)
+                        {
+                            originalView = gridView.getChildAt(position);
+                            if (originalView != null && originalView instanceof ImageView)
+                            {
+                                ((ImageView) originalView).setImageDrawable(null); // Remove the image from the original view
+                            }
+                            draggedPiece = new ImageView(LocalPvPActivity.this);
+                            draggedPiece.setImageResource(piece.getPictureID()); // Get the correct image for the piece
+                            draggedPiece.setLayoutParams(new GridView.LayoutParams(140, 140));
+                            draggedPiece.setVisibility(View.INVISIBLE);
+                            ((ViewGroup) gridView.getParent()).addView(draggedPiece);
+                        }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         adapter.setHighlightedPosition(position);
+                        if (draggedPiece != null)
+                        {
+                            draggedPiece.setVisibility(View.VISIBLE);
+                            draggedPiece.setX(event.getRawX() - draggedPiece.getWidth() / 2);
+                            draggedPiece.setY(event.getRawY() - draggedPiece.getHeight());
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
                         // Attempt to make a move from the start position to the end position.
                         adapter.setDraggingPosition(-1);
                         adapter.setHighlightedPosition(-1);
+                        if (draggedPiece != null)
+                        {
+                            ((ViewGroup) gridView.getParent()).removeView(draggedPiece);
+                            draggedPiece = null;
+                        }
+                        if (originalView != null && originalView instanceof ImageView) {
+                            Piece originalPiece = (Piece) adapter.getItem(position);
+                            if (originalPiece != null)
+                            {
+                                ((ImageView) originalView).setImageResource(originalPiece.getPictureID()); // Restore the image
+                            }
+                            originalView = null;
+                        }
                         if (game.makeMove(startX, startY, flippedRow, flippedCol))
                         {
                             adapter.notifyDataSetChanged(); // Update the board if move was successful.
