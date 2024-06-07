@@ -559,6 +559,18 @@ public class Board
     }
 
     /**
+     * Replaces a certain piece in the board with another piece.
+     * This method is used while removing and adding pieces from the board for visual dragging effects.
+     *
+     * @param piece The piece that should replace the current piece.
+     * @param position The position of the piece that should be replaced.
+     */
+    public void setPieceInPosition(Piece piece, int position)
+    {
+        state[position / BOARD_SIZE][position % BOARD_SIZE] = piece;
+    }
+
+    /**
      * Sets the turn for the current game.
      * This method is used in online play to synchronize the turn state across devices.
      *

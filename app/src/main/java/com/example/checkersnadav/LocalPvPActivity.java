@@ -28,6 +28,8 @@ public class LocalPvPActivity extends AppCompatActivity
     private int startY = -1; // Start column for move.
     private ImageView draggedPiece; // ImageView to represent the dragged piece
     private View originalView; // Original view of the dragged piece
+    private int heldPosition; // The position of the currently held piece
+    private Piece heldPiece; // The currently held piece
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,9 +84,10 @@ public class LocalPvPActivity extends AppCompatActivity
                         // Record the start position of a drag (potential move).
                         startX = flippedRow;
                         startY = flippedCol;
-                        adapter.setDraggingPosition(Board.BOARD_SIZE * Board.BOARD_SIZE - 1 - position); // Reversing the position to account for the reversed board
-                        Piece piece = (Piece) adapter.getItem(Board.BOARD_SIZE * Board.BOARD_SIZE - 1 - position);
-                        if (piece != null)
+                        heldPosition = Board.BOARD_SIZE * Board.BOARD_SIZE - 1 - position;
+                        adapter.setDraggingPosition(heldPosition); // Reversing the position to account for the reversed board
+                        heldPiece = (Piece) adapter.getItem(heldPosition);
+                        if (heldPiece != null)
                         {
                             originalView = gridView.getChildAt(position);
                             if (originalView != null && originalView instanceof ImageView)
@@ -92,7 +95,7 @@ public class LocalPvPActivity extends AppCompatActivity
                                 ((ImageView) originalView).setImageDrawable(null); // Remove the image from the original view
                             }
                             draggedPiece = new ImageView(LocalPvPActivity.this);
-                            draggedPiece.setImageResource(piece.getPictureID()); // Get the correct image for the piece
+                            draggedPiece.setImageResource(heldPiece.getPictureID()); // Get the correct image for the piece
                             draggedPiece.setLayoutParams(new GridView.LayoutParams(140, 140));
                             draggedPiece.setVisibility(View.INVISIBLE);
                             ((ViewGroup) gridView.getParent()).addView(draggedPiece);
@@ -100,6 +103,9 @@ public class LocalPvPActivity extends AppCompatActivity
                         break;
                     case MotionEvent.ACTION_MOVE:
                         adapter.setHighlightedPosition(position);
+                        game.getBoard().setPieceInPosition(null, heldPosition);
+                        adapter.notifyDataSetChanged(); // Update the board if move was successful.
+
                         if (draggedPiece != null)
                         {
                             draggedPiece.setVisibility(View.VISIBLE);
@@ -111,6 +117,7 @@ public class LocalPvPActivity extends AppCompatActivity
                         // Attempt to make a move from the start position to the end position.
                         adapter.setDraggingPosition(-1);
                         adapter.setHighlightedPosition(-1);
+                        game.getBoard().setPieceInPosition(heldPiece, heldPosition); // Put the held piece back in for board evaluations
                         if (draggedPiece != null)
                         {
                             ((ViewGroup) gridView.getParent()).removeView(draggedPiece);
