@@ -1,0 +1,167 @@
+@startuml
+class com.example.checkersnadav.LoginActivity {
+- EditText editTextUsername
+- EditText editTextEmail
+- EditText editTextPassword
+- TextView textViewError
+- FirebaseAuth mAuth
+- DatabaseReference mDatabase
+# void onCreate(Bundle)
+- void configureNotificationSettings()
+- void styleDialogButtons(AlertDialog)
++ void login(View)
+- void displayLoginFailedError(Exception)
+- void displayLoginFailedError()
++ void register(View)
+- {static} String hashPassword(String)
+- {static} void saveUserToDatabase(String,String,String)
+- void retrieveAndNavigateToMenu(String)
+- void handleRegistrationFailure(Task<AuthResult>)
+}
+
+
+class com.example.checkersnadav.MenuActivity {
+- String userId
+# void onCreate(Bundle)
++ void goToLocalPvP(View)
++ void goToCreateOrJoinRoom(View)
++ void goToTutorial(View)
++ void goToStats(View)
++ void logout(View)
+}
+
+
+class com.example.checkersnadav.CreateAndJoinRoomActivity {
+- ListView roomListView
+- EditText roomNameEditText
+- RoomAdapter roomAdapter
+- List<Room> roomList
+- String userId
+# void onCreate(Bundle)
+- void createRoom()
+- void updateRoomList()
+- void joinRoom(int)
+}
+
+
+class com.example.checkersnadav.DrawScreen {
+- TextView usernameTextView
+- TextView newEloTextView
+# void onCreate(Bundle)
+}
+
+
+class com.example.checkersnadav.RoomActivity {
+- Button btnStartGame
+- Button btnCloseRoom
+- Button btnLeaveRoom
+- String roomOwnerId
+- String player2Id
+- String roomId
+- TextView txtRoomOwner
+- DatabaseReference roomRef
+- String playerColor
+# void onCreate(Bundle)
+- void setupRoomListener()
+- void updateUI(Room)
+- void fetchPlayerDetails(String,TextView,String)
+- void setButtonVisibility(boolean)
+- void startGame()
+- void leaveRoom()
+- void closeRoom()
+- void startOnlinePvPActivity()
+}
+
+
+class com.example.checkersnadav.WinScreen {
+- TextView usernameTextView
+- TextView newEloTextView
+- TextView bonusActivatedTextView
+# void onCreate(Bundle)
+}
+
+
+class com.example.checkersnadav.TutorialActivity {
+# void onCreate(Bundle)
+}
+
+class com.example.checkersnadav.LoseScreen {
+- TextView usernameTextView
+- TextView newEloTextView
+# void onCreate(Bundle)
+}
+
+
+class com.example.checkersnadav.LocalPvPActivity {
+- Game game
+- GridView gridView
+- CheckersAdapter adapter
+- TextView turnIndicator
+- TextView turnIndicator2
+- int startX
+- int startY
+- ImageView draggedPiece
+- View originalView
+- int heldPosition
+- Piece heldPiece
+# void onCreate(Bundle)
+- void showBackConfirmationDialog(String,String)
+- void forfeit(String,String)
+- void updateTurnIndicators()
+}
+
+
+class com.example.checkersnadav.OnlinePvPActivity {
+- OnlineGame game
+- GridView gridView
+- CheckersAdapter adapter
+- String playerColor
+- String player1Id
+- String player2Id
+- TextView tvTop
+- TextView tvBottom
+- TextView turnIndicator
+- int startX
+- int startY
+- ImageView draggedPiece
+- View originalView
+- int heldPosition
+- Piece heldPiece
+# void onCreate(Bundle)
+- void showForfeitConfirmationDialog()
+- void forfeitGame()
+- void moveToResultsScreen()
+- void setupTouchListeners()
+}
+
+
+class com.example.checkersnadav.LocalEndScreenActivity {
+- String userId
+# void onCreate(Bundle)
++ void goToMainMenu(View)
+}
+
+
+class com.example.checkersnadav.StatsActivity {
+- TextView titleTextView
+- TextView statsTextView
+# void onCreate(Bundle)
+- void fetchUserStats(String)
+}
+
+
+
+
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.LoginActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.MenuActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.CreateAndJoinRoomActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.DrawScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.RoomActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.WinScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.TutorialActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.LoseScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.LocalPvPActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.OnlinePvPActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.LocalEndScreenActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.checkersnadav.StatsActivity
+@enduml

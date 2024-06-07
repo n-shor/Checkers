@@ -20,7 +20,6 @@ public class CheckersAdapter extends BaseAdapter
     private final Context context; // Context in which the adapter is running
     private Piece[][] boardState; // Current state of the board
     private final boolean color; // Required for online play, so we know how to display the board
-    private int draggingPosition = -1; // Position being dragged
     private int highlightedPosition = -1; // Position currently highlighted
 
     /**
@@ -162,7 +161,7 @@ public class CheckersAdapter extends BaseAdapter
      */
     public void setDraggingPosition(int position)
     {
-        this.draggingPosition = position;
+        // Position being dragged
         notifyDataSetChanged(); // Notify the adapter to update the view
     }
 

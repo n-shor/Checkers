@@ -1,0 +1,209 @@
+@startuml
+class com.example.checkersnadav.Player {
+- String username
+- String email
+- String hashedPassword
+- Statistics stats
+- String lastWinDate
++ <<Create>> Player()
++ <<Create>> Player(String,String,String)
++ String getUsername()
++ void setUsername(String)
++ String getEmail()
++ void setEmail(String)
++ String getHashedPassword()
++ void setHashedPassword(String)
++ Statistics getStats()
++ void setStats(Statistics)
++ String getLastWinDate()
++ void setLastWinDate(String)
+}
+
+
+class com.example.checkersnadav.OnlineGame {
+- String whiteId
+- String blackId
+- String gameId
+- DatabaseReference gameRef
+- String playerColor
+- int playerMoves
+- CheckersAdapter adapter
++ <<Create>> OnlineGame(String,String,String,String)
+- void setupFirebase(String)
++ boolean makeMove(int,int,int,int)
+- boolean isValidPlayerMove(int,int)
+- void updateGameStateInFirebase()
+- void updateLocalBoardState(String)
+- String serializeBoardState()
++ void deserializeBoardState(String)
+- Statistics.Outcomes determineOutcome()
++ void setAdapter(CheckersAdapter)
++ void forfeitGame(String)
++ void finishGame()
+}
+
+
+class com.example.checkersnadav.Game {
+# Board board
+# boolean isActive
++ {static} String WHITE_STRING
++ {static} String BLACK_STRING
++ {static} String DRAW_STRING
++ {static} String NONE_STRING
++ <<Create>> Game()
++ Board getBoard()
++ boolean makeMove(int,int,int,int)
++ boolean isActive()
++ void forfeitGame(String)
+}
+
+
+class com.example.checkersnadav.AlarmReceiver {
++ {static} String CHANNEL_ID
++ {static} String CHANNEL_NAME
++ void onReceive(Context,Intent)
+- void makeNotification(Context)
+}
+
+
+class com.example.checkersnadav.Piece {
+- boolean color
+- boolean isKing
++ <<Create>> Piece(boolean)
++ <<Create>> Piece(boolean,boolean)
++ boolean isBlack()
++ int getPictureID()
++ boolean isKing()
++ void setKing(boolean)
+}
+
+
+class com.example.checkersnadav.Statistics {
+- int elo
+- int wins
+- int losses
+- int draws
+- int averageMovesPerGame
+- int topMoves
++ <<Create>> Statistics()
++ <<Create>> Statistics(int,int,int,int,int)
++ void updateStatistics(Outcomes,int,boolean,int)
++ int getWins()
++ void setWins(int)
++ int getLosses()
++ void setLosses(int)
++ int getDraws()
++ void setDraws(int)
++ int getAverageMovesPerGame()
++ void setAverageMovesPerGame(int)
++ int getTopMoves()
++ void setTopMoves(int)
++ int getElo()
++ void setElo(int)
+- {static} float winProbability(float,float)
+}
+
+
+enum com.example.checkersnadav.Outcomes {
++  WIN
++  LOSS
++  DRAW
+}
+
+class com.example.checkersnadav.Board {
++ {static} boolean WHITE
++ {static} boolean BLACK
++ {static} int BOARD_SIZE
+- Piece[][] state
+- boolean turn
+- int movesSinceCaptureOrKing
+- int lastMoveX
+- int lastMoveY
+- String forfeit
++ <<Create>> Board()
++ boolean move(int,int,int,int)
+- boolean canMove(int,int)
++ String getWinner()
++ String checkGameStatus()
++ Piece[][] getState()
++ boolean isValidMove(int,int,int,int)
+- void performPieceCapture(int,int,int,int)
+- void performKingCapture(int,int,int,int)
+- boolean isPathClear(int,int,int,int)
+- boolean hasOpponentPieceInBetween(int,int,int,int)
+- boolean pieceHasMandatoryCapture(int,int)
+- boolean kingHasMandatoryCapture(int,int)
+- boolean playerHasMandatoryCapture()
++ void setPieceInPosition(Piece,int)
++ void forfeit(String)
++ String getForfeit()
++ void setTurn(boolean)
++ boolean getTurn()
++ int getLastMoveX()
++ void setLastMoveX(int)
++ int getLastMoveY()
++ void setLastMoveY(int)
++ int getMovesSinceCaptureOrKing()
++ void setMovesSinceCaptureOrKing(int)
+}
+
+
+class com.example.checkersnadav.CheckersAdapter {
+- Context context
+- Piece[][] boardState
+- boolean color
+- int highlightedPosition
++ <<Create>> CheckersAdapter(Context,Piece[][],boolean)
++ int getCount()
++ Object getItem(int)
++ long getItemId(int)
++ View getView(int,View,ViewGroup)
++ void updateGameState(Piece[][])
++ void setDraggingPosition(int)
++ void setHighlightedPosition(int)
+}
+
+
+class com.example.checkersnadav.Room {
+- String roomId
+- String roomOwnerId
+- String player2Id
+- boolean isGameOngoing
+- String roomName
++ <<Create>> Room()
++ <<Create>> Room(String,String,String)
++ String getRoomId()
++ String getRoomOwnerId()
++ String getPlayer2Id()
++ void setPlayer2Id(String)
++ boolean isGameOngoing()
++ void setGameOngoing(boolean)
++ boolean canJoin()
++ String getRoomName()
+}
+
+
+class com.example.checkersnadav.SquareImageView {
++ <<Create>> SquareImageView(Context)
++ <<Create>> SquareImageView(Context,AttributeSet)
++ <<Create>> SquareImageView(Context,AttributeSet,int)
+# void onMeasure(int,int)
+}
+
+class com.example.checkersnadav.AlarmScheduler {
++ {static} void scheduleMidnightAlarm(Context,Activity)
+}
+
+class com.example.checkersnadav.RoomAdapter {
++ <<Create>> RoomAdapter(Context,List<Room>)
++ View getView(int,View,ViewGroup)
+}
+
+
+
+com.example.checkersnadav.Game <|-- com.example.checkersnadav.OnlineGame
+android.content.BroadcastReceiver <|-- com.example.checkersnadav.AlarmReceiver
+android.widget.BaseAdapter <|-- com.example.checkersnadav.CheckersAdapter
+com.example.checkersnadav.AppCompatImageView <|-- com.example.checkersnadav.SquareImageView
+android.widget.ArrayAdapter <|-- com.example.checkersnadav.RoomAdapter
+@enduml
