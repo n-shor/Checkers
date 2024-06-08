@@ -271,7 +271,7 @@ public class OnlinePvPActivity extends AppCompatActivity
                         {
                             draggedPiece.setVisibility(View.VISIBLE);
                             draggedPiece.setX(event.getRawX() - draggedPiece.getWidth() / 2);
-                            draggedPiece.setY(event.getRawY() - (int)(draggedPiece.getHeight()));
+                            draggedPiece.setY(event.getRawY() - draggedPiece.getHeight());
                         }
                         break;
                     case MotionEvent.ACTION_UP:
